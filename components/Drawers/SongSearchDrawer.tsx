@@ -9,22 +9,17 @@ import {
   DrawerHeader,
   Heading,
   useColorMode,
-  PseudoBox,
   Grid,
-} from '@chakra-ui/core';
-import { useRecoilValue, useRecoilState } from 'recoil';
+  Box,
+} from '@chakra-ui/react';
 import DashboardSongDisplay from '../Room/DashboardSongDisplay';
 import useWindowDimensions from '../../hooks/useWindowDimensions';
-import { displayedModalState } from '../../state/displayedModal';
-import firebase from '../../lib/firebase';
-import Events from '../../services/analytics/Events';
-import { roomInformationState } from '../../state/roomInformation';
-import queueSong from '../../services/queueSong';
-import { SongInformation } from '../../models/SongInformation';
-import { Service } from '../../models/Service';
-import { spotifyApiState } from '../../state/spotifyAPI';
-import { accessTokenState } from '../../state/accessToken';
-import { userInformationState } from '../../state/userInformation';
+import useSpotifyAuthentication from '../../hooks/useSpotifyAuthentication';
+import { useAtom } from 'jotai';
+import { spotifyAtom } from '../../state/spotifyAtom';
+import { userAtom } from '../../state/userAtom';
+import { Modal, modalAtom } from '../../state/modalAtom';
+import Service from '../../models/Service';
 
 interface Props {}
 
@@ -53,13 +48,12 @@ const SongSearchDrawer = (props: Props) => {
   const { colorMode } = useColorMode();
   const dimensions = useWindowDimensions();
 
-  const spotifyAPI = useRecoilValue(spotifyApiState);
-  const accessToken = useRecoilValue(accessTokenState);
-  const userInformation = useRecoilValue(userInformationState);
-  const roomInformation = useRecoilValue(roomInformationState);
-  const [displayedModal, setDisplayedModal] = useRecoilState(
-    displayedModalState
-  );
+  const [spotifyAPI] = useAtom(spotifyAtom);
+  const [user] = useAtom(userAtom);
+  const [modal, setModal] = useAtom(modalAtom);
+  const { accessToken } = useSpotifyAuthentication();
+
+  // const roomInformation = useRecoilValue(roomInformationState);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [lastSearched, setLastSearched] = useState(0);
@@ -68,63 +62,63 @@ const SongSearchDrawer = (props: Props) => {
   >([]);
 
   const queueTrack = async (track: SpotifyApi.TrackObjectFull) => {
-    if (spotifyAPI && userInformation) {
+    if (spotifyAPI && user) {
       spotifyAPI.setAccessToken(accessToken);
       const devicesResponse = await spotifyAPI.getMyDevices();
       console.log(devicesResponse);
 
-      const userRoom = {
-        service: 'spotify' as Service,
-        id: userInformation.id,
-        displayName: userInformation.displayName,
-        image: {
-          src: userInformation.image.src,
-        },
-      };
+      // const userRoom = {
+      //   service: Service.Spotify,
+      //   id: user.id,
+      //   displayName: user.displayName,
+      //   image: {
+      //     src: user.image.src,
+      //   },
+      // };
 
-      const song: SongInformation = {
-        name: track.name,
-        artists: track.artists.map((artist) => artist.name),
-        timestampUpdated: firebase.firestore.FieldValue.serverTimestamp(),
-        isPlaying: true,
-        progress: 0,
-        duration: track.duration_ms,
-        album: {
-          name: track.album.name,
-          image: {
-            src: track.album.images[0].url,
-          },
-        },
-        spotify: {
-          id: track.id,
-          uri: track.uri,
-        },
-        userWhoQueued: userRoom,
-      };
+      // const song: SongInformation = {
+      //   name: track.name,
+      //   artists: track.artists.map((artist) => artist.name),
+      //   timestampUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+      //   isPlaying: true,
+      //   progress: 0,
+      //   duration: track.duration_ms,
+      //   album: {
+      //     name: track.album.name,
+      //     image: {
+      //       src: track.album.images[0].url,
+      //     },
+      //   },
+      //   spotify: {
+      //     id: track.id,
+      //     uri: track.uri,
+      //   },
+      //   userWhoQueued: userRoom,
+      // };
 
-      if (roomInformation && userInformation) {
-        queueSong(roomInformation, song);
-      }
+      // if (roomInformation && userInformation) {
+      //   queueSong(roomInformation, song);
+      // }
 
-      if (devicesResponse.devices.length === 0) {
-        setDisplayedModal('device-select');
-        return;
-      }
+      // if (devicesResponse.devices.length === 0) {
+      //   setDisplayedModal('device-select');
+      //   return;
+      // }
 
       // await spotifyAPI.play({
       //   uris: [track.uri],
       //   device_id: devicesResponse.devices[0].id || '',
       // });
 
-      firebase.analytics().logEvent(Events.QueueSong, {
-        spotify: {
-          uri: track.uri,
-          id: track.id,
-          name: track.name,
-        },
-      });
+      // firebase.analytics().logEvent(Events.QueueSong, {
+      //   spotify: {
+      //     uri: track.uri,
+      //     id: track.id,
+      //     name: track.name,
+      //   },
+      // });
       setSearchQuery('');
-      setDisplayedModal(null);
+      setModal(Modal.None);
     }
   };
 
@@ -147,8 +141,9 @@ const SongSearchDrawer = (props: Props) => {
     }
   };
 
-  const onClose = () => setDisplayedModal(null);
-  const isOpen = displayedModal === 'queue-song';
+  const onClose = () => setModal(Modal.None);
+  const isOpen = modal === Modal.QueueSong;
+  console.log(isOpen);
 
   return (
     <Drawer placement='top' onClose={onClose} isOpen={isOpen}>
@@ -184,7 +179,7 @@ const SongSearchDrawer = (props: Props) => {
             >
               {searchResults.map((track, index) => {
                 return (
-                  <PseudoBox
+                  <Box
                     {...grayGhostStyle[colorMode]}
                     p={2}
                     mx={-2}
@@ -203,7 +198,7 @@ const SongSearchDrawer = (props: Props) => {
                           : undefined
                       }
                     />
-                  </PseudoBox>
+                  </Box>
                 );
               })}
             </Grid>

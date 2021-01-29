@@ -53,13 +53,20 @@ const PlaybackHeader = ({ placement, isHome }: Props) => {
           {/* {roomInformation ? (
             <DashboardSongControls />
           ) : ( */}
-          <Link href='/create'>
+          <Link href='/rooms/test'>
+            <a>
+              <Button colorScheme='green' leftIcon={<FiPlus />}>
+                Test Room
+              </Button>
+            </a>
+          </Link>
+          {/* <Link href='/create'>
             <a>
               <Button colorScheme='green' leftIcon={<FiPlus />}>
                 Create Room
               </Button>
             </a>
-          </Link>
+          </Link> */}
           {/* )} */}
         </Flex>
         <Flex

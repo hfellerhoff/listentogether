@@ -5,6 +5,7 @@ import {
   Spinner,
   Stack,
   Text,
+  useColorMode,
   useRadio,
   useRadioGroup,
   UseRadioProps,
@@ -28,6 +29,7 @@ interface RadioCardProps extends UseRadioProps {
 function RadioCard(props: RadioCardProps) {
   const { leftIcon, title, description, isChecked, isLoading } = props;
   const { getInputProps, getCheckboxProps } = useRadio(props);
+  const { colorMode } = useColorMode();
 
   const input = getInputProps();
   const checkbox = getCheckboxProps();
@@ -42,13 +44,20 @@ function RadioCard(props: RadioCardProps) {
         flexDirection='column'
         alignItems='flex-start'
         textAlign='left'
-        bg='#3B4757'
+        bg={colorMode === 'dark' ? '#3B4757' : '#EDF2F7'}
         borderRadius={4}
         _hover={{
-          bg: isChecked ? 'teal.500' : 'gray.600',
+          bg:
+            colorMode === 'dark'
+              ? isChecked
+                ? 'teal.600'
+                : 'gray.600'
+              : isChecked
+              ? '#38A068'
+              : '#DEE3E8',
         }}
         _checked={{
-          bg: 'teal.600',
+          bg: colorMode === 'dark' ? 'teal.600' : '#38A068',
         }}
         _focus={{
           boxShadow: 'outline',
@@ -56,7 +65,12 @@ function RadioCard(props: RadioCardProps) {
         px={5}
         py={3}
       >
-        <Flex align='center' justify='space-between' w='100%'>
+        <Flex
+          align='center'
+          justify='space-between'
+          w='100%'
+          color={isChecked || colorMode === 'dark' ? '#FFFFFF' : ''}
+        >
           <Flex align='center' justify='center'>
             {leftIcon}
             <Box ml={leftIcon ? 3 : 0}>

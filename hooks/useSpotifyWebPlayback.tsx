@@ -4,6 +4,10 @@ import useSpotifyAuthentication from './useSpotifyAuthentication';
 const useSpotifyWebPlayback = () => {
   const { accessToken } = useSpotifyAuthentication();
 
+  console.log(
+    process.browser ? window.onSpotifyWebPlaybackSDKReady : undefined
+  );
+
   useEffect(() => {
     // @ts-ignore
     window.onSpotifyWebPlaybackSDKReady = () => {
@@ -46,16 +50,6 @@ const useSpotifyWebPlayback = () => {
 
       // Connect to the player!
       player.connect();
-      // console.log(accessToken, process.browser);
-
-      // if (accessToken && process.browser) {
-      //   try {
-
-      //     };
-      //   } catch (err) {
-      //     console.warn(err);
-      //   }
-      // }
     };
   }, []);
 };

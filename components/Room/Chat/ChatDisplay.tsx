@@ -1,6 +1,6 @@
 import React from 'react';
-import { Box, Flex, Avatar, Text, useColorMode } from '@chakra-ui/core';
-import { ChatMessage } from '../../../models/ChatMessage';
+import { Box, Flex, Avatar, Text, useColorMode } from '@chakra-ui/react';
+import { ChatMessage } from '../../../models/room/ChatMessage';
 
 interface Props {
   messages: ChatMessage[];
@@ -41,13 +41,13 @@ const ChatDisplay = ({ messages }: Props) => {
                     width={8}
                     height={8}
                     size='sm'
-                    src={message.user.image.src}
-                    name={message.user.displayName}
+                    src={message.user.profile.image.src}
+                    name={message.user.profile.name}
                   />
                 )}
                 <Box ml={isSameUser ? 10 : 2}>
                   <Text fontSize={12} display={isSameUser ? 'none' : 'block'}>
-                    {message.user.displayName}
+                    {message.user.profile.name}
                   </Text>
                   <Text>{message.content}</Text>
                 </Box>

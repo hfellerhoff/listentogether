@@ -26,8 +26,8 @@ const VolumeSlider = (props: Props) => {
     console.log(localVolume);
 
     if (spotifyApi) {
-      spotifyApi.setAccessToken(accessToken);
-      spotifyApi.setVolume(value);
+      // spotifyApi.setAccessToken(accessToken);
+      // spotifyApi.setVolume(value);
     }
   };
 

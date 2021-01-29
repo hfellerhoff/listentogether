@@ -1,20 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { useRecoilValue } from 'recoil';
-import { roomInformationState } from '../../../state/roomInformation';
-import { useDocument } from 'react-firebase-hooks/firestore';
-import firebase from '../../../lib/firebase';
-import { ListenersDocument } from '../../../models/room-details/ListenersDocument';
-import { Spinner, Flex } from '@chakra-ui/core';
-import { UserInformationRoom } from '../../../models/UserInformation';
+import { Spinner, Flex } from '@chakra-ui/react';
 import ListenerDisplay from './ListenerDisplay';
 
 interface Props {}
 
 const ListenerPanel = (props: Props) => {
-  const roomInformation = useRecoilValue(roomInformationState);
-  const [listeners, setListeners] = useState<
-    UserInformationRoom[] | undefined
-  >();
+  // const roomInformation = useRecoilValue(roomInformationState);
+  // const [listeners, setListeners] = useState<
+  //   UserInformationRoom[] | undefined
+  // >();
 
   const [value, loading, error] = useDocument(
     roomInformation

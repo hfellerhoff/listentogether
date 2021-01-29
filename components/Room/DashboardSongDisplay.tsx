@@ -1,6 +1,5 @@
 import React from 'react';
-import { Flex, Box, Heading, Text, Image } from '@chakra-ui/core';
-import ResponsiveEllipsis from '../ResponsiveEllipsis';
+import { Flex, Box, Heading, Text, Image } from '@chakra-ui/react';
 
 interface Props {
   title: string;
@@ -68,10 +67,10 @@ const DashboardSongDisplay = ({
         )}
         <Flex ml={3} justify='center' direction='column'>
           <Heading size='md' fontSize={18}>
-            <ResponsiveEllipsis text={title} maxLine={1} />
+            {title}
           </Heading>
           <Text fontSize={14}>
-            <ResponsiveEllipsis text={`${artist} • ${album}`} maxLine={1} />
+            {artist} • {album}
           </Text>
         </Flex>
       </Flex>

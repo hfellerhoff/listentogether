@@ -145,26 +145,18 @@ const DeviceSelectDrawer = (props: Props) => {
                   <></>
                 )}
                 <Box textAlign='center'>
-                  {isTransferingPlayback ? (
-                    <Stack align='center' p={4}>
-                      <Spinner size='md' />
-                      <Text>Transfering playback...</Text>
-                    </Stack>
-                  ) : (
-                    <Text maxW='md' margin='0 auto'>
-                      Looking for a device that isn't here? Try opening up
-                      Spotify on one of your devices, or swap to a browser that
-                      supports{' '}
-                      <Link
-                        fontWeight={600}
-                        href='https://developer.spotify.com/documentation/web-playback-sdk/#supported-browsers'
-                        target='_blank'
-                        rel='noopener noreferrer'
-                      >
-                        Spotify's Web Playback SDK.
-                      </Link>
-                    </Text>
-                  )}
+                  <Text maxW='md' margin='0 auto'>
+                    Looking for a device that isn't here? Try opening up Spotify
+                    on one of your devices, or swap to a browser that supports{' '}
+                    <Link
+                      fontWeight={600}
+                      href='https://developer.spotify.com/documentation/web-playback-sdk/#supported-browsers'
+                      target='_blank'
+                      rel='noopener noreferrer'
+                    >
+                      Spotify's Web Playback SDK.
+                    </Link>
+                  </Text>
                 </Box>
               </Box>
             )}
