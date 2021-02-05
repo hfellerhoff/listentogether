@@ -12,26 +12,15 @@ interface Props {
 }
 
 const Layout = ({ children, publicRoute }: Props) => {
-  const { colorMode } = useColorMode();
   const { backgroundColor } = useBackgroundColor();
 
   if (!publicRoute) {
-    const isLoading = useUserMonitor();
-    // if (isLoading)
-    //   return (
-    //     <Center minH='100vh'>
-    //       <Spinner size='lg' />
-    //     </Center>
-    //   );
+    useUserMonitor();
   }
 
   return (
     <main>
-      <Box
-        minH='100vh'
-        // bg={colorMode === 'light' ? '#EEEEEE' : '#19202D'}
-        bg={backgroundColor}
-      >
+      <Box minH='100vh' bg={backgroundColor}>
         {children}
       </Box>
       {!publicRoute ? (
