@@ -1,6 +1,6 @@
 # Listen Together
 
-An app for listening syncronously with friends on Spotify.
+An app for listening syncronously with friends on Spotify. This is an updated version of the previous Listen Together - if you're looking for that, you can find it [here](https://github.com/hfellerhoff/listentogether-hackathon).
 
 ## Project Structure
 
