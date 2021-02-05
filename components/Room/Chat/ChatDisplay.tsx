@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Flex, Avatar, Text, useColorMode } from '@chakra-ui/react';
-import { ChatMessage } from '../../../models/room/ChatMessage';
+import { ChatMessage } from '../../../models/Message';
 
 interface Props {
   messages: ChatMessage[];

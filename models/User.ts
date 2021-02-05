@@ -1,8 +1,10 @@
+import Room from './Room';
 import Service from './Service';
 
 interface User {
   id: string;
   service: Service;
+  online: boolean;
   profile: {
     name: string;
     image: {
@@ -10,9 +12,8 @@ interface User {
     };
   };
   rooms: {
-    current: any;
-    favorited: any[];
-    created: any[];
+    current: Room | undefined;
+    favorited: Room[];
   };
 }
 

@@ -3,7 +3,7 @@ import { Flex, Box } from '@chakra-ui/react';
 import ChatDisplay from './ChatDisplay';
 import ChatInput from './ChatInput';
 import useBackgroundColor from '../../../hooks/useBackgroundColor';
-import { ChatMessage } from '../../../models/room/ChatMessage';
+import { ChatMessage } from '../../../models/Message';
 
 export type ChatComponentType = 'panel' | 'full';
 
