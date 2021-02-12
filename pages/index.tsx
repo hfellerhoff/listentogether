@@ -14,8 +14,6 @@ import React from 'react';
 import TextLoop from 'react-text-loop';
 import { FaSpotify } from 'react-icons/fa';
 import ColorModeButton from '../components/ColorModeButton';
-import Link from 'next/link';
-import PaddedLayout from '../components/Layout';
 import Layout from '../components/Layout';
 import useSpotifyAuthentication from '../hooks/useSpotifyAuthentication';
 

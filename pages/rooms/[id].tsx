@@ -82,7 +82,7 @@ export const Room = (props: Props) => {
               pt={4}
               flex={1}
               variant='solid-rounded'
-              variantColor='green'
+              colorScheme='green'
               display='flex'
               flexDirection='column'
               size='md'

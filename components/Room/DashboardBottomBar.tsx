@@ -69,7 +69,7 @@ const DashboardBottomBar = (props: Props) => {
             </Flex>
             <Flex>
               <Button
-                variantColor='blue'
+                colorScheme='blue'
                 leftIcon={() => <FiCopy />}
                 size='sm'
                 onClick={onCopy}
@@ -78,7 +78,7 @@ const DashboardBottomBar = (props: Props) => {
                 <Text ml={2}>{hasCopied ? 'Copied!' : 'Copy ID'}</Text>
               </Button>
               <Button
-                variantColor='red'
+                colorScheme='red'
                 leftIcon={() => <FiLogOut />}
                 size='sm'
                 onClick={async () => {
@@ -99,7 +99,7 @@ const DashboardBottomBar = (props: Props) => {
               No room selected.
             </Heading>
             <Button
-              variantColor='red'
+              colorScheme='red'
               leftIcon={() => <FiLogOut />}
               size='sm'
               onClick={() => {
