@@ -59,8 +59,15 @@ const callback = (req: NextApiRequest, res: NextApiResponse) =>
       };
 
       request.post(authOptions, function (error, response, body) {
+        // On successful login
         if (!error && response.statusCode === 200) {
           const { access_token, refresh_token, expires_in } = body;
+
+          // TODO: Fetch user information from Spotify
+
+          // TODO: If user exists, update fields
+
+          // TODO: If user does not exist, create new user
 
           // Pass the access token back to the Listen Together client
           // to be able to make client-side API requests

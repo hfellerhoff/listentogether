@@ -53,10 +53,10 @@ const PlaybackHeader = ({ placement, isHome }: Props) => {
           {/* {roomInformation ? (
             <DashboardSongControls />
           ) : ( */}
-          <Link href='/rooms/test'>
+          <Link href='/api/rooms/create'>
             <a>
               <Button colorScheme='green' leftIcon={<FiPlus />}>
-                Test Room
+                Create Room
               </Button>
             </a>
           </Link>
@@ -89,11 +89,7 @@ const PlaybackHeader = ({ placement, isHome }: Props) => {
           display={['none', 'none', 'none', 'flex']}
         >
           <Button variant='ghost' rightIcon={<FiChevronDown />}>
-            <Avatar
-              size='sm'
-              name={user.profile.name}
-              src={user.profile.image.src}
-            />
+            <Avatar size='sm' name={user.name} src={user.imageSrc} />
           </Button>
           <ColorModeButton />
         </Flex>

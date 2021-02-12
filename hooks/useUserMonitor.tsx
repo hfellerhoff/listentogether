@@ -4,6 +4,7 @@ import { useAtom } from 'jotai';
 import { spotifyAtom } from '../state/spotifyAtom';
 import useSpotifyAuthentication from './useSpotifyAuthentication';
 import { userAtom } from '../state/userAtom';
+import User from '../models/User';
 
 const useUserMonitor = () => {
   const [spotifyAPI, _] = useAtom(spotifyAtom);
@@ -20,22 +21,13 @@ const useUserMonitor = () => {
         setUser({
           service: 'spotify' as Service,
           id: spotifyUser.id,
-          profile: {
-            name: spotifyUser.display_name || '',
-            image: {
-              src: spotifyUser.images
-                ? spotifyUser.images[0]
-                  ? spotifyUser.images[0].url || ''
-                  : ''
-                : '',
-            },
-          },
-          rooms: {
-            current: undefined,
-            favorited: [],
-            created: [],
-          },
-        });
+          name: spotifyUser.display_name || '',
+          imageSrc: spotifyUser.images
+            ? spotifyUser.images[0]
+              ? spotifyUser.images[0].url || ''
+              : ''
+            : '',
+        } as User);
       } catch (error) {
         console.error('User fetch error:');
         console.error(error);
