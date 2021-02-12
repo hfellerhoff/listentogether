@@ -1,7 +1,5 @@
 interface Song {
-  spotify: {
-    uri: string;
-  };
+  spotifyUri: string;
   progress: number; // in milliseconds
   updatedAt: number; // in milliseconds
   isPaused: boolean;

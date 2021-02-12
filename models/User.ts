@@ -5,16 +5,9 @@ interface User {
   id: string;
   service: Service;
   online: boolean;
-  profile: {
-    name: string;
-    image: {
-      src: string;
-    };
-  };
-  rooms: {
-    current: Room | undefined;
-    favorited: Room[];
-  };
+  name: string;
+  imageSrc: string;
+  // favoritedRooms: Room[];
 }
 
 export default User;

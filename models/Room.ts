@@ -3,12 +3,9 @@ import Song from './Song';
 import User from './User';
 
 interface Room {
-  admins: User[];
+  queuedSongs: Song[];
+  owner: User;
   users: User[];
-  songs: {
-    current: Song;
-    queue: Song[];
-  };
   messages: Message[];
 }
 
