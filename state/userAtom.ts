@@ -5,12 +5,9 @@ import User from '../models/User';
 export const userAtom = atom<User>({
   service: Service.Spotify,
   id: '',
-  profile: {
-    name: '',
-    image: {
-      src: '',
-    },
-  },
+  online: false,
+  name: '',
+  imageSrc: '',
   rooms: {
     current: undefined,
     favorited: [],

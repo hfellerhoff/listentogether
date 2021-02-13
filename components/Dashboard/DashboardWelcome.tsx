@@ -29,7 +29,7 @@ const DashboardWelcome = (props: Props) => {
       <Box textAlign='center' mb={[4, 4, 8, 8]} mt={[4, 4, 8, 8]}>
         <Heading size='2xl'>
           {user
-            ? `Welcome back, ${getFirstName(user.profile.name)}!`
+            ? `Welcome back, ${getFirstName(user.name)}!`
             : 'Welcome back!'}
         </Heading>
         <Text fontSize={20}>It's great to see you again.</Text>
