@@ -25,6 +25,10 @@ const PlaybackHeader = ({ placement, isHome }: Props) => {
 
   console.log(user);
 
+const OnRoomCreate = () => {
+  fetch("/api/rooms/create", {method: "POST", body: JSON.stringify(user)})
+}
+
   return (
     <>
       <Box height={24} display={isHome ? 'static' : 'none'} />
@@ -55,13 +59,13 @@ const PlaybackHeader = ({ placement, isHome }: Props) => {
           {/* {roomInformation ? (
             <DashboardSongControls />
           ) : ( */}
-          <Link href='/api/rooms/create'>
-            <a>
-              <Button colorScheme='green' leftIcon={<FiPlus />}>
+          {/* <Link href={`/api/rooms/create?user=${user.id}`}>
+            <a> */}
+              <Button colorScheme='green' leftIcon={<FiPlus />} onClick={OnRoomCreate}>
                 Create Room
               </Button>
-            </a>
-          </Link>
+            {/* </a>
+          </Link> */}
         </Flex>
         <Flex
           p={2}
