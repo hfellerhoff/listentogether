@@ -3,6 +3,11 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import * as querystring from 'querystring';
 import * as request from 'request';
 import { API_SPOTIFY_AUTH_STATE_KEY } from '../../../constants/API_SPOTIFY_AUTH';
+import supabase from '../../../util/supabase/index';
+
+// import { useAtom } from 'jotai';
+// import { spotifyAtom } from '../../../state/spotifyAtom';
+import Spotify from 'spotify-web-api-node';
 
 const isDevelopment = true; // !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
 
@@ -63,7 +68,15 @@ const callback = (req: NextApiRequest, res: NextApiResponse) =>
         if (!error && response.statusCode === 200) {
           const { access_token, refresh_token, expires_in } = body;
 
+          // console.log("SUPABASE details: ")
+          // console.log(supabase)
+          // spotifyAPI = Spotify.SpotifyWebApiJs;
+          spotifyAPI = new Spotify();
+          spotifyAPI.setAccessToken(accessToken);
+          const spotifyUser = spotifyAPI.getMe();
+          console.log(spotifyUser)
           // TODO: Fetch user information from Spotify
+          
 
           // TODO: If user exists, update fields
 

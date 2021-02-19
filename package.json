@@ -23,7 +23,8 @@
     "react-icons": "^4.1.0",
     "react-text-loop": "^2.3.0",
     "request": "^2.88.2",
-    "spotify-web-api-js": "^1.5.1"
+    "spotify-web-api-js": "^1.5.1",
+    "spotify-web-api-node": "^5.0.2"
   },
   "devDependencies": {
     "@types/cookie": "^0.4.0",
