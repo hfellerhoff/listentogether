@@ -5,8 +5,10 @@ import { spotifyAtom } from '../state/spotifyAtom';
 import useSpotifyAuthentication from './useSpotifyAuthentication';
 import { userAtom } from '../state/userAtom';
 import User from '../models/User';
+import { useRouter } from 'next/router';
 
 const useUserMonitor = () => {
+  const router = useRouter();
   const [spotifyAPI, _] = useAtom(spotifyAtom);
   const [user, setUser] = useAtom(userAtom);
   const { isLoading, accessToken } = useSpotifyAuthentication();
@@ -31,6 +33,7 @@ const useUserMonitor = () => {
       } catch (error) {
         console.error('User fetch error:');
         console.error(error);
+        router.push('/api/spotify/login');
       }
     };
 

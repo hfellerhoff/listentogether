@@ -7,9 +7,10 @@ interface Props {
 
 const RoomRollLayout = ({ children }: Props) => {
   return (
-    <Box>
+    <Box width='100%'>
       <Grid
-        mt={[0, 0, 8, 8]}
+        mt={[4, 4, 8, 8]}
+        px={[4, 4, 0]}
         templateColumns={[
           'repeat(auto-fill, minmax(260px, 1fr))',
           'repeat(auto-fill, minmax(280px, 1fr))',

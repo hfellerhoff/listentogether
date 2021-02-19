@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Flex,
   Grid,
@@ -22,46 +22,42 @@ import { Modal, modalAtom } from '../../state/modalAtom';
 import { useRouter } from 'next/router';
 import { FiPlus } from 'react-icons/fi';
 import Layout from '../../components/Layout';
+import Head from 'next/head';
+import Room from '../../models/Room';
+import supabase from '../../util/supabase';
 
 interface Props {}
 
-export const Room = (props: Props) => {
+export const RoomPage = (props: Props) => {
   const router = useRouter();
-  const id = router.query.id;
-
-  const [modal, setModal] = useAtom(modalAtom);
 
   const { foregroundColor, backgroundColor } = useBackgroundColor();
+  const [modal, setModal] = useAtom(modalAtom);
+  const [room, setRoom] = useState<Room>();
 
-  useEffect(
-    () => {
-      // const initializeRoom = async (room: RoomInformation) => {
-      //   if (userInformation) {
-      //     setRoomInformation(room);
-      //     await addUserToRoom(room, userInformation);
-      //   }
-      // };
-      // if (!loading && !error && value) {
-      //   if (value.exists) {
-      //     const room = value.data();
-      //     if (!roomInformation) initializeRoom(room as RoomInformation);
-      //   }
-      // }
-    },
-    [
-      // value,
-      // loading,
-      // error,
-      // userInformation,
-      // setRoomInformation,
-      // roomInformation,
-    ]
-  );
+  useEffect(() => {
+    const fetchRoom = async () => {
+      console.log(router.query);
 
-  console.log(modal);
+      let { data: rooms, error } = await supabase
+        .from('rooms')
+        .select('*')
+        .eq('slug', router.query.slug)
+        .range(0, 1);
+      if (rooms && rooms.length > 0) {
+        setRoom(rooms[0]);
+      }
+    };
+
+    if (!room && router.query && router.query.slug) fetchRoom();
+  }, [router.query]);
 
   return (
     <Layout>
+      <Head>
+        <title>Room / Listen Together</title>
+        <link rel='icon' href='/favicon.ico' />
+      </Head>
       <Box h='100vh'>
         <PlaybackHeader />
         <Grid
@@ -87,7 +83,6 @@ export const Room = (props: Props) => {
               flexDirection='column'
               size='md'
             >
-              {/* {roomInformation ? ( */}
               <Flex
                 align='center'
                 justify='space-between'
@@ -140,7 +135,7 @@ export const Room = (props: Props) => {
                   <ChatComponent type='panel' />
                 </TabPanel>
               </TabPanels>
-              {/* <DashboardBottomBar /> */}
+              <DashboardBottomBar room={room} />
             </Tabs>
           </Flex>
           <Box
@@ -157,4 +152,4 @@ export const Room = (props: Props) => {
   );
 };
 
-export default Room;
+export default RoomPage;

@@ -4,8 +4,9 @@ import User from './User';
 
 interface Room {
   name: string;
+  slug: string;
   queuedSongs: Song[];
-  owner: User;
+  owner_id: string;
   users: User[];
   messages: Message[];
   isPublic: boolean;

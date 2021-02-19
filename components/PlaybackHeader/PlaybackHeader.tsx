@@ -23,6 +23,8 @@ const PlaybackHeader = ({ placement, isHome }: Props) => {
   // const roomInformation = useRecoilValue(roomInformationState);
   const [, setModal] = useAtom(modalAtom);
 
+  console.log(user);
+
   return (
     <>
       <Box height={24} display={isHome ? 'static' : 'none'} />
@@ -60,14 +62,6 @@ const PlaybackHeader = ({ placement, isHome }: Props) => {
               </Button>
             </a>
           </Link>
-          {/* <Link href='/create'>
-            <a>
-              <Button colorScheme='green' leftIcon={<FiPlus />}>
-                Create Room
-              </Button>
-            </a>
-          </Link> */}
-          {/* )} */}
         </Flex>
         <Flex
           p={2}

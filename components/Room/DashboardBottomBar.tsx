@@ -8,27 +8,23 @@ import {
   Tooltip,
   Text,
   useClipboard,
+  Spinner,
 } from '@chakra-ui/react';
 import useBackgroundColor from '../../hooks/useBackgroundColor';
 import { FiLogOut, FiCopy } from 'react-icons/fi';
 import { useAtom } from 'jotai';
 import { userAtom } from '../../state/userAtom';
+import Room from '../../models/Room';
+import { FaRegHeart, FaSignOutAlt } from 'react-icons/fa';
+import Link from 'next/link';
 
-interface Props {}
+interface Props {
+  room: Room | undefined;
+}
 
-const DashboardBottomBar = (props: Props) => {
-  // const history = useHistory();
+const DashboardBottomBar = ({ room }: Props) => {
   const { foregroundColor } = useBackgroundColor();
   const [user] = useAtom(userAtom);
-  // const { onCopy, hasCopied } = useClipboard(
-  //   roomInformation ? roomInformation.id : ''
-  // );
-
-  // const isFavorited =
-  //   userInformation && roomInformation
-  //     ? userInformation.favoritedRoomIDs.includes(roomInformation.id)
-  //     : false;
-  // const favoriteText = isFavorited ? 'Unfavorite Room' : 'Favorite Room';
 
   return (
     <Box>
@@ -41,48 +37,30 @@ const DashboardBottomBar = (props: Props) => {
         justify='center'
         display={['none', 'none', 'flex', 'flex']}
       >
-        {/* {roomInformation ? (
+        {room ? (
           <>
             <Flex align='center' justify='center'>
               <Heading size='lg' mb={2} textAlign='center'>
-                <LinesEllipsis
-                  text={roomInformation.name}
-                  maxLine='2'
-                  ellipsis='...'
-                  trimRight
-                  basedOn='letters'
-                />
+                {room.name}
               </Heading>
-              <Tooltip label={favoriteText} aria-label={favoriteText}>
+              <Tooltip label='Favorite room' aria-label='Favorite room'>
                 <Box ml={2}>
-                  <FavoriteRoomButton room={roomInformation} />
+                  <FaRegHeart />
                 </Box>
               </Tooltip>
             </Flex>
             <Flex>
-              <Button
-                colorScheme='blue'
-                leftIcon={() => <FiCopy />}
-                size='sm'
-                onClick={onCopy}
-                mr={2}
-              >
-                <Text ml={2}>{hasCopied ? 'Copied!' : 'Copy ID'}</Text>
-              </Button>
-              <Button
-                colorScheme='red'
-                leftIcon={() => <FiLogOut />}
-                size='sm'
-                onClick={async () => {
-                  if (userInformation && roomInformation) {
-                    await removeUserFromRoom(roomInformation, userInformation);
-                    setRoomInformation(null);
-                    history.push('/dashboard');
-                  }
-                }}
-              >
-                <Text ml={2}>Leave</Text>
-              </Button>
+              <Link href='/dashboard'>
+                <a>
+                  <Button
+                    colorScheme='red'
+                    leftIcon={<FaSignOutAlt />}
+                    size='sm'
+                  >
+                    Leave
+                  </Button>
+                </a>
+              </Link>
             </Flex>
           </>
         ) : (
@@ -90,18 +68,15 @@ const DashboardBottomBar = (props: Props) => {
             <Heading size='md' mb={2}>
               No room selected.
             </Heading>
-            <Button
-              colorScheme='red'
-              leftIcon={() => <FiLogOut />}
-              size='sm'
-              onClick={() => {
-                history.push('/dashboard');
-              }}
-            >
-              <Text ml={2}>Back to Home</Text>
-            </Button>
+            <Link href='/dashboard'>
+              <a>
+                <Button colorScheme='red' leftIcon={<FaSignOutAlt />} size='sm'>
+                  <Text ml={2}>Back to Home</Text>
+                </Button>
+              </a>
+            </Link>
           </>
-        )} */}
+        )}
       </Stack>
     </Box>
   );
