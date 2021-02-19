@@ -10,6 +10,8 @@ import { userAtom } from '../../state/userAtom';
 import useBackgroundColor from '../../hooks/useBackgroundColor';
 import Link from 'next/link';
 import ColorModeButton from '../ColorModeButton';
+import Room from '../../models/Room';
+import { useRouter } from 'next/router';
 
 interface Props {
   placement?: 'top' | 'bottom';
@@ -18,16 +20,21 @@ interface Props {
 
 const PlaybackHeader = ({ placement, isHome }: Props) => {
   placement = placement || 'top';
+  const router = useRouter();
   const { foregroundColor } = useBackgroundColor();
   const [user] = useAtom(userAtom);
-  // const roomInformation = useRecoilValue(roomInformationState);
   const [, setModal] = useAtom(modalAtom);
 
-  console.log(user);
+  const onRoomCreate = async () => {
+    const res = await fetch('/api/rooms/create', {
+      method: 'POST',
+      body: JSON.stringify(user),
+    });
 
-const OnRoomCreate = () => {
-  fetch("/api/rooms/create", {method: "POST", body: JSON.stringify(user)})
-}
+    const room: Room = await res.json();
+
+    router.push(`/rooms/${room.slug}`);
+  };
 
   return (
     <>
@@ -61,10 +68,14 @@ const OnRoomCreate = () => {
           ) : ( */}
           {/* <Link href={`/api/rooms/create?user=${user.id}`}>
             <a> */}
-              <Button colorScheme='green' leftIcon={<FiPlus />} onClick={OnRoomCreate}>
-                Create Room
-              </Button>
-            {/* </a>
+          <Button
+            colorScheme='green'
+            leftIcon={<FiPlus />}
+            onClick={onRoomCreate}
+          >
+            Create Room
+          </Button>
+          {/* </a>
           </Link> */}
         </Flex>
         <Flex

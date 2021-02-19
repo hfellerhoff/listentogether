@@ -40,7 +40,15 @@ const DashboardBottomBar = ({ room }: Props) => {
         {room ? (
           <>
             <Flex align='center' justify='center'>
-              <Heading size='lg' mb={2} textAlign='center'>
+              <Heading
+                w={275}
+                size='md'
+                mb={2}
+                textAlign='center'
+                whiteSpace='nowrap'
+                overflow='hidden'
+                textOverflow='ellipsis'
+              >
                 {room.name}
               </Heading>
               <Tooltip label='Favorite room' aria-label='Favorite room'>

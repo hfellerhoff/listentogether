@@ -3,38 +3,30 @@ const redirectURI =
     ? 'http://localhost:3000/rooms/'
     : 'http://listentogether.app/rooms/';
 
+import { customAlphabet } from 'nanoid';
+import Room from '../../../models/Room';
+import User from '../../../models/User';
 import supabase from '../../../util/supabase/index';
 
+const nanoid = customAlphabet(
+  '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
+  10
+);
+
 export default function handler(req, res) {
-  const roomID = 0;
-  console.log(req.body)
-  // supabase
-  // .from('rooms')
-  // .insert([
-  //   {owner: "", name: "test", isPublic: true}
-  // ])
-  //         supabase
-  //           .from('users')
-  //           .select("*")
-            
-  //           .eq('serviceId', user.serviceId).then((res_2) =>{
-  //               console.log("RES_2, array: ");
-  //               console.log(res_2);
-  //               if (res_2.data.length === 0){
-  //                 supabase
-  //                     .from('users')
-  //                     .insert([
-  //                       user,
-  //                     ]).then((res_1) => {
-  //                       console.log("RES 1: ")
-  //                       console.log(res_1)
-  //                     })
-  //                 // console.log(supabase)
+  const user: User = JSON.parse(req.body);
 
-  //               }
-  //           } );
-          
+  const room = {
+    name: `${user.name}'s Room`,
+    slug: nanoid(),
+    isPublic: true,
+    owner_id: user.id,
+  };
 
+  supabase
+    .from('rooms')
+    .insert([room])
+    .then((res) => console.log(res));
 
-  res.redirect(redirectURI + roomID);
+  res.json(room);
 }

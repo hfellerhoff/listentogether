@@ -6,6 +6,7 @@ import useSpotifyAuthentication from './useSpotifyAuthentication';
 import { userAtom } from '../state/userAtom';
 import User from '../models/User';
 import { useRouter } from 'next/router';
+import supabase from '../util/supabase';
 
 const useUserMonitor = () => {
   const router = useRouter();
@@ -20,18 +21,14 @@ const useUserMonitor = () => {
         spotifyAPI.setAccessToken(accessToken);
         const spotifyUser = await spotifyAPI.getMe();
 
-        setUser({
-          service: 'spotify' as Service,
-          serviceId: spotifyUser.id,
-          id: spotifyUser.id,
-          name: spotifyUser.display_name || '',
-          imageSrc: spotifyUser.images
-            ? spotifyUser.images[0]
-              ? spotifyUser.images[0].url || ''
-              : ''
-            : '',
-          online: false,
-        } as User);
+        let { data: users, error } = await supabase
+          .from('users')
+          .select('*')
+          .eq('serviceId', spotifyUser.id);
+
+        if (users && users.length > 0) {
+          setUser(users[0] as User);
+        }
       } catch (error) {
         console.error('User fetch error:');
         console.error(error);
