@@ -22,6 +22,7 @@ const useUserMonitor = () => {
 
         setUser({
           service: 'spotify' as Service,
+          serviceId: spotifyUser.id,
           id: spotifyUser.id,
           name: spotifyUser.display_name || '',
           imageSrc: spotifyUser.images
@@ -29,6 +30,7 @@ const useUserMonitor = () => {
               ? spotifyUser.images[0].url || ''
               : ''
             : '',
+          online: false,
         } as User);
       } catch (error) {
         console.error('User fetch error:');
