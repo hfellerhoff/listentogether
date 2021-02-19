@@ -1,9 +1,9 @@
 import React from 'react';
 import { Box, Flex, Avatar, Text, useColorMode } from '@chakra-ui/react';
-import { ChatMessage } from '../../../models/Message';
+import Message, { MessageType } from '../../../models/Message';
 
 interface Props {
-  messages: ChatMessage[];
+  messages: Message[];
 }
 
 const ChatDisplay = ({ messages }: Props) => {
@@ -12,7 +12,7 @@ const ChatDisplay = ({ messages }: Props) => {
   return (
     <Box flex={1} overflowY='scroll' h='100%' pb={6}>
       {messages.map((message, index) => {
-        const isMessage = message.type === 'message';
+        const isMessage = message.type === MessageType.UserChat;
         const isSameUser =
           index !== 0 ? message.user.id === messages[index - 1].user.id : false;
 
@@ -41,13 +41,13 @@ const ChatDisplay = ({ messages }: Props) => {
                     width={8}
                     height={8}
                     size='sm'
-                    src={message.user.profile.image.src}
-                    name={message.user.profile.name}
+                    src={message.user.imageSrc}
+                    name={message.user.name}
                   />
                 )}
                 <Box ml={isSameUser ? 10 : 2}>
                   <Text fontSize={12} display={isSameUser ? 'none' : 'block'}>
-                    {message.user.profile.name}
+                    {message.user.name}
                   </Text>
                   <Text>{message.content}</Text>
                 </Box>

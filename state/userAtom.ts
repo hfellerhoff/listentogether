@@ -8,9 +8,4 @@ export const userAtom = atom<User>({
   online: false,
   name: '',
   imageSrc: '',
-  rooms: {
-    current: undefined,
-    favorited: [],
-    created: [],
-  },
 });

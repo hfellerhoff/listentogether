@@ -11,25 +11,24 @@ import {
   Icon,
   useColorMode,
   Box,
-} from '@chakra-ui/core';
-import { useRecoilValue, useRecoilState } from 'recoil';
+} from '@chakra-ui/react';
 import DashboardSongControls from '../Room/DashboardSongControls';
 import VolumeAndDeviceControl from '../Room/VolumeAndDeviceControl';
-import { displayedModalState } from '../../state/displayedModal';
-import { userInformationState } from '../../state/userInformation';
+import { useAtom } from 'jotai';
+import { Modal, modalAtom } from '../../state/modalAtom';
+import { userAtom } from '../../state/userAtom';
+import { FaChevronDown } from 'react-icons/fa';
 
 interface Props {}
 
 const PlaybackControlDrawer = (props: Props) => {
   const { colorMode, toggleColorMode } = useColorMode();
-  const userInformation = useRecoilValue(userInformationState);
-  const [displayedModal, setDisplayedModal] = useRecoilState(
-    displayedModalState
-  );
+  const [user] = useAtom(userAtom);
+  const [modal, setModal] = useAtom(modalAtom);
 
-  const onClose = () => setDisplayedModal(null);
-  const onSpeakerClick = () => setDisplayedModal('device-select');
-  const isOpen = displayedModal === 'playback-control';
+  const onClose = () => setModal(Modal.None);
+  const onSpeakerClick = () => setModal(Modal.PlaybackControl);
+  const isOpen = modal === Modal.PlaybackControl;
 
   return (
     <Drawer placement='top' onClose={onClose} isOpen={isOpen}>
@@ -47,15 +46,11 @@ const PlaybackControlDrawer = (props: Props) => {
               User + Appearance
             </Heading>
             <Flex>
-              <Button variant='ghost' rightIcon='chevron-down'>
+              <Button variant='ghost' rightIcon={<FaChevronDown />}>
                 <Avatar
                   size='sm'
-                  name={userInformation?.displayName || 'Guest User'}
-                  src={
-                    userInformation
-                      ? userInformation.image.src || undefined
-                      : undefined
-                  }
+                  name={user.name || 'Guest User'}
+                  src={user ? user.imageSrc || undefined : undefined}
                 />
               </Button>
               <Button variant='ghost' onClick={toggleColorMode}>

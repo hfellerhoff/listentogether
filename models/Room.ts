@@ -8,6 +8,7 @@ interface Room {
   owner: User;
   users: User[];
   messages: Message[];
+  isPublic: boolean;
 }
 
 export default Room;

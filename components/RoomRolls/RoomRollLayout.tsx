@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Grid } from '@chakra-ui/core';
+import { Box, Grid } from '@chakra-ui/react';
 
 interface Props {
   children: JSX.Element | JSX.Element[];

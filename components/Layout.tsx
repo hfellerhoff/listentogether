@@ -1,9 +1,9 @@
-import { Box, Center, Spinner, useColorMode } from '@chakra-ui/react';
+import { Box } from '@chakra-ui/react';
 import React from 'react';
 import useBackgroundColor from '../hooks/useBackgroundColor';
-import useSpotifyWebPlayback from '../hooks/useSpotifyWebPlayback';
 import useUserMonitor from '../hooks/useUserMonitor';
 import DeviceSelectDrawer from './Drawers/DeviceSelectDrawer';
+import PlaybackControlDrawer from './Drawers/PlaybackControlDrawer';
 import SongSearchDrawer from './Drawers/SongSearchDrawer';
 
 interface Props {
@@ -27,7 +27,7 @@ const Layout = ({ children, publicRoute }: Props) => {
         <>
           <SongSearchDrawer />
           <DeviceSelectDrawer />
-          {/* <PlaybackControlDrawer /> */}
+          <PlaybackControlDrawer />
         </>
       ) : (
         <></>

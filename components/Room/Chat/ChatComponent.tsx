@@ -3,7 +3,7 @@ import { Flex, Box } from '@chakra-ui/react';
 import ChatDisplay from './ChatDisplay';
 import ChatInput from './ChatInput';
 import useBackgroundColor from '../../../hooks/useBackgroundColor';
-import { ChatMessage } from '../../../models/Message';
+import Message from '../../../models/Message';
 
 export type ChatComponentType = 'panel' | 'full';
 
@@ -15,7 +15,7 @@ const ChatComponent = ({ type }: Props) => {
   const { backgroundColor } = useBackgroundColor();
   // const roomInformation = useRecoilValue(roomInformationState);
 
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
 
   // const [snapshot, loading, error] = useDocument(
   //   roomInformation

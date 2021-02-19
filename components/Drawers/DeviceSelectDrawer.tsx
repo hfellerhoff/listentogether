@@ -18,14 +18,7 @@ import {
   Stack,
   Link,
 } from '@chakra-ui/react';
-import RadioOption from '../RadioCard';
-import {
-  FiRefreshCcw,
-  FiGlobe,
-  FiSpeaker,
-  FiMonitor,
-  FiSmartphone,
-} from 'react-icons/fi';
+import { FiRefreshCcw } from 'react-icons/fi';
 import { useAtom } from 'jotai';
 import { spotifyAtom } from '../../state/spotifyAtom';
 import useSpotifyAuthentication from '../../hooks/useSpotifyAuthentication';

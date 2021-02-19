@@ -4,10 +4,6 @@ import useSpotifyAuthentication from './useSpotifyAuthentication';
 const useSpotifyWebPlayback = () => {
   const { accessToken } = useSpotifyAuthentication();
 
-  console.log(
-    process.browser ? window.onSpotifyWebPlaybackSDKReady : undefined
-  );
-
   useEffect(() => {
     // @ts-ignore
     window.onSpotifyWebPlaybackSDKReady = () => {

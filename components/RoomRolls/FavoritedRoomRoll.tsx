@@ -1,29 +1,28 @@
+import { Spinner } from '@chakra-ui/react';
+import { useAtom } from 'jotai';
 import React from 'react';
-import { RoomInformation } from '../../models/RoomInformation';
+import Room from '../../models/Room';
+import { userAtom } from '../../state/userAtom';
 import RoomCardDisplay from './RoomCardDisplay';
 import RoomRollLayout from './RoomRollLayout';
-import { useRecoilValue } from 'recoil';
-import { userInformationState } from '../../state/userInformation';
-import Loading from '../Loading';
-import { getFullUserID } from '../../util/user';
 
 interface Props {
-  rooms: RoomInformation[] | undefined;
+  rooms: Room[] | undefined;
   isLoading?: boolean;
 }
 
 const FavoritedRoomRoll = ({ rooms, isLoading }: Props) => {
-  const userInformation = useRecoilValue(userInformationState);
+  const [user] = useAtom(userAtom);
 
-  if (isLoading) return <Loading size='lg' />;
+  if (isLoading) return <Spinner size='lg' />;
 
-  const userID = userInformation ? getFullUserID(userInformation) : null;
-  if (userInformation && rooms) {
-    rooms = rooms.filter(
-      (room) =>
-        userInformation.favoritedRoomIDs.includes(room.id) ||
-        (userID ? room.owner.id === userID : false)
-    );
+  const userID = user.id;
+  if (user && rooms) {
+    // rooms = rooms.filter(
+    //   (room) =>
+    //     userInformation.favoritedRoomIDs.includes(room.id) ||
+    //     (userID ? room.owner.id === userID : false)
+    // );
   }
 
   return (

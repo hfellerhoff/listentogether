@@ -1,55 +1,44 @@
 import React, { useRef } from 'react';
-import { useHistory } from 'react-router-dom';
-import { PseudoBox, Heading, Box, Text, Flex, Tooltip } from '@chakra-ui/core';
+import { Heading, Box, Text, Flex, Tooltip } from '@chakra-ui/react';
 import DashboardSongDisplay from '../Room/DashboardSongDisplay';
-import { RoomInformation } from '../../models/RoomInformation';
 import { FiMusic, FiUser } from 'react-icons/fi';
-import useGradientsFromImageRef from '../../hooks/useGradientsFromImage';
-import LinesEllipsis from 'react-lines-ellipsis';
-import { useRecoilValue } from 'recoil';
-import { userInformationState } from '../../state/userInformation';
-import { getFullUserID } from '../../util/user';
 import { FaCrown } from 'react-icons/fa';
-import FavoriteRoomButton from '../Buttons/FavoriteRoomButton';
+import Room from '../../models/Room';
+import { useAtom } from 'jotai';
+import { userAtom } from '../../state/userAtom';
 
 interface Props {
-  room: RoomInformation;
+  room: Room;
 }
 
 const RoomCardDisplay = ({ room }: Props) => {
-  const history = useHistory();
-  const userInformation = useRecoilValue(userInformationState);
+  // const history = useHistory();
+  const [user] = useAtom(userAtom);
 
   const image = useRef<HTMLImageElement>();
-  const [normalGradient, hoverGradient] = useGradientsFromImageRef(image);
+  // const [normalGradient, hoverGradient] = useGradientsFromImageRef(image);
 
   return (
-    <PseudoBox
+    <Box
       borderRadius={4}
       h='100%'
-      background={normalGradient}
+      // background={normalGradient}
       p={[4, 6, 8, 8]}
       cursor='pointer'
-      _hover={{
-        background: hoverGradient,
-      }}
-      onClick={async () => {
-        history.push(`/rooms/${room.id}`);
-      }}
+      // _hover={{
+      //   background: hoverGradient,
+      // }}
+      // onClick={async () => {
+      //   history.push(`/rooms/${room.id}`);
+      // }}
       textAlign='center'
       color='#ffffff'
       position='relative'
     >
       <Heading size='lg' textShadow='0px 2px #2F2F2F'>
-        <LinesEllipsis
-          text={room.name}
-          maxLine={2}
-          ellipsis='...'
-          basedOn='letters'
-          style={{ whiteSpace: 'pre-wrap' }}
-        />
+        <Text>{room.name}</Text>
       </Heading>
-      {room.currentSong ? (
+      {/* {room.currentSong ? (
         <Box mt={4}>
           <DashboardSongDisplay
             title={room.currentSong.name}
@@ -67,7 +56,7 @@ const RoomCardDisplay = ({ room }: Props) => {
           </Flex>
           <Text>Be the first to play something!</Text>
         </Box>
-      )}
+      )} */}
       <Box height={12} />
       <Flex
         align='center'
@@ -85,12 +74,12 @@ const RoomCardDisplay = ({ room }: Props) => {
           <Flex align='center' justify='center' flex={1}>
             <FiUser fontSize={20} />
             <Text fontSize={20} ml={2}>
-              {room.count.listeners}
+              {/* {room.count.listeners} */}
             </Text>
           </Flex>
         </Tooltip>
-        {userInformation ? (
-          room.owner.id === getFullUserID(userInformation) ? (
+        {user ? (
+          room.owner.id === user.id ? (
             <Tooltip label='Your room' aria-label='Your room' placement='top'>
               <Flex align='center' justify='center' mx={2}>
                 <FaCrown fontSize={24} />
@@ -104,14 +93,14 @@ const RoomCardDisplay = ({ room }: Props) => {
         )}
         <Tooltip label='Favorites' aria-label='Favorites' placement='top'>
           <Flex align='center' justify='center' flex={1}>
-            <FavoriteRoomButton room={room} colorMode='dark' />
+            {/* <FavoriteRoomButton room={room} colorMode='dark' />
             <Text fontSize={20} ml={2}>
               {room.count.favorites}
-            </Text>
+            </Text> */}
           </Flex>
         </Tooltip>
       </Flex>
-    </PseudoBox>
+    </Box>
   );
 };
 

@@ -8,35 +8,27 @@ import {
   Tooltip,
   Text,
   useClipboard,
-} from '@chakra-ui/core';
-import { useRecoilValue, useRecoilState } from 'recoil';
-import { roomInformationState } from '../../state/roomInformation';
+} from '@chakra-ui/react';
 import useBackgroundColor from '../../hooks/useBackgroundColor';
-import { useHistory } from 'react-router-dom';
 import { FiLogOut, FiCopy } from 'react-icons/fi';
-import { userInformationState } from '../../state/userInformation';
-import removeUserFromRoom from '../../services/removeUserFromRoom';
-import LinesEllipsis from 'react-lines-ellipsis';
-import FavoriteRoomButton from '../Buttons/FavoriteRoomButton';
+import { useAtom } from 'jotai';
+import { userAtom } from '../../state/userAtom';
 
 interface Props {}
 
 const DashboardBottomBar = (props: Props) => {
-  const history = useHistory();
+  // const history = useHistory();
   const { foregroundColor } = useBackgroundColor();
-  const [roomInformation, setRoomInformation] = useRecoilState(
-    roomInformationState
-  );
-  const userInformation = useRecoilValue(userInformationState);
-  const { onCopy, hasCopied } = useClipboard(
-    roomInformation ? roomInformation.id : ''
-  );
+  const [user] = useAtom(userAtom);
+  // const { onCopy, hasCopied } = useClipboard(
+  //   roomInformation ? roomInformation.id : ''
+  // );
 
-  const isFavorited =
-    userInformation && roomInformation
-      ? userInformation.favoritedRoomIDs.includes(roomInformation.id)
-      : false;
-  const favoriteText = isFavorited ? 'Unfavorite Room' : 'Favorite Room';
+  // const isFavorited =
+  //   userInformation && roomInformation
+  //     ? userInformation.favoritedRoomIDs.includes(roomInformation.id)
+  //     : false;
+  // const favoriteText = isFavorited ? 'Unfavorite Room' : 'Favorite Room';
 
   return (
     <Box>
@@ -49,7 +41,7 @@ const DashboardBottomBar = (props: Props) => {
         justify='center'
         display={['none', 'none', 'flex', 'flex']}
       >
-        {roomInformation ? (
+        {/* {roomInformation ? (
           <>
             <Flex align='center' justify='center'>
               <Heading size='lg' mb={2} textAlign='center'>
@@ -109,7 +101,7 @@ const DashboardBottomBar = (props: Props) => {
               <Text ml={2}>Back to Home</Text>
             </Button>
           </>
-        )}
+        )} */}
       </Stack>
     </Box>
   );

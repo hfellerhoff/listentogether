@@ -1,35 +1,28 @@
 import React from 'react';
-import { Box, Input } from '@chakra-ui/core';
+import { Box, Input } from '@chakra-ui/react';
 import useBackgroundColor from '../../../hooks/useBackgroundColor';
 import { ChatComponentType } from './ChatComponent';
-import { useRecoilValue } from 'recoil';
-import sendChatMessage from '../../../services/sendChatMessage';
-import { roomInformationState } from '../../../state/roomInformation';
-import { Formik } from 'formik';
-import { MessagesDocument } from '../../../models/room-details/MessagesDocument';
-import { userInformationState } from '../../../state/userInformation';
+// import sendChatMessage from '../../../services/sendChatMessage';
 
 interface Props {
   type: ChatComponentType;
-  messageDocument: MessagesDocument | undefined;
+  // messageDocument: MessagesDocument | undefined;
 }
 
-const ChatInput = ({ type, messageDocument }: Props) => {
+const ChatInput = ({ type }: Props) => {
   const { foregroundColor } = useBackgroundColor();
-  const userInformation = useRecoilValue(userInformationState);
-  const roomInformation = useRecoilValue(roomInformationState);
   const isPanel = type === 'panel';
 
-  const onSubmit = (content: string) => {
-    if (userInformation && roomInformation && messageDocument) {
-      sendChatMessage(
-        messageDocument,
-        roomInformation.id,
-        userInformation,
-        content
-      );
-    }
-  };
+  // const onSubmit = (content: string) => {
+  //   if (userInformation && roomInformation && messageDocument) {
+  //     sendChatMessage(
+  //       messageDocument,
+  //       roomInformation.id,
+  //       userInformation,
+  //       content
+  //     );
+  //   }
+  // };
 
   return (
     <Box
@@ -43,7 +36,7 @@ const ChatInput = ({ type, messageDocument }: Props) => {
       bottom={0}
       right={0}
     >
-      <Formik
+      {/* <Formik
         initialValues={{ message: '' }}
         onSubmit={(values, actions) => {
           onSubmit(values.message);
@@ -64,7 +57,7 @@ const ChatInput = ({ type, messageDocument }: Props) => {
             />
           </form>
         )}
-      </Formik>
+      </Formik> */}
     </Box>
   );
 };

@@ -22,8 +22,8 @@ import {
 interface RadioCardProps extends UseRadioProps {
   title: string;
   description: string;
-  //   children?: JSX.Element | JSX.Element[] | string;
   leftIcon?: JSX.Element;
+  isLoading: boolean;
 }
 
 function RadioCard(props: RadioCardProps) {
