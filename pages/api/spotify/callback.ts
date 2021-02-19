@@ -71,10 +71,43 @@ const callback = (req: NextApiRequest, res: NextApiResponse) =>
           // console.log("SUPABASE details: ")
           // console.log(supabase)
           // spotifyAPI = Spotify.SpotifyWebApiJs;
-          spotifyAPI = new Spotify();
-          spotifyAPI.setAccessToken(accessToken);
-          const spotifyUser = spotifyAPI.getMe();
-          console.log(spotifyUser)
+          const spotifyAPI = new Spotify();
+          spotifyAPI.setAccessToken(access_token);
+          spotifyAPI.getMe().then((res) => {
+            console.log("HERE:");
+            console.log(res);
+            const user = {
+                service: 'spotify',
+                serviceId: res.body.id,
+                name: res.body.display_name || '',
+                imageSrc: res.body.images
+                  ? res.body.images[0]
+                    ? res.body.images[0].url || ''
+                    : ''
+                  : '',
+                online: false
+            }
+          supabase
+            .from('users')
+            .select("*")
+            
+            .eq('serviceId', user.serviceId).then((res_2) =>{
+                console.log("RES_2, array: ");
+                console.log(res_2);
+                if (res_2.data.length === 0){
+                  supabase
+                      .from('users')
+                      .insert([
+                        user,
+                      ]).then((res_1) => {
+                        console.log("RES 1: ")
+                        console.log(res_1)
+                      })
+                  // console.log(supabase)
+
+                }
+            } );
+          } );
           // TODO: Fetch user information from Spotify
           
 
