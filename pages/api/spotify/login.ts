@@ -1,16 +1,16 @@
 import * as querystring from 'querystring';
 import generateRandomString from '../../../util/api/generateRandomString';
 import { serialize } from 'cookie';
-import { API_SPOTIFY_AUTH_STATE_KEY } from '../../../constants/API_SPOTIFY_AUTH';
+import {
+  API_SPOTIFY_AUTH_CALLBACK_URI,
+  API_SPOTIFY_AUTH_REDIRECT_URI,
+  API_SPOTIFY_AUTH_STATE_KEY,
+} from '../../../constants/API_SPOTIFY_AUTH';
 
 const isDevelopment = true; // !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
 
-const redirect_uri = isDevelopment
-  ? 'http://localhost:3000/api/spotify/callback'
-  : 'http://listentogether.app/api/spotify/callback';
-const callbackURI = isDevelopment
-  ? 'http://localhost:3000/dashboard'
-  : 'http://listentogether.app/dashboard';
+const redirect_uri = API_SPOTIFY_AUTH_REDIRECT_URI;
+const callbackURI = API_SPOTIFY_AUTH_CALLBACK_URI;
 
 const scope =
   'user-read-private user-read-email user-read-playback-state user-modify-playback-state streaming';

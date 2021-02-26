@@ -2,21 +2,19 @@ import { serialize } from 'cookie';
 import { NextApiRequest, NextApiResponse } from 'next';
 import * as querystring from 'querystring';
 import * as request from 'request';
-import { API_SPOTIFY_AUTH_STATE_KEY } from '../../../constants/API_SPOTIFY_AUTH';
+import {
+  API_SPOTIFY_AUTH_CALLBACK_URI,
+  API_SPOTIFY_AUTH_REDIRECT_URI,
+  API_SPOTIFY_AUTH_STATE_KEY,
+} from '../../../constants/API_SPOTIFY_AUTH';
 import supabase from '../../../util/supabase/index';
 
 // import { useAtom } from 'jotai';
 // import { spotifyAtom } from '../../../state/spotifyAtom';
 import Spotify from 'spotify-web-api-node';
 
-const isDevelopment = true; // !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
-
-const redirect_uri = isDevelopment
-  ? 'http://localhost:3000/api/spotify/callback'
-  : 'http://listentogether.app/api/spotify/callback';
-const callbackURI = isDevelopment
-  ? 'http://localhost:3000/dashboard?'
-  : 'http://listentogether.app/dashboard?';
+const redirect_uri = API_SPOTIFY_AUTH_REDIRECT_URI;
+const callbackURI = API_SPOTIFY_AUTH_CALLBACK_URI;
 
 const client_id = process.env.SPOTIFY_CLIENT_ID;
 const client_secret = process.env.SPOTIFY_CLIENT_SECRET;
@@ -74,42 +72,40 @@ const callback = (req: NextApiRequest, res: NextApiResponse) =>
           const spotifyAPI = new Spotify();
           spotifyAPI.setAccessToken(access_token);
           spotifyAPI.getMe().then((res) => {
-            console.log("HERE:");
+            console.log('HERE:');
             console.log(res);
             const user = {
-                service: 'spotify',
-                serviceId: res.body.id,
-                name: res.body.display_name || '',
-                imageSrc: res.body.images
-                  ? res.body.images[0]
-                    ? res.body.images[0].url || ''
-                    : ''
-                  : '',
-                online: false
-            }
-          supabase
-            .from('users')
-            .select("*")
-            
-            .eq('serviceId', user.serviceId).then((res_2) =>{
-                console.log("RES_2, array: ");
-                console.log(res_2);
-                if (res_2.data.length === 0){
-                  supabase
-                      .from('users')
-                      .insert([
-                        user,
-                      ]).then((res_1) => {
-                        console.log("RES 1: ")
-                        console.log(res_1)
-                      })
-                  // console.log(supabase)
+              service: 'spotify',
+              serviceId: res.body.id,
+              name: res.body.display_name || '',
+              imageSrc: res.body.images
+                ? res.body.images[0]
+                  ? res.body.images[0].url || ''
+                  : ''
+                : '',
+              online: false,
+            };
+            supabase
+              .from('users')
+              .select('*')
 
+              .eq('serviceId', user.serviceId)
+              .then((res_2) => {
+                console.log('RES_2, array: ');
+                console.log(res_2);
+                if (res_2.data.length === 0) {
+                  supabase
+                    .from('users')
+                    .insert([user])
+                    .then((res_1) => {
+                      console.log('RES 1: ');
+                      console.log(res_1);
+                    });
+                  // console.log(supabase)
                 }
-            } );
-          } );
+              });
+          });
           // TODO: Fetch user information from Spotify
-          
 
           // TODO: If user exists, update fields
 
