@@ -16,13 +16,7 @@ import { FaSpotify } from 'react-icons/fa';
 import ColorModeButton from '../components/ColorModeButton';
 import Layout from '../components/Layout';
 import useSpotifyAuthentication from '../hooks/useSpotifyAuthentication';
-
-const BASE_URL =
-  process.env.VERCEL_ENV === 'production'
-    ? 'https://listentogether.app'
-    : process.env.VERCEL_ENV === 'preview'
-    ? 'https://listentogetherbeta.vercel.app'
-    : 'http://localhost:3000';
+import { BASE_URL } from '../constants/API_SPOTIFY_AUTH';
 
 export default function Home() {
   const { colorMode } = useColorMode();
