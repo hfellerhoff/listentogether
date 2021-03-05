@@ -61,55 +61,43 @@ const callback = (req: NextApiRequest, res: NextApiResponse) =>
         json: true,
       };
 
-      request.post(authOptions, function (error, response, body) {
+      request.post(authOptions, async function (error, response, body) {
         // On successful login
         if (!error && response.statusCode === 200) {
           const { access_token, refresh_token, expires_in } = body;
 
-          // console.log("SUPABASE details: ")
-          // console.log(supabase)
-          // spotifyAPI = Spotify.SpotifyWebApiJs;
+          // Get user's data from Spotify
           const spotifyAPI = new Spotify();
           spotifyAPI.setAccessToken(access_token);
-          spotifyAPI.getMe().then((res) => {
-            console.log('HERE:');
-            console.log(res);
-            const user = {
-              service: 'spotify',
-              serviceId: res.body.id,
-              name: res.body.display_name || '',
-              imageSrc: res.body.images
-                ? res.body.images[0]
-                  ? res.body.images[0].url || ''
-                  : ''
-                : '',
-              online: false,
-            };
+          const spotifyResponse = await spotifyAPI.getMe();
+          const user = {
+            service: 'spotify',
+            serviceId: spotifyResponse.body.id,
+            name: spotifyResponse.body.display_name || '',
+            imageSrc: spotifyResponse.body.images
+              ? spotifyResponse.body.images[0]
+                ? spotifyResponse.body.images[0].url || ''
+                : ''
+              : '',
+            online: false,
+          };
+
+          // Check if user exists in database
+          const supabaseResponse = await supabase
+            .from('users')
+            .select('*')
+            .eq('serviceId', user.serviceId);
+
+          // If user does not exist, insert into database
+          if (supabaseResponse.data.length === 0) {
             supabase
               .from('users')
-              .select('*')
-
-              .eq('serviceId', user.serviceId)
-              .then((res_2) => {
-                console.log('RES_2, array: ');
-                console.log(res_2);
-                if (res_2.data.length === 0) {
-                  supabase
-                    .from('users')
-                    .insert([user])
-                    .then((res_1) => {
-                      console.log('RES 1: ');
-                      console.log(res_1);
-                    });
-                  // console.log(supabase)
-                }
+              .insert([user])
+              .then((insertedUser) => {
+                console.log('User successfully inserted.');
+                console.log(insertedUser);
               });
-          });
-          // TODO: Fetch user information from Spotify
-
-          // TODO: If user exists, update fields
-
-          // TODO: If user does not exist, create new user
+          }
 
           // Pass the access token back to the Listen Together client
           // to be able to make client-side API requests
