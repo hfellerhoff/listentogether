@@ -25,6 +25,7 @@ import Layout from '../../components/Layout';
 import Head from 'next/head';
 import Room from '../../models/Room';
 import supabase from '../../util/supabase';
+import { roomAtom } from '../../state/roomAtom';
 
 interface Props {}
 
@@ -33,12 +34,10 @@ export const RoomPage = (props: Props) => {
 
   const { foregroundColor, backgroundColor } = useBackgroundColor();
   const [modal, setModal] = useAtom(modalAtom);
-  const [room, setRoom] = useState<Room>();
+  const [room, setRoom] = useAtom(roomAtom);
 
   useEffect(() => {
     const fetchRoom = async () => {
-      console.log(router.query);
-
       let { data: rooms, error } = await supabase
         .from('rooms')
         .select('*')
@@ -49,13 +48,14 @@ export const RoomPage = (props: Props) => {
       }
     };
 
-    if (!room && router.query && router.query.slug) fetchRoom();
+    if (router.query && router.query.slug)
+      if (room.slug !== router.query.slug) fetchRoom();
   }, [router.query]);
 
   return (
     <Layout>
       <Head>
-        <title>Room / Listen Together</title>
+        <title>{room.name || 'Room'} | Listen Together</title>
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <Box h='100vh'>
@@ -112,7 +112,7 @@ export const RoomPage = (props: Props) => {
                       'inline-block',
                       'inline-block',
                     ]}
-                    // isDisabled={!roomInformation}
+                    isDisabled={!room.name}
                   >
                     <FiPlus />
                   </Button>
@@ -135,7 +135,7 @@ export const RoomPage = (props: Props) => {
                   <ChatComponent type='panel' />
                 </TabPanel>
               </TabPanels>
-              <DashboardBottomBar room={room} />
+              <DashboardBottomBar />
             </Tabs>
           </Flex>
           <Box

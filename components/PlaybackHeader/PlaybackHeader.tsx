@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Grid, Box, Flex, Button, Avatar, Tooltip } from '@chakra-ui/react';
 import DashboardSongControls from '../Room/DashboardSongControls';
 import VolumeAndDeviceControl from '../Room/VolumeAndDeviceControl';
@@ -12,6 +12,7 @@ import Link from 'next/link';
 import ColorModeButton from '../ColorModeButton';
 import Room from '../../models/Room';
 import { useRouter } from 'next/router';
+import { roomAtom } from '../../state/roomAtom';
 
 interface Props {
   placement?: 'top' | 'bottom';
@@ -21,19 +22,25 @@ interface Props {
 const PlaybackHeader = ({ placement, isHome }: Props) => {
   placement = placement || 'top';
   const router = useRouter();
-  const { foregroundColor } = useBackgroundColor();
   const [user] = useAtom(userAtom);
+  const [room, setRoom] = useAtom(roomAtom);
   const [, setModal] = useAtom(modalAtom);
+  const { foregroundColor } = useBackgroundColor();
+
+  const [isCreatingRoom, setIsCreatingRoom] = useState(false);
 
   const onRoomCreate = async () => {
+    setIsCreatingRoom(true);
     const res = await fetch('/api/rooms/create', {
       method: 'POST',
       body: JSON.stringify(user),
     });
 
     const room: Room = await res.json();
+    setRoom(room);
 
     router.push(`/rooms/${room.slug}`);
+    setIsCreatingRoom(false);
   };
 
   return (
@@ -53,31 +60,29 @@ const PlaybackHeader = ({ placement, isHome }: Props) => {
         boxShadow='0px 5px 5px 0px rgba(0,0, 0, 0.075)'
         zIndex={1}
         width='100vw'
-        position='fixed' //placement === 'top' ? 'static' : 'fixed'
+        position='fixed'
         bottom={placement === 'bottom' ? 0 : ''}
         top={placement === 'top' ? 0 : ''}
         height={24}
       >
-        <Flex
-          display={['none', 'none', 'none', 'flex']}
-          align='center'
-          justify='center'
-        >
-          {/* {roomInformation ? (
-            <DashboardSongControls />
-          ) : ( */}
-          {/* <Link href={`/api/rooms/create?user=${user.id}`}>
-            <a> */}
-          <Button
-            colorScheme='green'
-            leftIcon={<FiPlus />}
-            onClick={onRoomCreate}
+        {!room.name ? (
+          <Flex
+            display={['none', 'none', 'none', 'flex']}
+            align='center'
+            justify='center'
           >
-            Create Room
-          </Button>
-          {/* </a>
-          </Link> */}
-        </Flex>
+            <Button
+              colorScheme='green'
+              leftIcon={<FiPlus />}
+              onClick={onRoomCreate}
+              isLoading={isCreatingRoom}
+            >
+              Create Room
+            </Button>
+          </Flex>
+        ) : (
+          <DashboardSongControls />
+        )}
         <Flex
           p={2}
           borderRadius={4}

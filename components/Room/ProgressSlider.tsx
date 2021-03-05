@@ -23,9 +23,13 @@ const ProgressSlider = ({ playback }: Props) => {
           value={playback.progress}
           step={1}
           w={40}
+          aria-label='Song progress'
+          focusThumbOnChange={false}
+          colorScheme='blue'
         >
-          <SliderTrack />
-          <SliderFilledTrack />
+          <SliderTrack>
+            <SliderFilledTrack />
+          </SliderTrack>
           <SliderThumb />
         </Slider>
       ) : (

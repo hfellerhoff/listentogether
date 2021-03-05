@@ -17,14 +17,16 @@ import { userAtom } from '../../state/userAtom';
 import Room from '../../models/Room';
 import { FaRegHeart, FaSignOutAlt } from 'react-icons/fa';
 import Link from 'next/link';
+import { ROOM_EMPTY, roomAtom } from '../../state/roomAtom';
 
-interface Props {
-  room: Room | undefined;
-}
+interface Props {}
 
-const DashboardBottomBar = ({ room }: Props) => {
+const DashboardBottomBar = () => {
   const { foregroundColor } = useBackgroundColor();
   const [user] = useAtom(userAtom);
+  const [room, setRoom] = useAtom(roomAtom);
+
+  const handleLeaveRoom = () => setRoom(ROOM_EMPTY);
 
   return (
     <Box>
@@ -37,7 +39,7 @@ const DashboardBottomBar = ({ room }: Props) => {
         justify='center'
         display={['none', 'none', 'flex', 'flex']}
       >
-        {room ? (
+        {room.name ? (
           <>
             <Flex align='center' justify='center'>
               <Heading
@@ -64,6 +66,7 @@ const DashboardBottomBar = ({ room }: Props) => {
                     colorScheme='red'
                     leftIcon={<FaSignOutAlt />}
                     size='sm'
+                    onClick={handleLeaveRoom}
                   >
                     Leave
                   </Button>
