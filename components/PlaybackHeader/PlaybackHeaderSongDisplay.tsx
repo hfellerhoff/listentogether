@@ -9,9 +9,11 @@ import useSpotifyAuthentication from '../../hooks/useSpotifyAuthentication';
 import Song from '../../models/Song';
 import { FaPlus } from 'react-icons/fa';
 
-interface Props {}
+interface Props {
+  song?: Song;
+}
 
-const PlaybackHeaderSongDisplay = (props: Props) => {
+const PlaybackHeaderSongDisplay = ({ song }: Props) => {
   const [room] = useAtom(roomAtom);
   const [, setModal] = useAtom(modalAtom);
   const [spotifyApi] = useAtom(spotifyAtom);
@@ -21,21 +23,14 @@ const PlaybackHeaderSongDisplay = (props: Props) => {
     setSpotifyTrack,
   ] = useState<SpotifyApi.SingleTrackResponse>();
 
-  const song: Song = {
-    spotifyUri: 'spotify:track:2RlgNHKcydI9sayD2Df2xp',
-    progress: 0, // in milliseconds
-    updatedAt: 1614965834327, // in milliseconds
-    isPaused: false,
-  };
-
   useEffect(() => {
-    if (song.spotifyUri) {
+    if (song) {
       spotifyApi.setAccessToken(accessToken);
       spotifyApi
         .getTrack(song.spotifyUri.split(':')[2])
         .then((res) => setSpotifyTrack(res));
     }
-  }, []);
+  }, [song]);
 
   return (
     <Box>

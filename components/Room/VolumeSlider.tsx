@@ -23,7 +23,6 @@ const VolumeSlider = (props: Props) => {
 
   const updateSpotifyVolume = (value: number) => {
     setLocalVolume(value);
-    console.log(localVolume);
 
     if (spotifyApi) {
       // spotifyApi.setAccessToken(accessToken);

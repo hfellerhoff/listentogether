@@ -2,6 +2,7 @@ import { atom } from 'jotai';
 import Room from '../models/Room';
 
 export const ROOM_EMPTY = {
+  id: -1,
   name: '',
   slug: '',
   queuedSongs: [],

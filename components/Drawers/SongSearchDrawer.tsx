@@ -20,6 +20,7 @@ import { spotifyAtom } from '../../state/spotifyAtom';
 import { userAtom } from '../../state/userAtom';
 import { Modal, modalAtom } from '../../state/modalAtom';
 import Service from '../../models/Service';
+import { roomAtom } from '../../state/roomAtom';
 
 interface Props {}
 
@@ -50,6 +51,7 @@ const SongSearchDrawer = (props: Props) => {
 
   const [spotifyAPI] = useAtom(spotifyAtom);
   const [user] = useAtom(userAtom);
+  const [room] = useAtom(roomAtom);
   const [modal, setModal] = useAtom(modalAtom);
   const { accessToken } = useSpotifyAuthentication();
 
@@ -64,59 +66,15 @@ const SongSearchDrawer = (props: Props) => {
   const queueTrack = async (track: SpotifyApi.TrackObjectFull) => {
     if (spotifyAPI && user) {
       spotifyAPI.setAccessToken(accessToken);
-      const devicesResponse = await spotifyAPI.getMyDevices();
-      console.log(devicesResponse);
 
-      // const userRoom = {
-      //   service: Service.Spotify,
-      //   id: user.id,
-      //   displayName: user.displayName,
-      //   image: {
-      //     src: user.image.src,
-      //   },
-      // };
+      const res = await fetch('/api/rooms/queue', {
+        method: 'POST',
+        body: JSON.stringify({
+          spotifyUri: track.uri,
+          roomId: room.id,
+        }),
+      });
 
-      // const song: SongInformation = {
-      //   name: track.name,
-      //   artists: track.artists.map((artist) => artist.name),
-      //   timestampUpdated: firebase.firestore.FieldValue.serverTimestamp(),
-      //   isPlaying: true,
-      //   progress: 0,
-      //   duration: track.duration_ms,
-      //   album: {
-      //     name: track.album.name,
-      //     image: {
-      //       src: track.album.images[0].url,
-      //     },
-      //   },
-      //   spotify: {
-      //     id: track.id,
-      //     uri: track.uri,
-      //   },
-      //   userWhoQueued: userRoom,
-      // };
-
-      // if (roomInformation && userInformation) {
-      //   queueSong(roomInformation, song);
-      // }
-
-      // if (devicesResponse.devices.length === 0) {
-      //   setDisplayedModal('device-select');
-      //   return;
-      // }
-
-      // await spotifyAPI.play({
-      //   uris: [track.uri],
-      //   device_id: devicesResponse.devices[0].id || '',
-      // });
-
-      // firebase.analytics().logEvent(Events.QueueSong, {
-      //   spotify: {
-      //     uri: track.uri,
-      //     id: track.id,
-      //     name: track.name,
-      //   },
-      // });
       setSearchQuery('');
       setModal(Modal.None);
     }
@@ -134,7 +92,6 @@ const SongSearchDrawer = (props: Props) => {
         spotifyAPI.setAccessToken(accessToken);
         const results = await spotifyAPI.searchTracks(e.target.value);
         setSearchResults(results.tracks.items.slice(0, 10));
-        console.log(results);
       } catch (error) {
         console.error(error);
       }
@@ -143,7 +100,6 @@ const SongSearchDrawer = (props: Props) => {
 
   const onClose = () => setModal(Modal.None);
   const isOpen = modal === Modal.QueueSong;
-  console.log(isOpen);
 
   return (
     <Drawer placement='top' onClose={onClose} isOpen={isOpen}>

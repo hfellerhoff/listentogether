@@ -13,13 +13,15 @@ import ColorModeButton from '../ColorModeButton';
 import Room from '../../models/Room';
 import { useRouter } from 'next/router';
 import { roomAtom } from '../../state/roomAtom';
+import Song from '../../models/Song';
 
 interface Props {
   placement?: 'top' | 'bottom';
   isHome?: boolean;
+  song?: Song;
 }
 
-const PlaybackHeader = ({ placement, isHome }: Props) => {
+const PlaybackHeader = ({ placement, isHome, song }: Props) => {
   placement = placement || 'top';
   const router = useRouter();
   const [user] = useAtom(userAtom);
@@ -81,7 +83,7 @@ const PlaybackHeader = ({ placement, isHome }: Props) => {
             </Button>
           </Flex>
         ) : (
-          <DashboardSongControls />
+          <DashboardSongControls song={song} />
         )}
         <Flex
           p={2}
@@ -90,7 +92,7 @@ const PlaybackHeader = ({ placement, isHome }: Props) => {
           align='center'
           justify='space-between'
         >
-          <PlaybackHeaderSongDisplay />
+          <PlaybackHeaderSongDisplay song={song} />
           <Box display={['none', 'none', 'none', 'block']}>
             <VolumeAndDeviceControl
               onSpeakerClick={() => setModal(Modal.DeviceSelect)}

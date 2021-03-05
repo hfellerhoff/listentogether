@@ -26,6 +26,7 @@ import Head from 'next/head';
 import Room from '../../models/Room';
 import supabase from '../../util/supabase';
 import { roomAtom } from '../../state/roomAtom';
+import useRoomSongRealtime from '../../hooks/rooms/useRoomSongRealtime';
 
 interface Props {}
 
@@ -35,6 +36,8 @@ export const RoomPage = (props: Props) => {
   const { foregroundColor, backgroundColor } = useBackgroundColor();
   const [modal, setModal] = useAtom(modalAtom);
   const [room, setRoom] = useAtom(roomAtom);
+
+  const song = useRoomSongRealtime();
 
   useEffect(() => {
     const fetchRoom = async () => {
@@ -59,7 +62,7 @@ export const RoomPage = (props: Props) => {
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <Box h='100vh'>
-        <PlaybackHeader />
+        <PlaybackHeader song={song} />
         <Grid
           gridTemplateColumns={['1fr', '1fr', '350px 1fr', '350px 1fr']}
           flex={1}

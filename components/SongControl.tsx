@@ -13,7 +13,7 @@ const SongControl = ({ song }: Props) => {
   const [spotifyApi] = useAtom(spotifyAtom);
   const [changeToIsPlaying, setChangeToIsPlaying] = useState(true);
 
-  const isPlaying = !song.isPaused;
+  const isPlaying = song ? !song.isPaused : false;
   const isOwner = true;
 
   useEffect(() => {

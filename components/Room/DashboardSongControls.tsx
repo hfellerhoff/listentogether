@@ -7,9 +7,11 @@ import { useAtom } from 'jotai';
 import { spotifyAtom } from '../../state/spotifyAtom';
 import useSpotifyAuthentication from '../../hooks/useSpotifyAuthentication';
 
-interface Props {}
+interface Props {
+  song?: Song;
+}
 
-const DashboardSongControls = (props: Props) => {
+const DashboardSongControls = ({ song }: Props) => {
   const [spotifyApi] = useAtom(spotifyAtom);
   const { accessToken } = useSpotifyAuthentication();
   const [progress, setProgress] = useState(0);
@@ -18,15 +20,10 @@ const DashboardSongControls = (props: Props) => {
     setSpotifyTrack,
   ] = useState<SpotifyApi.SingleTrackResponse>();
 
-  const song: Song = {
-    spotifyUri: 'spotify:track:2RlgNHKcydI9sayD2Df2xp',
-    progress: 0, // in milliseconds
-    updatedAt: 1614966134327, // in milliseconds
-    isPaused: false,
-  };
+  const updatedAtMS = song ? Date.parse(song.updatedAt).valueOf() : 0;
 
   useEffect(() => {
-    if (song.spotifyUri) {
+    if (song) {
       spotifyApi.setAccessToken(accessToken);
       spotifyApi
         .getTrack(song.spotifyUri.split(':')[2])
@@ -36,15 +33,13 @@ const DashboardSongControls = (props: Props) => {
 
   useEffect(() => {
     const calculateProgress = () => {
-      setProgress(
-        song.updatedAt ? Date.now() - song.updatedAt + song.progress : 0
-      );
-      console.log(
-        song.updatedAt ? Date.now() - song.updatedAt + song.progress : 0
-      );
+      const x = new Date();
+      const now = x.getTime() + x.getTimezoneOffset() * 60 * 1000;
+
+      setProgress(song ? now - updatedAtMS + song.progress : 0);
     };
 
-    if (!song.updatedAt) return;
+    if (!song) return;
     const interval = setInterval(calculateProgress, 250);
 
     return () => {

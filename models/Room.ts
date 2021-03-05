@@ -3,6 +3,7 @@ import Song from './Song';
 import User from './User';
 
 interface Room {
+  id: number;
   name: string;
   slug: string;
   queuedSongs: Song[];
