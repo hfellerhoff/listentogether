@@ -70,13 +70,14 @@ const callback = (req: NextApiRequest, res: NextApiResponse) =>
           const spotifyAPI = new Spotify();
           spotifyAPI.setAccessToken(access_token);
           const spotifyResponse = await spotifyAPI.getMe();
+          const spotifyUser = spotifyResponse.body;
           const user = {
             service: 'spotify',
-            serviceId: spotifyResponse.body.id,
-            name: spotifyResponse.body.display_name || '',
-            imageSrc: spotifyResponse.body.images
-              ? spotifyResponse.body.images[0]
-                ? spotifyResponse.body.images[0].url || ''
+            serviceId: spotifyUser.id,
+            name: spotifyUser.display_name || '',
+            imageSrc: spotifyUser.images
+              ? spotifyUser.images[0]
+                ? spotifyUser.images[0].url || ''
                 : ''
               : '',
             online: false,
