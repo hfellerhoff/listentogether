@@ -14,7 +14,8 @@ interface Props {
 const DashboardSongControls = ({ song }: Props) => {
   const [spotifyApi] = useAtom(spotifyAtom);
   const { accessToken } = useSpotifyAuthentication();
-  const [progress, setProgress] = useState(0);
+  const [currentSongId, setCurrentSongId] = useState(-1);
+  const [progress, setProgress] = useState(-1);
   const [
     spotifyTrack,
     setSpotifyTrack,
@@ -25,22 +26,26 @@ const DashboardSongControls = ({ song }: Props) => {
   useEffect(() => {
     if (song) {
       spotifyApi.setAccessToken(accessToken);
-      spotifyApi
-        .getTrack(song.spotifyUri.split(':')[2])
-        .then((res) => setSpotifyTrack(res));
+      spotifyApi.getTrack(song.spotifyUri.split(':')[2]).then((res) => {
+        setSpotifyTrack(res);
+      });
     }
-  }, []);
+  }, [song]);
 
   useEffect(() => {
     const calculateProgress = () => {
       const x = new Date();
       const now = x.getTime() + x.getTimezoneOffset() * 60 * 1000;
 
-      setProgress(song ? now - updatedAtMS + song.progress : 0);
+      if (song.isPaused) setProgress(song.progress);
+      else setProgress(song ? now - updatedAtMS + song.progress : 0);
     };
 
     if (!song) return;
     const interval = setInterval(calculateProgress, 250);
+
+    if (currentSongId !== song.id) setCurrentSongId(song.id);
+    else setProgress(-1);
 
     return () => {
       if (interval) clearInterval(interval);
@@ -49,7 +54,7 @@ const DashboardSongControls = ({ song }: Props) => {
 
   return (
     <Flex direction='column' align='center' justify='center'>
-      <SongControl song={song} />
+      <SongControl song={song} progress={progress} />
       <ProgressSlider
         playback={{
           progress,

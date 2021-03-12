@@ -27,6 +27,8 @@ import Room from '../../models/Room';
 import supabase from '../../util/supabase';
 import { roomAtom } from '../../state/roomAtom';
 import useRoomSongRealtime from '../../hooks/rooms/useRoomSongRealtime';
+import { spotifyAtom } from '../../state/spotifyAtom';
+import useSpotifyAuthentication from '../../hooks/useSpotifyAuthentication';
 
 interface Props {}
 

@@ -4,28 +4,119 @@ import { FiPause, FiSkipBack, FiSkipForward, FiPlay } from 'react-icons/fi';
 import { useAtom } from 'jotai';
 import { spotifyAtom } from '../state/spotifyAtom';
 import Song from '../models/Song';
+import { RoomPlaybackQuery } from '../pages/api/rooms/playback';
+import useSpotifyAuthentication from '../hooks/useSpotifyAuthentication';
 
 interface Props {
   song: Song;
+  progress: number;
 }
 
-const SongControl = ({ song }: Props) => {
+const SongControl = ({ song, progress }: Props) => {
   const [spotifyApi] = useAtom(spotifyAtom);
-  const [changeToIsPlaying, setChangeToIsPlaying] = useState(true);
+  const [changeToIsPaused, setChangeToIsPaused] = useState(true);
+  const { accessToken } = useSpotifyAuthentication();
 
-  const isPlaying = song ? !song.isPaused : false;
+  const isPaused = song ? song.isPaused : false;
   const isOwner = true;
 
   useEffect(() => {
-    setChangeToIsPlaying(isPlaying);
-  }, [isPlaying]);
+    setChangeToIsPaused(isPaused);
+  }, [isPaused]);
 
   const handleSkipBack = () => spotifyApi.skipToPrevious();
   const handleSkipForward = () => spotifyApi.skipToNext();
-  const handleTogglePlay = () => {
-    setChangeToIsPlaying(!isPlaying);
-    isPlaying ? spotifyApi.pause() : spotifyApi.play();
+  const handleTogglePlay = async () => {
+    setChangeToIsPaused(!isPaused);
+
+    // Play song
+    if (isPaused) {
+      await fetch('/api/rooms/playback', {
+        method: 'POST',
+        body: JSON.stringify({
+          isPaused: !isPaused,
+          songId: song.id,
+        } as RoomPlaybackQuery),
+      });
+    }
+    // Pause song
+    else {
+      await fetch('/api/rooms/playback', {
+        method: 'POST',
+        body: JSON.stringify({
+          isPaused: !isPaused,
+          songId: song.id,
+          progress,
+        } as RoomPlaybackQuery),
+      });
+    }
   };
+
+  useEffect(() => {
+    const updatePlayback = async () => {
+      if (song && progress >= 0) {
+        spotifyApi.setAccessToken(accessToken);
+
+        try {
+          const devices = await spotifyApi.getMyDevices();
+          console.log(devices);
+
+          let targetDeviceId = '';
+          const activeDevices = devices.devices.filter((d) => d.is_active);
+          if (devices.devices.length > 0) {
+            if (activeDevices.length === 0) {
+              targetDeviceId = devices.devices[0].id;
+            }
+          }
+
+          console.log(activeDevices);
+          console.log(targetDeviceId);
+
+          const playback = await spotifyApi.getMyCurrentPlaybackState();
+          console.log(playback);
+
+          if (playback) {
+            if (song.isPaused && playback.is_playing) {
+              spotifyApi.pause();
+            } else if (!song.isPaused) {
+              if (playback.item.uri !== song.spotifyUri) {
+                const x = new Date();
+                const now = x.getTime() + x.getTimezoneOffset() * 60 * 1000;
+
+                const position_ms =
+                  now - Date.parse(song.updatedAt).valueOf() + song.progress;
+
+                spotifyApi.play({
+                  uris: [song.spotifyUri],
+                  position_ms,
+                });
+              } else if (
+                !playback.is_playing ||
+                Math.abs(progress - playback.progress_ms) > 1000
+              ) {
+                spotifyApi.play({
+                  uris: [song.spotifyUri],
+                  position_ms: progress,
+                });
+              }
+            }
+          } else {
+            if (!song.isPaused) {
+              spotifyApi.play({
+                uris: [song.spotifyUri],
+                position_ms: progress,
+                device_id: targetDeviceId,
+              });
+            }
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      }
+    };
+
+    updatePlayback();
+  }, [song]);
 
   return (
     <Flex align='center' justify='center'>
@@ -37,16 +128,16 @@ const SongControl = ({ song }: Props) => {
         variant='ghost'
       />
       <IconButton
-        aria-label={isPlaying ? 'Pause song' : 'Play song'}
-        isDisabled={isOwner ? changeToIsPlaying !== isPlaying : true}
+        aria-label={isPaused ? 'Play song' : 'Pause song'}
+        isDisabled={isOwner ? changeToIsPaused !== isPaused : true}
         onClick={handleTogglePlay}
         variant='ghost'
         icon={
-          changeToIsPlaying === isPlaying ? (
-            isPlaying ? (
-              <FiPause fontSize='1.25em' />
-            ) : (
+          changeToIsPaused === isPaused ? (
+            isPaused ? (
               <FiPlay fontSize='1.25em' />
+            ) : (
+              <FiPause fontSize='1.25em' />
             )
           ) : (
             <Spinner />
