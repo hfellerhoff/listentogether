@@ -20,7 +20,11 @@ const PublicRoomRoll = (props: Props) => {
         .from('rooms')
         .select('*')
         .eq('isPublic', true);
-      setRooms(rooms);
+
+      if (!error) {
+        setRooms(rooms);
+      } else console.error(error);
+
       setIsLoading(false);
     };
 

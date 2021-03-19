@@ -21,8 +21,6 @@ const DashboardSongControls = ({ song }: Props) => {
     setSpotifyTrack,
   ] = useState<SpotifyApi.SingleTrackResponse>();
 
-  const updatedAtMS = song ? Date.parse(song.updatedAt).valueOf() : 0;
-
   useEffect(() => {
     if (song) {
       spotifyApi.setAccessToken(accessToken);
@@ -32,13 +30,16 @@ const DashboardSongControls = ({ song }: Props) => {
     }
   }, [song]);
 
+  const updatedAtMS = song ? Date.parse(song.updatedAt) : 0;
+
   useEffect(() => {
     const calculateProgress = () => {
       const x = new Date();
-      const now = x.getTime() + x.getTimezoneOffset() * 60 * 1000;
+      const now = x.valueOf(); //+ x.getTimezoneOffset() * 60 * 1000; // - x.getTimezoneOffset() * 60 * 1000;
+      const newProgress = now - updatedAtMS + song.progress;
 
       if (song.isPaused) setProgress(song.progress);
-      else setProgress(song ? now - updatedAtMS + song.progress : 0);
+      else setProgress(newProgress);
     };
 
     if (!song) return;
