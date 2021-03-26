@@ -57,8 +57,6 @@ const useRoomSongRealtime = () => {
             return;
           case 'UPDATE':
             if (payload.new.id === songId) {
-              console.log(payload);
-
               setSong(payload.new);
             }
             return;

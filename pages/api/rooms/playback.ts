@@ -22,8 +22,6 @@ export default async function handler(req, res) {
   const now = x.getTime() + x.getTimezoneOffset() * 60 * 1000;
   const progress = now - updatedAtMS + song.progress;
 
-  // console.log(new Date(now).toISOString());
-
   // Update song playback
   try {
     if (songId && isPaused !== undefined) {

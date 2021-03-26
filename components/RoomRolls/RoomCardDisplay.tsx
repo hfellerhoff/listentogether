@@ -9,128 +9,145 @@ import { userAtom } from '../../state/userAtom';
 import User from '../../models/User';
 import supabase from '../../util/supabase';
 import Link from 'next/link';
+import useGradientsFromImageRef from '../../hooks/useGradientsFromImageRef';
+import { useRouter } from 'next/router';
+import Song from '../../models/Song';
+import useSpotifyTrack from '../../hooks/spotify/useSpotifyTrack';
 
 interface Props {
   room: Room;
 }
 
 const RoomCardDisplay = ({ room }: Props) => {
-  // const history = useHistory();
+  const router = useRouter();
   const [user] = useAtom(userAtom);
   const [owner, setOwner] = useState<User>();
+  const [song, setSong] = useState<Song>();
+  const track = useSpotifyTrack(song);
+
+  const image = useRef<HTMLImageElement>();
+  const [normalGradient, hoverGradient] = useGradientsFromImageRef(image);
 
   useEffect(() => {
     const fetchOwner = async () => {
-      console.log(room);
-
       let { data: users, error } = await supabase
         .from('users')
         .select('*')
         .eq('id', room.owner_id)
         .range(0, 1);
-      console.log(users, error);
+
       if (users.length > 0) setOwner(user[0]);
     };
 
     fetchOwner();
-  }, []);
+  }, [room]);
 
-  const image = useRef<HTMLImageElement>();
-  // const [normalGradient, hoverGradient] = useGradientsFromImageRef(image);
+  useEffect(() => {
+    const fetchSong = async () => {
+      let { data: roomSongs, error } = await supabase
+        .from('room_song')
+        .select('*')
+        .eq('room_id', room.id)
+        .range(0, 1);
+      if (roomSongs.length > 0) {
+        let { data: songs, error } = await supabase
+          .from('songs')
+          .select('*')
+          .eq('id', roomSongs[0].song_id)
+          .range(0, 1);
 
-  console.log(room);
+        if (songs.length > 0) {
+          setSong(songs[0]);
+        }
+      }
+    };
+
+    fetchSong();
+  }, [room]);
 
   return (
-    <Link href={`rooms/${room.slug}`}>
-      <a>
-        <Box
-          borderRadius={4}
-          h='100%'
-          // background={normalGradient}
-          bg='gray.700'
-          p={[4, 6, 8, 8]}
-          // _hover={{
-          //   background: hoverGradient,
-          // }}
-          // onClick={async () => {
-          //   history.push(`/rooms/${room.id}`);
-          // }}
-          textAlign='center'
-          color='#ffffff'
-          position='relative'
-        >
-          <Heading size='lg' textShadow='0px 2px #2F2F2F'>
-            <Text>{room.name}</Text>
-          </Heading>
-          {false ? (
-            <Box mt={4}>
-              {/* <DashboardSongDisplay
-            title={room.currentSong.name}
-            artist={room.currentSong.artists[0]}
-            album={room.currentSong.album.name}
-            src={room.currentSong.album.image.src}
-            standalone
+    <Box
+      borderRadius={4}
+      h='100%'
+      bg={track ? normalGradient : 'gray.700'}
+      p={[4, 6, 8, 8]}
+      _hover={{
+        background: track ? hoverGradient : 'gray.600',
+      }}
+      onClick={async () => {
+        router.push(`/rooms/${room.slug}`);
+      }}
+      textAlign='center'
+      color='#ffffff'
+      position='relative'
+      cursor='pointer'
+    >
+      <Heading size='lg' textShadow='0px 2px #2F2F2F'>
+        <Text>{room.name}</Text>
+      </Heading>
+      {track ? (
+        <Box mt={4}>
+          <DashboardSongDisplay
+            title={track.name}
+            artist={track.artists[0].name}
+            album={track.album.name}
+            src={track.album.images[0].url}
             imageRef={image}
-          /> */}
-            </Box>
-          ) : (
-            <Box mt={4}>
-              <Flex align='center' justify='center' p={12}>
-                <FiMusic fontSize={48} />
-              </Flex>
-              <Text>Be the first to play something!</Text>
-            </Box>
-          )}
-          <Box height={12} />
-          <Flex
-            align='center'
-            justify='center'
-            position='absolute'
-            bottom={6}
-            left={0}
-            width='100%'
-          >
-            <Tooltip
-              label='Current listeners'
-              aria-label='Current listeners'
-              placement='top'
-            >
-              <Flex align='center' justify='center' flex={1}>
-                <FiUser fontSize={20} />
-                <Text fontSize={20} ml={2}>
-                  0
-                </Text>
-              </Flex>
-            </Tooltip>
-            {user && owner ? (
-              owner.id === user.id ? (
-                <Tooltip
-                  label='Your room'
-                  aria-label='Your room'
-                  placement='top'
-                >
-                  <Flex align='center' justify='center' mx={2}>
-                    <FaCrown fontSize={24} />
-                  </Flex>
-                </Tooltip>
-              ) : (
-                <></>
-              )
-            ) : (
-              <></>
-            )}
-            <Tooltip label='Favorites' aria-label='Favorites' placement='top'>
-              <Flex align='center' justify='center' flex={1}>
-                <FaRegHeart />
-                <Text fontSize={20} ml={2}>
-                  0
-                </Text>
-              </Flex>
-            </Tooltip>
-          </Flex>
+            standalone
+          />
         </Box>
-      </a>
-    </Link>
+      ) : (
+        <Box mt={4}>
+          <Flex align='center' justify='center' p={12}>
+            <FiMusic fontSize={48} />
+          </Flex>
+          <Text>Be the first to play something!</Text>
+        </Box>
+      )}
+      <Box height={12} />
+      <Flex
+        align='center'
+        justify='center'
+        position='absolute'
+        bottom={6}
+        left={0}
+        width='100%'
+      >
+        <Tooltip
+          label='Current listeners'
+          aria-label='Current listeners'
+          placement='top'
+        >
+          <Flex align='center' justify='center' flex={1}>
+            <FiUser fontSize={20} />
+            <Text fontSize={20} ml={2}>
+              0
+            </Text>
+          </Flex>
+        </Tooltip>
+        {user && owner ? (
+          owner.id === user.id ? (
+            <Tooltip label='Your room' aria-label='Your room' placement='top'>
+              <Flex align='center' justify='center' mx={2}>
+                <FaCrown fontSize={24} />
+              </Flex>
+            </Tooltip>
+          ) : (
+            <></>
+          )
+        ) : (
+          <></>
+        )}
+        <Tooltip label='Favorites' aria-label='Favorites' placement='top'>
+          <Flex align='center' justify='center' flex={1}>
+            <FaRegHeart />
+            <Text fontSize={20} ml={2}>
+              0
+            </Text>
+          </Flex>
+        </Tooltip>
+      </Flex>
+    </Box>
   );
 };
 

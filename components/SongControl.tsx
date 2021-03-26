@@ -59,7 +59,6 @@ const SongControl = ({ song, progress }: Props) => {
 
         try {
           const devices = await spotifyApi.getMyDevices();
-          console.log(devices);
 
           let targetDeviceId = '';
           const activeDevices = devices.devices.filter((d) => d.is_active);
@@ -69,11 +68,7 @@ const SongControl = ({ song, progress }: Props) => {
             }
           }
 
-          console.log(activeDevices);
-          console.log(targetDeviceId);
-
           const playback = await spotifyApi.getMyCurrentPlaybackState();
-          console.log(playback);
 
           if (playback) {
             if (song.isPaused && playback.is_playing) {
