@@ -67,6 +67,8 @@ const SongSearchDrawer = (props: Props) => {
     if (spotifyAPI && user) {
       spotifyAPI.setAccessToken(accessToken);
 
+      console.log('Queuing track...');
+
       const res = await fetch('/api/rooms/queue', {
         method: 'POST',
         body: JSON.stringify({
@@ -74,6 +76,8 @@ const SongSearchDrawer = (props: Props) => {
           roomId: room.id,
         }),
       });
+
+      console.log(await res.json());
 
       setSearchQuery('');
       setModal(Modal.None);

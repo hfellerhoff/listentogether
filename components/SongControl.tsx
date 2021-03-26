@@ -6,6 +6,7 @@ import { spotifyAtom } from '../state/spotifyAtom';
 import Song from '../models/Song';
 import { RoomPlaybackQuery } from '../pages/api/rooms/playback';
 import useSpotifyAuthentication from '../hooks/useSpotifyAuthentication';
+import useSpotifyHandlePlayback from '../hooks/spotify/useSpotifyHandlePlayback';
 
 interface Props {
   song: Song;
@@ -15,7 +16,6 @@ interface Props {
 const SongControl = ({ song, progress }: Props) => {
   const [spotifyApi] = useAtom(spotifyAtom);
   const [changeToIsPaused, setChangeToIsPaused] = useState(true);
-  const { accessToken } = useSpotifyAuthentication();
 
   const isPaused = song ? song.isPaused : false;
   const isOwner = true;
@@ -31,6 +31,8 @@ const SongControl = ({ song, progress }: Props) => {
 
     // Play song
     if (isPaused) {
+      console.log('Playing song...');
+
       await fetch('/api/rooms/playback', {
         method: 'POST',
         body: JSON.stringify({
@@ -38,9 +40,13 @@ const SongControl = ({ song, progress }: Props) => {
           songId: song.id,
         } as RoomPlaybackQuery),
       });
+
+      console.log('Played song.');
     }
     // Pause song
     else {
+      console.log('Pausing song...');
+
       await fetch('/api/rooms/playback', {
         method: 'POST',
         body: JSON.stringify({
@@ -49,69 +55,10 @@ const SongControl = ({ song, progress }: Props) => {
           progress,
         } as RoomPlaybackQuery),
       });
+
+      console.log('Paused song.');
     }
   };
-
-  useEffect(() => {
-    const updatePlayback = async () => {
-      if (song && progress >= 0) {
-        spotifyApi.setAccessToken(accessToken);
-
-        try {
-          const devices = await spotifyApi.getMyDevices();
-
-          let targetDeviceId = '';
-          const activeDevices = devices.devices.filter((d) => d.is_active);
-          if (devices.devices.length > 0) {
-            if (activeDevices.length === 0) {
-              targetDeviceId = devices.devices[0].id;
-            }
-          }
-
-          const playback = await spotifyApi.getMyCurrentPlaybackState();
-
-          if (playback) {
-            if (song.isPaused && playback.is_playing) {
-              spotifyApi.pause();
-            } else if (!song.isPaused) {
-              if (playback.item.uri !== song.spotifyUri) {
-                const x = new Date();
-                const now = x.getTime() + x.getTimezoneOffset() * 60 * 1000;
-
-                const position_ms =
-                  now - Date.parse(song.updatedAt).valueOf() + song.progress;
-
-                spotifyApi.play({
-                  uris: [song.spotifyUri],
-                  position_ms,
-                });
-              } else if (
-                !playback.is_playing ||
-                Math.abs(progress - playback.progress_ms) > 1000
-              ) {
-                spotifyApi.play({
-                  uris: [song.spotifyUri],
-                  position_ms: progress,
-                });
-              }
-            }
-          } else {
-            if (!song.isPaused) {
-              spotifyApi.play({
-                uris: [song.spotifyUri],
-                position_ms: progress,
-                device_id: targetDeviceId,
-              });
-            }
-          }
-        } catch (err) {
-          console.error(err);
-        }
-      }
-    };
-
-    updatePlayback();
-  }, [song]);
 
   return (
     <Flex align='center' justify='center'>

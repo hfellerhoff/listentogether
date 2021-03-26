@@ -13,7 +13,7 @@ const useSpotifyTrack = (song: Song) => {
   ] = useState<SpotifyApi.SingleTrackResponse>();
 
   useEffect(() => {
-    if (song) {
+    if (song && song.spotifyUri) {
       spotifyApi.setAccessToken(accessToken);
       spotifyApi
         .getTrack(song.spotifyUri.split(':')[2])

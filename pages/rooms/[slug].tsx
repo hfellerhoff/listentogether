@@ -26,35 +26,25 @@ import Head from 'next/head';
 import supabase from '../../util/supabase';
 import { roomAtom } from '../../state/roomAtom';
 import useRoomSongRealtime from '../../hooks/rooms/useRoomSongRealtime';
+import useMonitorRoom from '../../hooks/rooms/useMonitorRoom';
+import useSpotifyTrack from '../../hooks/spotify/useSpotifyTrack';
+import useRoomSongs from '../../hooks/rooms/useRoomSongs';
+import useSpotifyHandlePlayback from '../../hooks/spotify/useSpotifyHandlePlayback';
 
 interface Props {}
 
 export const RoomPage = (props: Props) => {
   const router = useRouter();
 
-  console.log(supabase);
-
   const { foregroundColor, backgroundColor } = useBackgroundColor();
-  const [modal, setModal] = useAtom(modalAtom);
-  const [room, setRoom] = useAtom(roomAtom);
+  const [, setModal] = useAtom(modalAtom);
 
-  const song = useRoomSongRealtime();
+  const songs = useRoomSongs();
+  const room = useMonitorRoom(router.query.slug as string);
 
-  useEffect(() => {
-    const fetchRoom = async () => {
-      let { data: rooms, error } = await supabase
-        .from('rooms')
-        .select('*')
-        .eq('slug', router.query.slug)
-        .range(0, 1);
-      if (rooms && rooms.length > 0) {
-        setRoom(rooms[0]);
-      }
-    };
+  const activeSong = songs[0];
 
-    if (router.query && router.query.slug)
-      if (room.slug !== router.query.slug) fetchRoom();
-  }, [router.query]);
+  useSpotifyHandlePlayback(activeSong);
 
   return (
     <Layout>
@@ -63,7 +53,7 @@ export const RoomPage = (props: Props) => {
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <Box h='100vh'>
-        <PlaybackHeader song={song} />
+        <PlaybackHeader song={activeSong} />
         <Grid
           gridTemplateColumns={['1fr', '1fr', '350px 1fr', '350px 1fr']}
           flex={1}
