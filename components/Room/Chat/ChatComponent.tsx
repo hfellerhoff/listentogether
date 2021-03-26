@@ -65,12 +65,7 @@ const ChatComponent = ({ type }: Props) => {
     >
       <ChatDisplay messages={messages} />
       <Box height={20} />
-      {/* <ChatInput
-        type={type}
-        messageDocument={
-          // snapshot ? (snapshot.data() as MessagesDocument) : undefined
-        }
-      /> */}
+      <ChatInput type={type} />
     </Flex>
   );
 };

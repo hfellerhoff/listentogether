@@ -2,6 +2,9 @@ import React from 'react';
 import { Box, Input } from '@chakra-ui/react';
 import useBackgroundColor from '../../../hooks/useBackgroundColor';
 import { ChatComponentType } from './ChatComponent';
+import { Formik } from 'formik';
+import { useAtom } from 'jotai';
+import { roomAtom } from '../../../state/roomAtom';
 // import sendChatMessage from '../../../services/sendChatMessage';
 
 interface Props {
@@ -10,19 +13,20 @@ interface Props {
 }
 
 const ChatInput = ({ type }: Props) => {
+  const [room] = useAtom(roomAtom);
   const { foregroundColor } = useBackgroundColor();
   const isPanel = type === 'panel';
 
-  // const onSubmit = (content: string) => {
-  //   if (userInformation && roomInformation && messageDocument) {
-  //     sendChatMessage(
-  //       messageDocument,
-  //       roomInformation.id,
-  //       userInformation,
-  //       content
-  //     );
-  //   }
-  // };
+  const onSubmit = (content: string) => {
+    // if (userInformation && roomInformation && messageDocument) {
+    //   sendChatMessage(
+    //     messageDocument,
+    //     roomInformation.id,
+    //     userInformation,
+    //     content
+    //   );
+    // }
+  };
 
   return (
     <Box
@@ -36,7 +40,7 @@ const ChatInput = ({ type }: Props) => {
       bottom={0}
       right={0}
     >
-      {/* <Formik
+      <Formik
         initialValues={{ message: '' }}
         onSubmit={(values, actions) => {
           onSubmit(values.message);
@@ -46,7 +50,7 @@ const ChatInput = ({ type }: Props) => {
         {({ handleChange, handleBlur, handleSubmit, values }) => (
           <form onSubmit={handleSubmit}>
             <Input
-              isDisabled={!roomInformation}
+              isDisabled={!room.name}
               type='text'
               name='message'
               variant='filled'
@@ -57,7 +61,7 @@ const ChatInput = ({ type }: Props) => {
             />
           </form>
         )}
-      </Formik> */}
+      </Formik>
     </Box>
   );
 };
