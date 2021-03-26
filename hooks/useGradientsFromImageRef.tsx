@@ -4,9 +4,10 @@ import ColorThief from 'colorthief';
 
 const useGradientsFromImageRef = (
   image: React.MutableRefObject<HTMLImageElement | undefined>
-): [string, string] => {
+) => {
   const [firstColor, setFirstColor] = useState([0, 0, 0]);
   const [secondColor, setSecondColor] = useState([0, 0, 0]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (image.current) {
@@ -25,7 +26,6 @@ const useGradientsFromImageRef = (
           if (!colors) return;
           for (let i = 0; i < colors.length; i += 1) {
             const color = getBestContrast(colors[i]);
-            console.log(color, i);
 
             if (color === '#ffffff') {
               if (!colorOneSet) {
@@ -33,6 +33,7 @@ const useGradientsFromImageRef = (
                 colorOneSet = true;
               } else {
                 setSecondColor(colors[i]);
+                setIsLoading(false);
                 return;
               }
             }
@@ -55,7 +56,7 @@ const useGradientsFromImageRef = (
     g1 + 20
   }, ${b1 + 20}), rgb(${r2 + 20}, ${g2 + 20}, ${b2 + 20}))`;
 
-  return [normalGradient, hoverGradient];
+  return { normalGradient, hoverGradient, isLoading };
 };
 
 export default useGradientsFromImageRef;

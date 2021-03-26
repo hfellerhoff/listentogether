@@ -26,7 +26,9 @@ const RoomCardDisplay = ({ room }: Props) => {
   const track = useSpotifyTrack(song);
 
   const image = useRef<HTMLImageElement>();
-  const [normalGradient, hoverGradient] = useGradientsFromImageRef(image);
+  const { normalGradient, hoverGradient, isLoading } = useGradientsFromImageRef(
+    image
+  );
 
   useEffect(() => {
     const fetchOwner = async () => {
@@ -69,14 +71,12 @@ const RoomCardDisplay = ({ room }: Props) => {
     <Box
       borderRadius={4}
       h='100%'
-      bg={track ? normalGradient : 'gray.700'}
+      bg={!isLoading ? normalGradient : 'gray.700'}
       p={[4, 6, 8, 8]}
       _hover={{
-        background: track ? hoverGradient : 'gray.600',
+        background: !isLoading ? hoverGradient : 'gray.600',
       }}
-      onClick={async () => {
-        router.push(`/rooms/${room.slug}`);
-      }}
+      onClick={async () => router.push(`/rooms/${room.slug}`)}
       textAlign='center'
       color='#ffffff'
       position='relative'
