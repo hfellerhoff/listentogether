@@ -13,8 +13,6 @@ const useGradientsFromImageRef = (
     if (image.current) {
       image.current.setAttribute('crossOrigin', '');
       image.current.onload = () => {
-        console.log('image loaded');
-
         const colorThief = new ColorThief();
         const img = image.current as HTMLImageElement;
         if (!img) return;

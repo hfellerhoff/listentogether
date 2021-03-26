@@ -23,17 +23,16 @@ import { useRouter } from 'next/router';
 import { FiPlus } from 'react-icons/fi';
 import Layout from '../../components/Layout';
 import Head from 'next/head';
-import Room from '../../models/Room';
 import supabase from '../../util/supabase';
 import { roomAtom } from '../../state/roomAtom';
 import useRoomSongRealtime from '../../hooks/rooms/useRoomSongRealtime';
-import { spotifyAtom } from '../../state/spotifyAtom';
-import useSpotifyAuthentication from '../../hooks/useSpotifyAuthentication';
 
 interface Props {}
 
 export const RoomPage = (props: Props) => {
   const router = useRouter();
+
+  console.log(supabase);
 
   const { foregroundColor, backgroundColor } = useBackgroundColor();
   const [modal, setModal] = useAtom(modalAtom);

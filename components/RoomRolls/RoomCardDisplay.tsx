@@ -71,10 +71,10 @@ const RoomCardDisplay = ({ room }: Props) => {
     <Box
       borderRadius={4}
       h='100%'
-      bg={!isLoading ? normalGradient : 'gray.700'}
+      bg={track ? normalGradient : 'gray.700'}
       p={[4, 6, 8, 8]}
       _hover={{
-        background: !isLoading ? hoverGradient : 'gray.600',
+        background: track ? hoverGradient : 'gray.600',
       }}
       onClick={async () => router.push(`/rooms/${room.slug}`)}
       textAlign='center'
