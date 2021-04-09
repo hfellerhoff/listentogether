@@ -5,6 +5,7 @@ import { ChatComponentType } from './ChatComponent';
 import { Formik } from 'formik';
 import { useAtom } from 'jotai';
 import { roomAtom } from '../../../state/roomAtom';
+import { userAtom } from '../../../state/userAtom';
 // import sendChatMessage from '../../../services/sendChatMessage';
 
 interface Props {
@@ -14,13 +15,14 @@ interface Props {
 
 const ChatInput = ({ type }: Props) => {
   const [room] = useAtom(roomAtom);
+  const [user] = useAtom(userAtom);
   const { foregroundColor } = useBackgroundColor();
   const isPanel = type === 'panel';
 
   const onSubmit = async (message: string) => {
     const res = await fetch('/api/rooms/chat', {
       method: 'POST',
-      body: JSON.stringify({ message }),
+      body: JSON.stringify({ message,room_id: room.id, user_id: user.id}),
     });
 
   };
