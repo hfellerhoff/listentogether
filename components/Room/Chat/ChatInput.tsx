@@ -17,15 +17,12 @@ const ChatInput = ({ type }: Props) => {
   const { foregroundColor } = useBackgroundColor();
   const isPanel = type === 'panel';
 
-  const onSubmit = (content: string) => {
-    // if (userInformation && roomInformation && messageDocument) {
-    //   sendChatMessage(
-    //     messageDocument,
-    //     roomInformation.id,
-    //     userInformation,
-    //     content
-    //   );
-    // }
+  const onSubmit = async (message: string) => {
+    const res = await fetch('/api/rooms/chat', {
+      method: 'POST',
+      body: JSON.stringify({ message }),
+    });
+
   };
 
   return (
