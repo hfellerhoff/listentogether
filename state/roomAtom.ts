@@ -1,5 +1,5 @@
 import { atom } from 'jotai';
-import Room from '../models/Room';
+import { RoomWithQueue } from '../models/Room';
 
 export const ROOM_EMPTY = {
   id: -1,
@@ -10,6 +10,7 @@ export const ROOM_EMPTY = {
   users: [],
   messages: [],
   isPublic: true,
+  queue: [],
 };
 
-export const roomAtom = atom<Room>(ROOM_EMPTY);
+export const roomAtom = atom<RoomWithQueue>(ROOM_EMPTY);

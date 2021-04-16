@@ -55,8 +55,6 @@ const SongSearchDrawer = (props: Props) => {
   const [modal, setModal] = useAtom(modalAtom);
   const { accessToken } = useSpotifyAuthentication();
 
-  // const roomInformation = useRecoilValue(roomInformationState);
-
   const [searchQuery, setSearchQuery] = useState('');
   const [lastSearched, setLastSearched] = useState(0);
   const [searchResults, setSearchResults] = useState<
@@ -76,8 +74,6 @@ const SongSearchDrawer = (props: Props) => {
           roomId: room.id,
         }),
       });
-
-      console.log(await res.json());
 
       setSearchQuery('');
       setModal(Modal.None);

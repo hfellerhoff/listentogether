@@ -5,8 +5,6 @@ import { useAtom } from 'jotai';
 import { spotifyAtom } from '../state/spotifyAtom';
 import Song from '../models/Song';
 import { RoomPlaybackQuery } from '../pages/api/rooms/playback';
-import useSpotifyAuthentication from '../hooks/useSpotifyAuthentication';
-import useSpotifyHandlePlayback from '../hooks/spotify/useSpotifyHandlePlayback';
 
 interface Props {
   song: Song;

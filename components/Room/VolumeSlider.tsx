@@ -49,7 +49,7 @@ const VolumeSlider = (props: Props) => {
         aria-label={localVolume < 1 ? 'Unmute audio' : 'Mute audio'}
         mr={1}
       />
-      <Slider
+      {/* <Slider
         value={localVolume}
         onChangeEnd={(value) => {
           updateSpotifyVolume(value);
@@ -66,7 +66,7 @@ const VolumeSlider = (props: Props) => {
         </SliderTrack>
 
         <SliderThumb />
-      </Slider>
+      </Slider> */}
     </Flex>
   );
 };

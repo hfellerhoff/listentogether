@@ -53,7 +53,7 @@ const PlaybackHeader = ({ placement, isHome, song }: Props) => {
         gridTemplateColumns={[
           '1fr auto',
           '1fr auto',
-          '1fr auto',
+          '2fr 4fr 1fr',
           '1fr 3fr 1fr',
         ]}
         gridTemplateRows={'1fr'}
@@ -67,12 +67,12 @@ const PlaybackHeader = ({ placement, isHome, song }: Props) => {
         top={placement === 'top' ? 0 : ''}
         height={24}
       >
-        {!room.name ? (
-          <Flex
-            display={['none', 'none', 'none', 'flex']}
-            align='center'
-            justify='center'
-          >
+        <Flex
+          display={['none', 'none', 'flex', 'flex']}
+          align='center'
+          justify='center'
+        >
+          {!room.name ? (
             <Button
               colorScheme='green'
               leftIcon={<FiPlus />}
@@ -81,10 +81,10 @@ const PlaybackHeader = ({ placement, isHome, song }: Props) => {
             >
               Create Room
             </Button>
-          </Flex>
-        ) : (
-          <DashboardSongControls song={song} />
-        )}
+          ) : (
+            <DashboardSongControls song={song} />
+          )}
+        </Flex>
         <Flex
           p={2}
           borderRadius={4}

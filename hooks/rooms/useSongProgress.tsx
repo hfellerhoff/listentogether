@@ -9,22 +9,29 @@ const useSongProgress = (song: Song) => {
   const updatedAtMS = song ? Date.parse(song.updatedAt) : 0;
 
   useEffect(() => {
-    const calculateProgress = () => {
+    const calculateProgress = (s: Song) => {
       const x = new Date();
-      const now = x.valueOf(); //+ x.getTimezoneOffset() * 60 * 1000; // - x.getTimezoneOffset() * 60 * 1000;
-      const newProgress = now - updatedAtMS + song.progress;
 
-      if (song.isPaused) setProgress(song.progress);
+      // Get current time
+      let now = x.valueOf(); // - x.getTimezoneOffset() * 60 * 1000;
+      if (now - updatedAtMS > 10000000)
+        now -= x.getTimezoneOffset() * 60 * 1000;
+      if (now - updatedAtMS < -10000000)
+        now += x.getTimezoneOffset() * 60 * 1000;
+
+      const newProgress = now - updatedAtMS + s.progress;
+
+      if (s.isPaused) setProgress(s.progress);
       else setProgress(newProgress);
     };
 
     if (!song) return;
-    const interval = setInterval(calculateProgress, 250);
+    const interval = setInterval(() => calculateProgress(song), 250);
 
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [song]);
+  }, [song, progress]);
 
   return progress;
 };

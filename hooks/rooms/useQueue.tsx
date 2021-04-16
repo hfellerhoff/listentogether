@@ -1,30 +1,33 @@
-import { useAtom } from 'jotai';
 import { useEffect, useState } from 'react';
+import Room from '../../models/Room';
 import Song from '../../models/Song';
-import { roomAtom } from '../../state/roomAtom';
 import supabase from '../../util/supabase';
+import useSupabaseSubscription from '../supabase/useSupabaseSubscription';
 
-const useRoomSongs = () => {
-  const [room] = useAtom(roomAtom);
-
+const useQueue = (room: Room) => {
   const [songIds, setSongIds] = useState<number[]>([]);
   const [songs, setSongs] = useState<Song[]>([]);
 
+  const roomSongs = useSupabaseSubscription('room_song', 'room_id', {
+    column: 'room_id',
+    value: room.id,
+  });
+
   // Initially fetch the room songs
-  useEffect(() => {
-    const fetchRoomSongs = async () => {
-      const roomSongs = await supabase
-        .from('room_song')
-        .select('*')
-        .eq('room_id', room.id);
+  // useEffect(() => {
+  //   const fetchRoomSongs = async () => {
+  //     const roomSongs = await supabase
+  //       .from('room_song')
+  //       .select('*')
+  //       .eq('room_id', room.id);
 
-      if (roomSongs.body.length > 0) {
-        setSongIds(roomSongs.body.map((s) => s.song_id as number));
-      }
-    };
+  //     if (roomSongs.body.length > 0) {
+  //       setSongIds(roomSongs.body.map((s) => s.song_id as number));
+  //     }
+  //   };
 
-    fetchRoomSongs();
-  }, [room]);
+  //   fetchRoomSongs();
+  // }, [room.id]);
 
   // When roomSongIds is updated, updated the list of queued songs in the room
   useEffect(() => {
@@ -44,35 +47,35 @@ const useRoomSongs = () => {
 
   // Subscribe to room_songs
   // When a new song is added, update the list of song ids.
-  useEffect(() => {
-    const roomSongSubscription = supabase
-      .from('room_song')
-      .on('*', (payload) => {
-        console.log('=== ROOM SONG CHANGE ===');
-        console.log(payload);
+  // useEffect(() => {
+  //   const roomSongSubscription = supabase
+  //     .from('room_song')
+  //     .on('*', (payload) => {
+  //       console.log('=== ROOM SONG CHANGE ===');
+  //       console.log(payload);
 
-        switch (payload.eventType) {
-          case 'INSERT':
-            if (payload.new) {
-              console.log('Song id added:');
-              console.log(payload.new);
+  //       switch (payload.eventType) {
+  //         case 'INSERT':
+  //           if (payload.new) {
+  //             console.log('Song id added:');
+  //             console.log(payload.new);
 
-              setSongIds([...songIds, payload.new.song_id]);
-            }
-            return;
-          case 'UPDATE':
-            return;
-          case 'DELETE':
-            setSongIds([...songIds.filter((id) => id !== payload.old.song_id)]);
-            return;
-        }
-      })
-      .subscribe();
+  //             setSongIds([...songIds, payload.new.song_id]);
+  //           }
+  //           return;
+  //         case 'UPDATE':
+  //           return;
+  //         case 'DELETE':
+  //           setSongIds([...songIds.filter((id) => id !== payload.old.song_id)]);
+  //           return;
+  //       }
+  //     })
+  //     .subscribe();
 
-    return () => {
-      supabase.removeSubscription(roomSongSubscription);
-    };
-  }, [songIds]);
+  //   return () => {
+  //     supabase.removeSubscription(roomSongSubscription);
+  //   };
+  // }, [songIds]);
 
   // Subscribe to songs
   // When a song is updated, update the list of songs.
@@ -121,4 +124,4 @@ const useRoomSongs = () => {
   });
 };
 
-export default useRoomSongs;
+export default useQueue;

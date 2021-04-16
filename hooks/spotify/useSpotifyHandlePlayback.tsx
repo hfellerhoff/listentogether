@@ -1,14 +1,20 @@
 import { useAtom } from 'jotai';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import Song from '../../models/Song';
+import { roomAtom } from '../../state/roomAtom';
 import { spotifyAtom } from '../../state/spotifyAtom';
 import useSongProgress from '../rooms/useSongProgress';
 import useSpotifyAuthentication from '../useSpotifyAuthentication';
 
-const useSpotifyHandlePlayback = (song: Song) => {
+const useSpotifyHandlePlayback = () => {
+  const [room] = useAtom(roomAtom);
   const { accessToken } = useSpotifyAuthentication();
   const [spotifyApi] = useAtom(spotifyAtom);
+
+  const song = room.queue[0];
   const progress = useSongProgress(song);
+
+  console.log(progress);
 
   useEffect(() => {
     const updatePlayback = async () => {

@@ -28,7 +28,7 @@ import { roomAtom } from '../../state/roomAtom';
 import useRoomSongRealtime from '../../hooks/rooms/useRoomSongRealtime';
 import useMonitorRoom from '../../hooks/rooms/useMonitorRoom';
 import useSpotifyTrack from '../../hooks/spotify/useSpotifyTrack';
-import useRoomSongs from '../../hooks/rooms/useRoomSongs';
+import useRoomSongs from '../../hooks/rooms/useQueue';
 import useSpotifyHandlePlayback from '../../hooks/spotify/useSpotifyHandlePlayback';
 
 interface Props {}
@@ -39,12 +39,9 @@ export const RoomPage = (props: Props) => {
   const { foregroundColor, backgroundColor } = useBackgroundColor();
   const [, setModal] = useAtom(modalAtom);
 
-  const songs = useRoomSongs();
   const room = useMonitorRoom(router.query.slug as string);
 
-  const activeSong = songs[0];
-
-  useSpotifyHandlePlayback(activeSong);
+  // useSpotifyHandlePlayback();
 
   return (
     <Layout>
@@ -53,7 +50,7 @@ export const RoomPage = (props: Props) => {
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <Box h='100vh'>
-        <PlaybackHeader song={activeSong} />
+        <PlaybackHeader song={room.queue[0]} />
         <Grid
           gridTemplateColumns={['1fr', '1fr', '350px 1fr', '350px 1fr']}
           flex={1}

@@ -13,4 +13,8 @@ interface Room {
   isPublic: boolean;
 }
 
+export interface RoomWithQueue extends Room {
+  queue: Song[];
+}
+
 export default Room;
