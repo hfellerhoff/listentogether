@@ -5,45 +5,30 @@ import supabase from '../../util/supabase';
 import useSupabaseSubscription from '../supabase/useSupabaseSubscription';
 
 const useQueue = (room: Room) => {
-  const [songIds, setSongIds] = useState<number[]>([]);
-  const [songs, setSongs] = useState<Song[]>([]);
-
-  const roomSongs = useSupabaseSubscription('room_song', 'room_id', {
+  const roomSongs = useSupabaseSubscription('room_song', 'song_id', {
     column: 'room_id',
     value: room.id,
   });
 
-  // Initially fetch the room songs
-  // useEffect(() => {
-  //   const fetchRoomSongs = async () => {
-  //     const roomSongs = await supabase
-  //       .from('room_song')
-  //       .select('*')
-  //       .eq('room_id', room.id);
-
-  //     if (roomSongs.body.length > 0) {
-  //       setSongIds(roomSongs.body.map((s) => s.song_id as number));
-  //     }
-  //   };
-
-  //   fetchRoomSongs();
-  // }, [room.id]);
+  const [songs, setSongs] = useState<Song[]>([]);
 
   // When roomSongIds is updated, updated the list of queued songs in the room
   useEffect(() => {
+    const songIds = roomSongs.array.map((roomSong) => roomSong.song_id);
+
     const fetchSong = async () => {
       const songsRes = await supabase
         .from('songs')
         .select('*')
         .in('id', songIds);
 
-      if (songsRes && songsRes.body.length > 0) {
+      if (songsRes && songsRes.body) {
         setSongs(songsRes.body);
       }
     };
 
     if (songIds.length > 0) fetchSong();
-  }, [songIds]);
+  }, [roomSongs]);
 
   // Subscribe to room_songs
   // When a new song is added, update the list of song ids.
@@ -76,6 +61,8 @@ const useQueue = (room: Room) => {
   //     supabase.removeSubscription(roomSongSubscription);
   //   };
   // }, [songIds]);
+
+  const songIds = roomSongs.array.map((roomSong) => roomSong.song_id);
 
   // Subscribe to songs
   // When a song is updated, update the list of songs.

@@ -15,30 +15,29 @@ const useSupabaseSubscription = <T extends unknown>(
 ) => {
   const [dictionary, setDictionary] = useState<Dictionary<T>>({});
 
-  // Fetch initial data
-  const fetchData = async () => {
-    // If there is a database filter, apply that filter
-    const { data, error } = where
-      ? await supabase.from('room_song').select('*')
-      : await supabase
-          .from('room_song')
-          .select('*')
-          .eq(where.column, where.value);
+  useEffect(() => {
+    // Fetch initial data
+    const fetchData = async () => {
+      // If there is a database filter, apply that filter
+      const { data, error } = where
+        ? await supabase.from(table).select('*')
+        : await supabase.from(table).select('*').eq(where.column, where.value);
 
-    if (error) console.log('error', error);
-    else {
-      let updatedDictionary = {};
-      data.forEach((element) => {
-        updatedDictionary[element[primaryKeyColumn]] = element;
-      });
+      if (error) console.log('error', error);
+      else {
+        let updatedDictionary = {};
+        data.forEach((element) => {
+          updatedDictionary[element[primaryKeyColumn]] = element;
+        });
 
-      setDictionary(updatedDictionary);
-    }
-  };
+        setDictionary(updatedDictionary);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   useEffect(() => {
-    fetchData();
-
     // Subscribe to future table changes
     const subscription = supabase
       .from(table)

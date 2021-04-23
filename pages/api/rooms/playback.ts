@@ -19,7 +19,7 @@ export default async function handler(req, res) {
 
   const updatedAtMS = song ? Date.parse(song.updatedAt).valueOf() : 0;
   const x = new Date();
-  const now = x.getTime() + x.getTimezoneOffset() * 60 * 1000;
+  const now = x.getTime(); // + x.getTimezoneOffset() * 60 * 1000;
   const progress = now - updatedAtMS + song.progress;
 
   // Update song playback

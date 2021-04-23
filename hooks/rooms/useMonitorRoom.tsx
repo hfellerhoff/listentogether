@@ -36,6 +36,8 @@ const useMonitorRoom = (slug?: string) => {
       });
   }, [queue]);
 
+  console.log(queue);
+
   return room;
 };
 
