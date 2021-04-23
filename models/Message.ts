@@ -8,11 +8,10 @@ export enum MessageType {
 }
 
 interface Message {
-  user: User;
-  room: Room;
+  id: number;
   type: MessageType;
   content: string;
-  timestamp: number;
+  timestamp: string;
 }
 
 export default Message;

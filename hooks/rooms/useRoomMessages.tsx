@@ -4,32 +4,64 @@ import Message from '../../models/Message';
 import Song from '../../models/Song';
 import { roomAtom } from '../../state/roomAtom';
 import supabase from '../../util/supabase';
+import useSupabaseSubscription from '../supabase/useSupabaseSubscription';
+
+interface RoomUserMessage {
+  message_id: number;
+  room_id: number;
+  user_id: number;
+}
 
 const useRoomMessages = () => {
   const [room] = useAtom(roomAtom);
-  const [roomUserMessages, setRoomUserMessages] = useState<
-    {
-      message_id: number;
-      room_id: number;
-      user_id: number;
-    }[]
-  >();
+  // const [roomUserMessages, setRoomUserMessages] = useState<
+  // {
+  //   message_id: number;
+  //   room_id: number;
+  //   user_id: number;
+  // }[]
+  // >();
   const [messages, setMessages] = useState<Message[]>();
 
-  useEffect(() => {
-    const fetchMessagesRoom = async () => {
-      const roomMessageIds = await supabase
-        .from('room_user_messages')
-        .select('*')
-        .eq('room_id', room.id);
+  const roomUserMessages = useSupabaseSubscription<RoomUserMessage>(
+    'room_user_messages',
+    'message_id',
+    {
+      column: 'room_id',
+      value: room.id,
+    }
+  );
 
-      if (roomMessageIds.body.length > 0) {
-        setRoomUserMessages(roomMessageIds.body);
-      }
+  useEffect(() => {
+    const fetchMessages = async () => {
+      const messageIds = roomUserMessages.array.map((rum) => rum.message_id);
+      const m = await supabase
+        .from('messages')
+        .select('*')
+        .in('id', messageIds);
+      setMessages(m.body);
     };
 
-    fetchMessagesRoom();
-  }, [room]);
+    fetchMessages();
+  }, [roomUserMessages.array]);
+
+  console.log(roomUserMessages.array);
+  console.log(messages);
+
+  // useEffect(() => {
+  //   const fetchMessagesRoom = async () => {
+  //     const roomMessageIds = await supabase
+  //       .from('room_user_messages')
+  //       .select('*')
+  //       .eq('room_id', room.id);
+
+  //     if (roomMessageIds.body.length > 0) {
+  //       setRoomUserMessages(roomMessageIds.body);
+  //     }
+  //   };
+
+  //   fetchMessagesRoom();
+  // }, [room]);
 
   //   useEffect(() => {
   //     const fetchSong = async () => {
