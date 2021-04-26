@@ -19,16 +19,21 @@ const useSupabaseSubscription = <T extends unknown>(
     // Fetch initial data
     const fetchData = async () => {
       // If there is a database filter, apply that filter
-      const { data, error } = where
+      const { data, error } = !!where
         ? await supabase.from(table).select('*')
         : await supabase.from(table).select('*').eq(where.column, where.value);
 
       if (error) console.log('error', error);
       else {
-        let updatedDictionary = {};
-        data.forEach((element) => {
-          updatedDictionary[element[primaryKeyColumn]] = element;
-        });
+        const filteredData = !where
+          ? data
+          : data.filter((e) => e[where.column] === where.value);
+
+        // Create dictionary out of array, with id as primaryKeyColumn
+        const updatedDictionary = filteredData.reduce((dict, element) => {
+          dict[element[primaryKeyColumn]] = element;
+          return dict;
+        }, {});
 
         setDictionary(updatedDictionary);
       }
@@ -45,7 +50,7 @@ const useSupabaseSubscription = <T extends unknown>(
         console.log(`=== TABLE (${table}) ${payload.eventType} ===`);
 
         // Apply filters
-        if (where) {
+        if (!!where) {
           if (
             payload.eventType === 'INSERT' ||
             payload.eventType === 'UPDATE'
@@ -81,7 +86,7 @@ const useSupabaseSubscription = <T extends unknown>(
     return () => {
       subscription.unsubscribe();
     };
-  }, [table, primaryKeyColumn, where, setDictionary]);
+  }, []); //table, primaryKeyColumn, where, setDictionary
 
   return { dictionary, array: Object.values(dictionary) };
 };

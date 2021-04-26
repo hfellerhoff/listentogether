@@ -2,6 +2,7 @@ import { useAtom } from 'jotai';
 import React, { useEffect } from 'react';
 import { roomAtom } from '../../state/roomAtom';
 import supabase from '../../util/supabase';
+import useSupabaseSubscription from '../supabase/useSupabaseSubscription';
 import useQueue from './useQueue';
 
 interface Props {}
@@ -35,8 +36,6 @@ const useMonitorRoom = (slug?: string) => {
         queue,
       });
   }, [queue]);
-
-  console.log(queue);
 
   return room;
 };
