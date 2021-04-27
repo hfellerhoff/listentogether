@@ -66,17 +66,15 @@ const useSongs = (roomID: number) => {
             // });
 
             // ==== LOGIC FOR SINGLE SONG ====
-            setDictionary(() => {
-              return {
-                [payload.new['id']]: payload.new,
-              };
+            setDictionary({
+              [payload.new['id']]: payload.new,
             });
             return;
           case 'DELETE':
-            if (payload.new[whereColumn] !== roomID) return;
-
             setDictionary((d) => {
-              delete d[payload.old['id']];
+              if (!d[payload.old.id]) return d;
+
+              delete d[payload.old.id];
               return { ...d };
             });
             return;
@@ -87,7 +85,7 @@ const useSongs = (roomID: number) => {
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [roomID]);
 
   useEffect(() => {
     setArray(

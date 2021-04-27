@@ -9,6 +9,7 @@ import useSpotifyAuthentication from '../../hooks/spotify/useSpotifyAuthenticati
 import Song from '../../models/Song';
 import { FaPlus } from 'react-icons/fa';
 import Room from '../../models/Room';
+import useSpotifyTrack from '../../hooks/spotify/useSpotifyTrack';
 
 interface Props {
   song?: Song;
@@ -19,29 +20,17 @@ const PlaybackHeaderSongDisplay = ({ song, room }: Props) => {
   const [, setModal] = useAtom(modalAtom);
   const [spotifyApi] = useAtom(spotifyAtom);
   const { accessToken } = useSpotifyAuthentication();
-  const [
-    spotifyTrack,
-    setSpotifyTrack,
-  ] = useState<SpotifyApi.SingleTrackResponse>();
-
-  useEffect(() => {
-    if (song) {
-      spotifyApi.setAccessToken(accessToken);
-      spotifyApi
-        .getTrack(song.spotifyUri.split(':')[2])
-        .then((res) => setSpotifyTrack(res));
-    }
-  }, [song]);
+  const track = useSpotifyTrack(song);
 
   return (
     <Box>
       {room && room.name ? (
-        spotifyTrack ? (
+        song && track ? (
           <DashboardSongDisplay
-            title={spotifyTrack.name}
-            artist={spotifyTrack.artists[0].name}
-            album={spotifyTrack.album.name}
-            src={spotifyTrack.album.images[0].url}
+            title={track.name}
+            artist={track.artists[0].name}
+            album={track.album.name}
+            src={track.album.images[0].url}
           />
         ) : (
           <Button

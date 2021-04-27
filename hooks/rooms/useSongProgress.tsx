@@ -25,7 +25,10 @@ const useSongProgress = (song: Song) => {
       else setProgress(newProgress);
     };
 
-    if (!song) return;
+    if (!song) {
+      setProgress(-1);
+      return;
+    }
     const interval = setInterval(() => calculateProgress(song), 1000);
 
     return () => {

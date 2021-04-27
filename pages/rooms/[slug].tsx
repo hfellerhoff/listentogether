@@ -45,8 +45,9 @@ export const RoomPage = (props: Props) => {
 
   const room = useMonitorRoom(router.query.slug as string);
   const queue = useQueue(room.id);
+  const activeSong = queue ? queue[0] || undefined : undefined;
 
-  useSpotifyHandlePlayback(room, queue);
+  useSpotifyHandlePlayback(room, activeSong);
 
   return (
     <Layout>
@@ -55,7 +56,7 @@ export const RoomPage = (props: Props) => {
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <Box h='100vh'>
-        <PlaybackHeader room={room} queue={queue} />
+        <PlaybackHeader room={room} song={activeSong} />
         <Grid
           gridTemplateColumns={['1fr', '1fr', '350px 1fr', '350px 1fr']}
           flex={1}

@@ -9,14 +9,15 @@ import useSongProgress from '../rooms/useSongProgress';
 import useSpotifyAuthentication from './useSpotifyAuthentication';
 import useSpotifyTrack from './useSpotifyTrack';
 
-const useSpotifyHandlePlayback = (room: Room, queue: Queue) => {
+const useSpotifyHandlePlayback = (room: Room, song: Song) => {
   const { accessToken } = useSpotifyAuthentication();
   const [spotifyApi] = useAtom(spotifyAtom);
   const [playbackConfiguration] = useAtom(playbackConfigurationAtom);
 
-  const song = queue[0];
   const progress = useSongProgress(song);
   const track = useSpotifyTrack(song);
+
+  console.log(song);
 
   useEffect(() => {
     const getTargetDevice = async () => {
@@ -37,16 +38,16 @@ const useSpotifyHandlePlayback = (room: Room, queue: Queue) => {
       // If not linked, don't update playback
       if (!playbackConfiguration.linked) return;
 
-      if (song && progress >= 0) {
-        spotifyApi.setAccessToken(accessToken);
+      spotifyApi.setAccessToken(accessToken);
 
-        try {
-          // The device to play music on
-          const targetDeviceID = await getTargetDevice();
+      try {
+        // The device to play music on
+        const targetDeviceID = await getTargetDevice();
 
-          // Current Spotify playback state (is playing? what song? etc.)
-          const playback = await spotifyApi.getMyCurrentPlaybackState();
+        // Current Spotify playback state (is playing? what song? etc.)
+        const playback = await spotifyApi.getMyCurrentPlaybackState();
 
+        if (song && progress >= 0) {
           // If there is playback information,
           if (playback) {
             // CLIENT: Something playing
@@ -72,7 +73,7 @@ const useSpotifyHandlePlayback = (room: Room, queue: Queue) => {
                 const position_ms =
                   now - Date.parse(song.updatedAt).valueOf() + song.progress;
 
-                spotifyApi.play({
+                await spotifyApi.play({
                   uris: [song.spotifyUri],
                   position_ms,
                 });
@@ -84,7 +85,7 @@ const useSpotifyHandlePlayback = (room: Room, queue: Queue) => {
                 !playback.is_playing ||
                 Math.abs(progress - playback.progress_ms) > 1000
               ) {
-                spotifyApi.play({
+                await spotifyApi.play({
                   uris: [song.spotifyUri],
                   position_ms: progress,
                 });
@@ -98,16 +99,21 @@ const useSpotifyHandlePlayback = (room: Room, queue: Queue) => {
           else {
             // If song from server is not paused, play song at current position
             if (!song.isPaused) {
-              spotifyApi.play({
+              await spotifyApi.play({
                 uris: [song.spotifyUri],
                 position_ms: progress,
                 device_id: targetDeviceID,
               });
             }
           }
-        } catch (err) {
-          console.error(err);
         }
+
+        // If there is no active song and user has playback, pause it
+        else if (!song && playback.is_playing) {
+          await spotifyApi.pause();
+        }
+      } catch (err) {
+        console.error(err);
       }
     };
 

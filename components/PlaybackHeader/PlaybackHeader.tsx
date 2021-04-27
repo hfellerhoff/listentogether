@@ -18,11 +18,11 @@ import Song from '../../models/Song';
 interface Props {
   placement?: 'top' | 'bottom';
   isHome?: boolean;
-  queue?: Queue;
+  song?: Song;
   room?: Room;
 }
 
-const PlaybackHeader = ({ placement, isHome, queue, room }: Props) => {
+const PlaybackHeader = ({ placement, isHome, song, room }: Props) => {
   placement = placement || 'top';
   const router = useRouter();
   const [user] = useAtom(userAtom);
@@ -30,8 +30,6 @@ const PlaybackHeader = ({ placement, isHome, queue, room }: Props) => {
   const { foregroundColor } = useBackgroundColor();
 
   const [isCreatingRoom, setIsCreatingRoom] = useState(false);
-
-  const song = queue ? queue[0] || undefined : undefined;
 
   const onRoomCreate = async () => {
     setIsCreatingRoom(true);
