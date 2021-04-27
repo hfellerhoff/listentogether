@@ -59,7 +59,7 @@ const useSpotifyHandlePlayback = (room: Room, queue: Queue) => {
             // SERVER: Song playing
             else if (!song.isPaused) {
               // If the song is finished, do nothing
-              if (track.duration_ms <= progress) return;
+              if (track.duration_ms - 1000 <= progress) return;
 
               // If song playing on Spotify does not match the server's song,
               // play the server's song
