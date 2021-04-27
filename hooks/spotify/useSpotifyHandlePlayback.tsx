@@ -1,36 +1,37 @@
 import { useAtom } from 'jotai';
 import { useEffect } from 'react';
+import Room, { Queue } from '../../models/Room';
 import Song from '../../models/Song';
 import { roomAtom } from '../../state/roomAtom';
 import { spotifyAtom } from '../../state/spotifyAtom';
 import useSongProgress from '../rooms/useSongProgress';
 import useSpotifyAuthentication from '../useSpotifyAuthentication';
 
-const useSpotifyHandlePlayback = () => {
-  const [room] = useAtom(roomAtom);
+const useSpotifyHandlePlayback = (room: Room, queue: Queue) => {
   const { accessToken } = useSpotifyAuthentication();
   const [spotifyApi] = useAtom(spotifyAtom);
 
-  const song = room.queue[0];
+  const song = queue[0];
   const progress = useSongProgress(song);
 
-  console.log(progress);
-
   useEffect(() => {
+    const getTargetDevice = async () => {
+      const devices = await spotifyApi.getMyDevices();
+
+      const activeDevices = devices.devices.filter((d) => d.is_active);
+      if (devices.devices.length > 0) {
+        if (activeDevices.length === 0) {
+          return devices.devices[0].id;
+        }
+      }
+    };
+
     const updatePlayback = async () => {
-      if (song && progress >= 0) {
+      if (song) {
         spotifyApi.setAccessToken(accessToken);
 
         try {
-          const devices = await spotifyApi.getMyDevices();
-
-          let targetDeviceId = '';
-          const activeDevices = devices.devices.filter((d) => d.is_active);
-          if (devices.devices.length > 0) {
-            if (activeDevices.length === 0) {
-              targetDeviceId = devices.devices[0].id;
-            }
-          }
+          const targetDeviceID = await getTargetDevice();
 
           const playback = await spotifyApi.getMyCurrentPlaybackState();
 
@@ -64,7 +65,7 @@ const useSpotifyHandlePlayback = () => {
               spotifyApi.play({
                 uris: [song.spotifyUri],
                 position_ms: progress,
-                device_id: targetDeviceId,
+                device_id: targetDeviceID,
               });
             }
           }

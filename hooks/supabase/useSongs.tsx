@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import Room from '../../models/Room';
 import RoomSong from '../../models/RoomSong';
 import Song from '../../models/Song';
 import supabase from '../../util/supabase';
@@ -7,13 +8,15 @@ interface Dictionary<T> {
   [id: string]: T;
 }
 
-const useSongs = (ids: number[]) => {
+const useSongs = (roomID: number) => {
   const [dictionary, setDictionary] = useState<Dictionary<Song>>({});
 
   const table = 'songs';
-  const whereColumn = 'id';
+  const whereColumn = 'room_id';
 
   useEffect(() => {
+    if (roomID < 0) return;
+
     console.log('Songs Initial');
 
     // Fetch initial data
@@ -21,7 +24,7 @@ const useSongs = (ids: number[]) => {
       const { data, error } = await supabase
         .from(table)
         .select('*')
-        .in(whereColumn, ids);
+        .eq(whereColumn, roomID);
 
       if (error) console.log('error', error);
       else {
@@ -36,7 +39,7 @@ const useSongs = (ids: number[]) => {
     };
 
     fetchData();
-  }, [ids]);
+  }, [roomID]);
 
   useEffect(() => {
     console.log('Songs Subscription');
@@ -51,17 +54,25 @@ const useSongs = (ids: number[]) => {
         switch (payload.eventType) {
           case 'INSERT':
           case 'UPDATE':
-            if (!ids.includes(payload.new[whereColumn])) return;
+            if (payload.new[whereColumn] !== roomID) return;
 
+            // ==== LOGIC FOR MULTIPLE SONGS ====
+            // setDictionary((d) => {
+            //   return {
+            //     ...d,
+            //     [payload.new['id']]: payload.new,
+            //   };
+            // });
+
+            // ==== LOGIC FOR SINGLE SONG ====
             setDictionary((d) => {
               return {
-                ...d,
                 [payload.new['id']]: payload.new,
               };
             });
             return;
           case 'DELETE':
-            if (!ids.includes(payload.old[whereColumn])) return;
+            if (payload.new[whereColumn] !== roomID) return;
 
             setDictionary((d) => {
               delete d[payload.old['id']];
@@ -75,7 +86,7 @@ const useSongs = (ids: number[]) => {
     return () => {
       subscription.unsubscribe();
     };
-  }, [ids]);
+  }, []);
 
   const array = Object.values(dictionary);
   return { dictionary, array };

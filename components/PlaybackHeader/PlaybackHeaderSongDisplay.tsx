@@ -8,13 +8,14 @@ import { spotifyAtom } from '../../state/spotifyAtom';
 import useSpotifyAuthentication from '../../hooks/useSpotifyAuthentication';
 import Song from '../../models/Song';
 import { FaPlus } from 'react-icons/fa';
+import Room from '../../models/Room';
 
 interface Props {
   song?: Song;
+  room: Room;
 }
 
-const PlaybackHeaderSongDisplay = ({ song }: Props) => {
-  const [room] = useAtom(roomAtom);
+const PlaybackHeaderSongDisplay = ({ song, room }: Props) => {
   const [, setModal] = useAtom(modalAtom);
   const [spotifyApi] = useAtom(spotifyAtom);
   const { accessToken } = useSpotifyAuthentication();

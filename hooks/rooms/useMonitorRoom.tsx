@@ -1,15 +1,13 @@
 import { useAtom } from 'jotai';
 import React, { useEffect } from 'react';
+import Room from '../../models/Room';
 import { roomAtom } from '../../state/roomAtom';
 import supabase from '../../util/supabase';
-import useSupabaseSubscription from '../supabase/useSupabaseSubscription';
-import useQueue from './useQueue';
 
 interface Props {}
 
-const useMonitorRoom = (slug?: string) => {
+const useMonitorRoom = (slug?: string): Room => {
   const [room, setRoom] = useAtom(roomAtom);
-  const queue = useQueue(room);
 
   useEffect(() => {
     const fetchRoom = async () => {
@@ -21,21 +19,12 @@ const useMonitorRoom = (slug?: string) => {
       if (rooms && rooms.length > 0) {
         setRoom({
           ...rooms[0],
-          queue,
         });
       }
     };
 
     if (slug && room.slug !== slug) fetchRoom();
   }, [slug]);
-
-  useEffect(() => {
-    if (queue)
-      setRoom({
-        ...room,
-        queue,
-      });
-  }, [queue]);
 
   return room;
 };

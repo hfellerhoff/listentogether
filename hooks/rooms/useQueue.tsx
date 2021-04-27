@@ -1,11 +1,12 @@
-import Room from '../../models/Room';
+import { useAtom } from 'jotai';
+import { useEffect } from 'react';
+import Room, { Queue } from '../../models/Room';
+import { roomAtom } from '../../state/roomAtom';
 import useRoomSongs from '../supabase/useRoomSongs';
 import useSongs from '../supabase/useSongs';
 
-const useQueue = (room: Room) => {
-  const roomSongs = useRoomSongs(room.id);
-  const songIDs = roomSongs.array.map((roomSong) => roomSong.song_id);
-  const songs = useSongs(songIDs);
+const useQueue = (roomID: number): Queue => {
+  const songs = useSongs(roomID);
 
   const sortedSongs = songs.array.sort((a, b) => {
     if (a.addedAt <= b.addedAt) return -1;

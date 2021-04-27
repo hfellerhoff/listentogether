@@ -19,8 +19,15 @@ export default async function handler(req, res) {
 
   const updatedAtMS = song ? Date.parse(song.updatedAt).valueOf() : 0;
   const x = new Date();
-  const now = x.getTime(); // + x.getTimezoneOffset() * 60 * 1000;
+  let now = x.getTime();
+
+  // Incredibly patchwork fix to an incredibly annoying problem
+  if (now - updatedAtMS > 10000000) now -= x.getTimezoneOffset() * 60 * 1000;
+  if (now - updatedAtMS < -10000000) now += x.getTimezoneOffset() * 60 * 1000;
+
   const progress = now - updatedAtMS + song.progress;
+
+  console.log(progress, now - updatedAtMS);
 
   // Update song playback
   try {

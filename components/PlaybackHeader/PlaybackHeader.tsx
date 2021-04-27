@@ -10,7 +10,7 @@ import { userAtom } from '../../state/userAtom';
 import useBackgroundColor from '../../hooks/useBackgroundColor';
 import Link from 'next/link';
 import ColorModeButton from '../ColorModeButton';
-import Room from '../../models/Room';
+import Room, { Queue } from '../../models/Room';
 import { useRouter } from 'next/router';
 import { roomAtom } from '../../state/roomAtom';
 import Song from '../../models/Song';
@@ -18,18 +18,20 @@ import Song from '../../models/Song';
 interface Props {
   placement?: 'top' | 'bottom';
   isHome?: boolean;
-  song?: Song;
+  queue: Queue;
+  room: Room;
 }
 
-const PlaybackHeader = ({ placement, isHome, song }: Props) => {
+const PlaybackHeader = ({ placement, isHome, queue, room }: Props) => {
   placement = placement || 'top';
   const router = useRouter();
   const [user] = useAtom(userAtom);
-  const [room, setRoom] = useAtom(roomAtom);
   const [, setModal] = useAtom(modalAtom);
   const { foregroundColor } = useBackgroundColor();
 
   const [isCreatingRoom, setIsCreatingRoom] = useState(false);
+
+  const song = queue[0] || undefined;
 
   const onRoomCreate = async () => {
     setIsCreatingRoom(true);
@@ -39,7 +41,6 @@ const PlaybackHeader = ({ placement, isHome, song }: Props) => {
     });
 
     const room: Room = await res.json();
-    setRoom(room);
 
     router.push(`/rooms/${room.slug}`);
     setIsCreatingRoom(false);
@@ -92,7 +93,7 @@ const PlaybackHeader = ({ placement, isHome, song }: Props) => {
           align='center'
           justify='space-between'
         >
-          <PlaybackHeaderSongDisplay song={song} />
+          <PlaybackHeaderSongDisplay song={song} room={room} />
           <Box display={['none', 'none', 'none', 'block']}>
             <VolumeAndDeviceControl
               onSpeakerClick={() => setModal(Modal.DeviceSelect)}
