@@ -18,9 +18,9 @@ const SongControl = ({ song, progress }: Props) => {
     playbackConfigurationAtom
   );
   const [changeToIsPaused, setChangeToIsPaused] = useState(true);
+  const [isSkippingSong, setIsSkippingSong] = useState(false);
 
   const isPaused = song ? song.isPaused : false;
-  const isOwner = true;
 
   useEffect(() => {
     setChangeToIsPaused(isPaused);
@@ -31,7 +31,23 @@ const SongControl = ({ song, progress }: Props) => {
       ...playbackConfiguration,
       linked: !playbackConfiguration.linked,
     });
-  const handleSkipForward = () => spotifyApi.skipToNext();
+
+  const handleSkipForward = async () => {
+    console.log('Skipping song...');
+    setIsSkippingSong(true);
+
+    await fetch('/api/rooms/playback', {
+      method: 'POST',
+      body: JSON.stringify({
+        shouldSkip: true,
+        songId: song.id,
+      } as RoomPlaybackQuery),
+    });
+
+    setIsSkippingSong(false);
+    console.log('Skipped song.');
+  };
+
   const handleTogglePlay = async () => {
     setChangeToIsPaused(!isPaused);
 
@@ -93,27 +109,25 @@ const SongControl = ({ song, progress }: Props) => {
       </Tooltip>
       <IconButton
         aria-label={isPaused ? 'Play song' : 'Pause song'}
-        isDisabled={isOwner ? changeToIsPaused !== isPaused : true}
         onClick={handleTogglePlay}
         variant='ghost'
         icon={
-          changeToIsPaused === isPaused ? (
-            isPaused ? (
-              <FiPlay fontSize='1.25em' />
-            ) : (
-              <FiPause fontSize='1.25em' />
-            )
+          isPaused ? (
+            <FiPlay fontSize='1.25em' />
           ) : (
-            <Spinner />
+            <FiPause fontSize='1.25em' />
           )
         }
+        isLoading={changeToIsPaused !== isPaused}
+        isDisabled={isSkippingSong}
       />
       <IconButton
         onClick={handleSkipForward}
-        isDisabled={!isOwner}
         icon={<FiSkipForward fontSize='1.25em' />}
         aria-label='Skip to next song'
         variant='ghost'
+        isLoading={isSkippingSong}
+        isDisabled={changeToIsPaused !== isPaused}
       />
     </Flex>
   );

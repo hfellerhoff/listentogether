@@ -5,11 +5,26 @@ import supabase from '../../../util/supabase/index';
 export interface RoomPlaybackQuery {
   songId?: number;
   isPaused?: boolean;
+  shouldSkip?: boolean;
 }
 
 export default async function handler(req, res) {
-  const { songId, isPaused }: RoomPlaybackQuery = JSON.parse(req.body);
+  const { songId, isPaused, shouldSkip }: RoomPlaybackQuery = JSON.parse(
+    req.body
+  );
 
+  // SONG SKIPPING
+  if (shouldSkip) {
+    await supabase.from('room_song').delete().eq('song_id', songId);
+    await supabase.from('songs').delete().eq('id', songId);
+
+    console.log('Successfully skipped song.');
+
+    res.end();
+    return;
+  }
+
+  // PLAYBACK TOGGLING (PAUSE / PLAY)
   const { data: songs } = await supabase
     .from('songs')
     .select('*')
