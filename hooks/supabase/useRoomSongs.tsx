@@ -13,8 +13,6 @@ const useRoomSongs = (roomID: number) => {
   const whereColumn = 'song_id';
 
   useEffect(() => {
-    console.log('Room Song Initial');
-
     // Fetch initial data
     const fetchData = async () => {
       const { data, error } = await supabase
@@ -38,8 +36,6 @@ const useRoomSongs = (roomID: number) => {
   }, [roomID]);
 
   useEffect(() => {
-    console.log('Room Song Subscription');
-
     // Subscribe to future table changes
     const subscription = supabase
       .from(table)

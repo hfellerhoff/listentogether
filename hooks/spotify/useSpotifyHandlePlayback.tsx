@@ -1,9 +1,8 @@
 import { useAtom } from 'jotai';
 import { useEffect } from 'react';
-import Room, { Queue } from '../../models/Room';
+import Room from '../../models/Room';
 import Song from '../../models/Song';
 import { playbackConfigurationAtom } from '../../state/playbackConfigurationAtom';
-import { roomAtom } from '../../state/roomAtom';
 import { spotifyAtom } from '../../state/spotifyAtom';
 import useSongProgress from '../rooms/useSongProgress';
 import useSpotifyAuthentication from './useSpotifyAuthentication';
@@ -16,8 +15,6 @@ const useSpotifyHandlePlayback = (room: Room, song: Song) => {
 
   const progress = useSongProgress(song);
   const track = useSpotifyTrack(song);
-
-  console.log(song);
 
   useEffect(() => {
     const getTargetDevice = async () => {
