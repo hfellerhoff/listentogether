@@ -11,6 +11,8 @@ import {
   Tabs,
   Tooltip,
   Box,
+  Stack,
+  Text,
 } from '@chakra-ui/react';
 import ChatComponent from '../../components/Room/Chat/ChatComponent';
 import useBackgroundColor from '../../hooks/useBackgroundColor';
@@ -31,6 +33,7 @@ import useSpotifyTrack from '../../hooks/spotify/useSpotifyTrack';
 import useRoomSongs from '../../hooks/rooms/useQueue';
 import useSpotifyHandlePlayback from '../../hooks/spotify/useSpotifyHandlePlayback';
 import useQueue from '../../hooks/rooms/useQueue';
+import QueuedSongDisplay from '../../components/Room/QueuedSongDisplay';
 
 interface Props {}
 
@@ -85,7 +88,7 @@ export const RoomPage = (props: Props) => {
               >
                 <TabList>
                   <Tab>Queue</Tab>
-                  <Tab ml={1}>Listeners</Tab>
+                  {/* <Tab ml={1}>Listeners</Tab> */}
                   <Tab ml={1} display={['block', 'block', 'none', 'none']}>
                     Chat
                   </Tab>
@@ -116,9 +119,13 @@ export const RoomPage = (props: Props) => {
             )} */}
               <TabPanels flex={1}>
                 <TabPanel px={4}>
-                  <Box></Box>
+                  <Stack>
+                    {queue.map((song) => (
+                      <QueuedSongDisplay song={song} key={song.id} />
+                    ))}
+                  </Stack>
                 </TabPanel>
-                <TabPanel px={4}>{/* <ListenerPanel /> */}</TabPanel>
+                {/* <TabPanel px={4}></TabPanel> */}
                 <TabPanel
                   overflowY='scroll'
                   h='100%'
