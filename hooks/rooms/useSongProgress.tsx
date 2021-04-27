@@ -4,7 +4,7 @@ import Song from '../../models/Song';
 interface Props {}
 
 const useSongProgress = (song: Song) => {
-  const [progress, setProgress] = useState(0);
+  const [progress, setProgress] = useState(-1);
 
   const updatedAtMS = song ? Date.parse(song.updatedAt) : 0;
 
@@ -26,7 +26,7 @@ const useSongProgress = (song: Song) => {
     };
 
     if (!song) return;
-    const interval = setInterval(() => calculateProgress(song), 250);
+    const interval = setInterval(() => calculateProgress(song), 1000);
 
     return () => {
       if (interval) clearInterval(interval);

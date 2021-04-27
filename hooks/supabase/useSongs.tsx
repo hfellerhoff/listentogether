@@ -88,7 +88,10 @@ const useSongs = (roomID: number) => {
     };
   }, []);
 
-  const array = Object.values(dictionary);
+  const array = Object.values(dictionary).sort((a, b) => {
+    if (a.addedAt <= b.addedAt) return -1;
+    else return 1;
+  });
   return { dictionary, array };
 };
 

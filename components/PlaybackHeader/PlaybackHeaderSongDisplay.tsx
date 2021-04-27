@@ -5,7 +5,7 @@ import { useAtom } from 'jotai';
 import { Modal, modalAtom } from '../../state/modalAtom';
 import { roomAtom } from '../../state/roomAtom';
 import { spotifyAtom } from '../../state/spotifyAtom';
-import useSpotifyAuthentication from '../../hooks/useSpotifyAuthentication';
+import useSpotifyAuthentication from '../../hooks/spotify/useSpotifyAuthentication';
 import Song from '../../models/Song';
 import { FaPlus } from 'react-icons/fa';
 import Room from '../../models/Room';
@@ -35,7 +35,7 @@ const PlaybackHeaderSongDisplay = ({ song, room }: Props) => {
 
   return (
     <Box>
-      {room.name ? (
+      {room && room.name ? (
         spotifyTrack ? (
           <DashboardSongDisplay
             title={spotifyTrack.name}

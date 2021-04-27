@@ -14,7 +14,7 @@ import {
 } from '@chakra-ui/react';
 import DashboardSongDisplay from '../Room/DashboardSongDisplay';
 import useWindowDimensions from '../../hooks/useWindowDimensions';
-import useSpotifyAuthentication from '../../hooks/useSpotifyAuthentication';
+import useSpotifyAuthentication from '../../hooks/spotify/useSpotifyAuthentication';
 import { useAtom } from 'jotai';
 import { spotifyAtom } from '../../state/spotifyAtom';
 import { userAtom } from '../../state/userAtom';

@@ -15,7 +15,7 @@ import TextLoop from 'react-text-loop';
 import { FaSpotify } from 'react-icons/fa';
 import ColorModeButton from '../components/ColorModeButton';
 import Layout from '../components/Layout';
-import useSpotifyAuthentication from '../hooks/useSpotifyAuthentication';
+import useSpotifyAuthentication from '../hooks/spotify/useSpotifyAuthentication';
 import { BASE_URL } from '../constants/API_SPOTIFY_AUTH';
 
 export default function Home() {

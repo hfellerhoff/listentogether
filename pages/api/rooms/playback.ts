@@ -27,8 +27,6 @@ export default async function handler(req, res) {
 
   const progress = now - updatedAtMS + song.progress;
 
-  console.log(progress, now - updatedAtMS);
-
   // Update song playback
   try {
     if (songId && isPaused !== undefined) {

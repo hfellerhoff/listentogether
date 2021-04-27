@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import Service from '../models/Service';
 import { useAtom } from 'jotai';
 import { spotifyAtom } from '../state/spotifyAtom';
-import useSpotifyAuthentication from './useSpotifyAuthentication';
+import useSpotifyAuthentication from './spotify/useSpotifyAuthentication';
 import { userAtom } from '../state/userAtom';
 import User from '../models/User';
 import { useRouter } from 'next/router';

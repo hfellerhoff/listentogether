@@ -18,8 +18,8 @@ import Song from '../../models/Song';
 interface Props {
   placement?: 'top' | 'bottom';
   isHome?: boolean;
-  queue: Queue;
-  room: Room;
+  queue?: Queue;
+  room?: Room;
 }
 
 const PlaybackHeader = ({ placement, isHome, queue, room }: Props) => {
@@ -31,7 +31,7 @@ const PlaybackHeader = ({ placement, isHome, queue, room }: Props) => {
 
   const [isCreatingRoom, setIsCreatingRoom] = useState(false);
 
-  const song = queue[0] || undefined;
+  const song = queue ? queue[0] || undefined : undefined;
 
   const onRoomCreate = async () => {
     setIsCreatingRoom(true);
@@ -73,7 +73,7 @@ const PlaybackHeader = ({ placement, isHome, queue, room }: Props) => {
           align='center'
           justify='center'
         >
-          {!room.name ? (
+          {!room || !room.name ? (
             <Button
               colorScheme='green'
               leftIcon={<FiPlus />}

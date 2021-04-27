@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Flex, IconButton, Spinner } from '@chakra-ui/react';
-import { FiPause, FiSkipBack, FiSkipForward, FiPlay } from 'react-icons/fi';
+import { Flex, IconButton, Spinner, Tooltip } from '@chakra-ui/react';
+import { FiPause, FiSkipForward, FiPlay, FiLink2 } from 'react-icons/fi';
 import { useAtom } from 'jotai';
 import { spotifyAtom } from '../state/spotifyAtom';
 import Song from '../models/Song';
 import { RoomPlaybackQuery } from '../pages/api/rooms/playback';
+import { playbackConfigurationAtom } from '../state/playbackConfigurationAtom';
 
 interface Props {
   song: Song;
@@ -13,6 +14,9 @@ interface Props {
 
 const SongControl = ({ song, progress }: Props) => {
   const [spotifyApi] = useAtom(spotifyAtom);
+  const [playbackConfiguration, setPlaybackConfiguration] = useAtom(
+    playbackConfigurationAtom
+  );
   const [changeToIsPaused, setChangeToIsPaused] = useState(true);
 
   const isPaused = song ? song.isPaused : false;
@@ -22,7 +26,11 @@ const SongControl = ({ song, progress }: Props) => {
     setChangeToIsPaused(isPaused);
   }, [isPaused]);
 
-  const handleSkipBack = () => spotifyApi.skipToPrevious();
+  const handleTogglePlaybackConfiguration = () =>
+    setPlaybackConfiguration({
+      ...playbackConfiguration,
+      linked: !playbackConfiguration.linked,
+    });
   const handleSkipForward = () => spotifyApi.skipToNext();
   const handleTogglePlay = async () => {
     setChangeToIsPaused(!isPaused);
@@ -60,13 +68,29 @@ const SongControl = ({ song, progress }: Props) => {
 
   return (
     <Flex align='center' justify='center'>
-      <IconButton
-        onClick={handleSkipBack}
-        isDisabled={!isOwner}
-        icon={<FiSkipBack fontSize='1.25em' />}
-        aria-label='Return to previous song'
-        variant='ghost'
-      />
+      <Tooltip
+        label={
+          playbackConfiguration.linked
+            ? 'Unlink playback to room'
+            : 'Link playback to room'
+        }
+        aria-label={
+          playbackConfiguration.linked
+            ? 'Unlink playback to room'
+            : 'Link playback to room'
+        }
+        placement='bottom'
+        zIndex={8}
+      >
+        <IconButton
+          onClick={handleTogglePlaybackConfiguration}
+          icon={<FiLink2 fontSize='1.25em' />}
+          aria-label='Return to previous song'
+          variant={playbackConfiguration.linked ? 'solid' : 'ghost'}
+          colorScheme={playbackConfiguration.linked ? 'blue' : 'gray'}
+          size={playbackConfiguration.linked ? 'sm' : 'md'}
+        />
+      </Tooltip>
       <IconButton
         aria-label={isPaused ? 'Play song' : 'Pause song'}
         isDisabled={isOwner ? changeToIsPaused !== isPaused : true}

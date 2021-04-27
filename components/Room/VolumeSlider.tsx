@@ -11,7 +11,7 @@ import {
 import { FiVolumeX, FiVolume, FiVolume1, FiVolume2 } from 'react-icons/fi';
 import { useAtom } from 'jotai';
 import { spotifyAtom } from '../../state/spotifyAtom';
-import useSpotifyAuthentication from '../../hooks/useSpotifyAuthentication';
+import useSpotifyAuthentication from '../../hooks/spotify/useSpotifyAuthentication';
 
 interface Props {}
 
