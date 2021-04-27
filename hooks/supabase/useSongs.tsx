@@ -10,6 +10,7 @@ interface Dictionary<T> {
 
 const useSongs = (roomID: number) => {
   const [dictionary, setDictionary] = useState<Dictionary<Song>>({});
+  const [array, setArray] = useState<Song[]>([]);
 
   const table = 'songs';
   const whereColumn = 'room_id';
@@ -65,7 +66,7 @@ const useSongs = (roomID: number) => {
             // });
 
             // ==== LOGIC FOR SINGLE SONG ====
-            setDictionary((d) => {
+            setDictionary(() => {
               return {
                 [payload.new['id']]: payload.new,
               };
@@ -88,10 +89,15 @@ const useSongs = (roomID: number) => {
     };
   }, []);
 
-  const array = Object.values(dictionary).sort((a, b) => {
-    if (a.addedAt <= b.addedAt) return -1;
-    else return 1;
-  });
+  useEffect(() => {
+    setArray(
+      Object.values(dictionary).sort((a, b) => {
+        if (a.addedAt <= b.addedAt) return -1;
+        else return 1;
+      })
+    );
+  }, [dictionary]);
+
   return { dictionary, array };
 };
 

@@ -64,19 +64,17 @@ const useSpotifyHandlePlayback = (room: Room, queue: Queue) => {
               // If song playing on Spotify does not match the server's song,
               // play the server's song
               if (playback.item.uri !== song.spotifyUri) {
-                // const x = new Date();
-                // const now = x.getTime() + x.getTimezoneOffset() * 60 * 1000;
+                // Recalculate progress when swapping songs to avoid playing
+                // in the middle of the song
+                const x = new Date();
+                const now = x.valueOf();
 
-                // const position_ms =
-                //   now - Date.parse(song.updatedAt).valueOf() + song.progress;
+                const position_ms =
+                  now - Date.parse(song.updatedAt).valueOf() + song.progress;
 
-                // spotifyApi.play({
-                //   uris: [song.spotifyUri],
-                //   position_ms,
-                // });
                 spotifyApi.play({
                   uris: [song.spotifyUri],
-                  position_ms: progress,
+                  position_ms,
                 });
               }
 

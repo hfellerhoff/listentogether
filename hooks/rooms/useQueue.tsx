@@ -6,9 +6,15 @@ import useRoomSongs from '../supabase/useRoomSongs';
 import useSongs from '../supabase/useSongs';
 
 const useQueue = (roomID: number): Queue => {
+  const [queue, setQueue] = useState<Queue>([]);
+
   const songs = useSongs(roomID);
 
-  return songs.array;
+  useEffect(() => {
+    setQueue(songs.array);
+  }, [songs]);
+
+  return queue;
 };
 
 export default useQueue;
