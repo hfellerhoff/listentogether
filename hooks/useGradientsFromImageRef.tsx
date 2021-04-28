@@ -1,45 +1,25 @@
 import { useState, useEffect } from 'react';
 import { getBestContrast } from '../util/helpers/getBestContrast';
 import ColorThief from 'colorthief';
+import Vibrant from 'node-vibrant';
 
 const useGradientsFromImageRef = (
-  image: React.MutableRefObject<HTMLImageElement | undefined>
+  // image: React.MutableRefObject<HTMLImageElement | undefined>
+  src: string | undefined
 ) => {
   const [firstColor, setFirstColor] = useState([0, 0, 0]);
   const [secondColor, setSecondColor] = useState([0, 0, 0]);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (image.current) {
-      image.current.setAttribute('crossOrigin', '');
-      image.current.onload = () => {
-        const colorThief = new ColorThief();
-        const img = image.current as HTMLImageElement;
-        if (!img) return;
+    const getGradient = async () => {
+      const v = new Vibrant(src);
+      const palatte = await v.getPalette();
+      setFirstColor(palatte.DarkMuted.rgb);
+      setSecondColor(palatte.DarkVibrant.rgb);
+    };
 
-        if (img.complete) {
-          const colors = colorThief.getPalette(img);
-
-          let colorOneSet = false;
-          if (!colors) return;
-          for (let i = 0; i < colors.length; i += 1) {
-            const color = getBestContrast(colors[i]);
-
-            if (color === '#ffffff') {
-              if (!colorOneSet) {
-                setFirstColor(colors[i]);
-                colorOneSet = true;
-              } else {
-                setSecondColor(colors[i]);
-                setIsLoading(false);
-                return;
-              }
-            }
-          }
-        }
-      };
-    }
-  }, [image]);
+    if (src) getGradient();
+  }, [src]);
 
   const r1 = firstColor[0];
   const g1 = firstColor[1];
@@ -54,7 +34,7 @@ const useGradientsFromImageRef = (
     g1 + 20
   }, ${b1 + 20}), rgb(${r2 + 20}, ${g2 + 20}, ${b2 + 20}))`;
 
-  return { normalGradient, hoverGradient, isLoading };
+  return { normalGradient, hoverGradient };
 };
 
 export default useGradientsFromImageRef;

@@ -14,7 +14,7 @@ import {
 } from '@chakra-ui/react';
 import DashboardSongDisplay from '../Room/DashboardSongDisplay';
 import useWindowDimensions from '../../hooks/useWindowDimensions';
-import useSpotifyAuthentication from '../../hooks/useSpotifyAuthentication';
+import useSpotifyAuthentication from '../../hooks/spotify/useSpotifyAuthentication';
 import { useAtom } from 'jotai';
 import { spotifyAtom } from '../../state/spotifyAtom';
 import { userAtom } from '../../state/userAtom';
@@ -55,8 +55,6 @@ const SongSearchDrawer = (props: Props) => {
   const [modal, setModal] = useAtom(modalAtom);
   const { accessToken } = useSpotifyAuthentication();
 
-  // const roomInformation = useRecoilValue(roomInformationState);
-
   const [searchQuery, setSearchQuery] = useState('');
   const [lastSearched, setLastSearched] = useState(0);
   const [searchResults, setSearchResults] = useState<
@@ -66,6 +64,8 @@ const SongSearchDrawer = (props: Props) => {
   const queueTrack = async (track: SpotifyApi.TrackObjectFull) => {
     if (spotifyAPI && user) {
       spotifyAPI.setAccessToken(accessToken);
+
+      console.log('Queuing track...');
 
       const res = await fetch('/api/rooms/queue', {
         method: 'POST',

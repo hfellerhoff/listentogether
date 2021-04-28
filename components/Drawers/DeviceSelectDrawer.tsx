@@ -21,7 +21,7 @@ import {
 import { FiRefreshCcw } from 'react-icons/fi';
 import { useAtom } from 'jotai';
 import { spotifyAtom } from '../../state/spotifyAtom';
-import useSpotifyAuthentication from '../../hooks/useSpotifyAuthentication';
+import useSpotifyAuthentication from '../../hooks/spotify/useSpotifyAuthentication';
 import { Modal, modalAtom } from '../../state/modalAtom';
 import RadioCardGroup from '../RadioCardGroup';
 

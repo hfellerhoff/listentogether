@@ -5,42 +5,32 @@ import { useAtom } from 'jotai';
 import { Modal, modalAtom } from '../../state/modalAtom';
 import { roomAtom } from '../../state/roomAtom';
 import { spotifyAtom } from '../../state/spotifyAtom';
-import useSpotifyAuthentication from '../../hooks/useSpotifyAuthentication';
+import useSpotifyAuthentication from '../../hooks/spotify/useSpotifyAuthentication';
 import Song from '../../models/Song';
 import { FaPlus } from 'react-icons/fa';
+import Room from '../../models/Room';
+import useSpotifyTrack from '../../hooks/spotify/useSpotifyTrack';
 
 interface Props {
   song?: Song;
+  room: Room;
 }
 
-const PlaybackHeaderSongDisplay = ({ song }: Props) => {
-  const [room] = useAtom(roomAtom);
+const PlaybackHeaderSongDisplay = ({ song, room }: Props) => {
   const [, setModal] = useAtom(modalAtom);
   const [spotifyApi] = useAtom(spotifyAtom);
   const { accessToken } = useSpotifyAuthentication();
-  const [
-    spotifyTrack,
-    setSpotifyTrack,
-  ] = useState<SpotifyApi.SingleTrackResponse>();
-
-  useEffect(() => {
-    if (song) {
-      spotifyApi.setAccessToken(accessToken);
-      spotifyApi
-        .getTrack(song.spotifyUri.split(':')[2])
-        .then((res) => setSpotifyTrack(res));
-    }
-  }, [song]);
+  const track = useSpotifyTrack(song);
 
   return (
     <Box>
-      {room.name ? (
-        spotifyTrack ? (
+      {room && room.name ? (
+        song && track ? (
           <DashboardSongDisplay
-            title={spotifyTrack.name}
-            artist={spotifyTrack.artists[0].name}
-            album={spotifyTrack.album.name}
-            src={spotifyTrack.album.images[0].url}
+            title={track.name}
+            artist={track.artists[0].name}
+            album={track.album.name}
+            src={track.album.images[0].url}
           />
         ) : (
           <Button

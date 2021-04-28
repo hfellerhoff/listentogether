@@ -5,11 +5,26 @@ import supabase from '../../../util/supabase/index';
 export interface RoomPlaybackQuery {
   songId?: number;
   isPaused?: boolean;
+  shouldSkip?: boolean;
 }
 
 export default async function handler(req, res) {
-  const { songId, isPaused }: RoomPlaybackQuery = JSON.parse(req.body);
+  const { songId, isPaused, shouldSkip }: RoomPlaybackQuery = JSON.parse(
+    req.body
+  );
 
+  // SONG SKIPPING
+  if (shouldSkip) {
+    await supabase.from('room_song').delete().eq('song_id', songId);
+    await supabase.from('songs').delete().eq('id', songId);
+
+    console.log('Successfully skipped song.');
+
+    res.end();
+    return;
+  }
+
+  // PLAYBACK TOGGLING (PAUSE / PLAY)
   const { data: songs } = await supabase
     .from('songs')
     .select('*')
@@ -19,7 +34,12 @@ export default async function handler(req, res) {
 
   const updatedAtMS = song ? Date.parse(song.updatedAt).valueOf() : 0;
   const x = new Date();
-  const now = x.getTime() + x.getTimezoneOffset() * 60 * 1000;
+  let now = x.getTime();
+
+  // Incredibly patchwork fix to an incredibly annoying problem
+  if (now - updatedAtMS > 10000000) now -= x.getTimezoneOffset() * 60 * 1000;
+  if (now - updatedAtMS < -10000000) now += x.getTimezoneOffset() * 60 * 1000;
+
   const progress = now - updatedAtMS + song.progress;
 
   // Update song playback

@@ -10,7 +10,7 @@ import { userAtom } from '../../state/userAtom';
 import useBackgroundColor from '../../hooks/useBackgroundColor';
 import Link from 'next/link';
 import ColorModeButton from '../ColorModeButton';
-import Room from '../../models/Room';
+import Room, { Queue } from '../../models/Room';
 import { useRouter } from 'next/router';
 import { roomAtom } from '../../state/roomAtom';
 import Song from '../../models/Song';
@@ -19,13 +19,13 @@ interface Props {
   placement?: 'top' | 'bottom';
   isHome?: boolean;
   song?: Song;
+  room?: Room;
 }
 
-const PlaybackHeader = ({ placement, isHome, song }: Props) => {
+const PlaybackHeader = ({ placement, isHome, song, room }: Props) => {
   placement = placement || 'top';
   const router = useRouter();
   const [user] = useAtom(userAtom);
-  const [room, setRoom] = useAtom(roomAtom);
   const [, setModal] = useAtom(modalAtom);
   const { foregroundColor } = useBackgroundColor();
 
@@ -39,7 +39,6 @@ const PlaybackHeader = ({ placement, isHome, song }: Props) => {
     });
 
     const room: Room = await res.json();
-    setRoom(room);
 
     router.push(`/rooms/${room.slug}`);
     setIsCreatingRoom(false);
@@ -53,7 +52,7 @@ const PlaybackHeader = ({ placement, isHome, song }: Props) => {
         gridTemplateColumns={[
           '1fr auto',
           '1fr auto',
-          '1fr auto',
+          '2fr 4fr 1fr',
           '1fr 3fr 1fr',
         ]}
         gridTemplateRows={'1fr'}
@@ -67,12 +66,12 @@ const PlaybackHeader = ({ placement, isHome, song }: Props) => {
         top={placement === 'top' ? 0 : ''}
         height={24}
       >
-        {!room.name ? (
-          <Flex
-            display={['none', 'none', 'none', 'flex']}
-            align='center'
-            justify='center'
-          >
+        <Flex
+          display={['none', 'none', 'flex', 'flex']}
+          align='center'
+          justify='center'
+        >
+          {!room || !room.name ? (
             <Button
               colorScheme='green'
               leftIcon={<FiPlus />}
@@ -81,10 +80,10 @@ const PlaybackHeader = ({ placement, isHome, song }: Props) => {
             >
               Create Room
             </Button>
-          </Flex>
-        ) : (
-          <DashboardSongControls song={song} />
-        )}
+          ) : (
+            <DashboardSongControls song={song} />
+          )}
+        </Flex>
         <Flex
           p={2}
           borderRadius={4}
@@ -92,7 +91,7 @@ const PlaybackHeader = ({ placement, isHome, song }: Props) => {
           align='center'
           justify='space-between'
         >
-          <PlaybackHeaderSongDisplay song={song} />
+          <PlaybackHeaderSongDisplay song={song} room={room} />
           <Box display={['none', 'none', 'none', 'block']}>
             <VolumeAndDeviceControl
               onSpeakerClick={() => setModal(Modal.DeviceSelect)}

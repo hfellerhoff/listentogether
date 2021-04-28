@@ -31,6 +31,7 @@ export default async function handler(req, res) {
       spotifyUri: props.spotifyUri,
       progress: 0,
       isPaused: false,
+      room_id: props.roomId,
     };
 
     const songResponse = await supabase.from('songs').insert([song]);

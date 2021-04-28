@@ -2,7 +2,7 @@ import * as React from 'react';
 import { ChakraProvider } from '@chakra-ui/react';
 import '../styles/globals.css';
 import { Provider } from 'jotai';
-import useSpotifyWebPlayback from '../hooks/useSpotifyWebPlayback';
+import useSpotifyWebPlayback from '../hooks/spotify/useSpotifyWebPlayback';
 
 export default function App({ Component, pageProps }) {
   useSpotifyWebPlayback();

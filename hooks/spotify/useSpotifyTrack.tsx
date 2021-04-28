@@ -2,7 +2,7 @@ import { useAtom } from 'jotai';
 import React, { useEffect, useState } from 'react';
 import Song from '../../models/Song';
 import { spotifyAtom } from '../../state/spotifyAtom';
-import useSpotifyAuthentication from '../useSpotifyAuthentication';
+import useSpotifyAuthentication from './useSpotifyAuthentication';
 
 const useSpotifyTrack = (song: Song) => {
   const [spotifyApi] = useAtom(spotifyAtom);
@@ -13,7 +13,7 @@ const useSpotifyTrack = (song: Song) => {
   ] = useState<SpotifyApi.SingleTrackResponse>();
 
   useEffect(() => {
-    if (song) {
+    if (song && song.spotifyUri) {
       spotifyApi.setAccessToken(accessToken);
       spotifyApi
         .getTrack(song.spotifyUri.split(':')[2])
