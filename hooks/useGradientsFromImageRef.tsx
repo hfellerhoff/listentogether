@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react';
-import { getBestContrast } from '../util/helpers/getBestContrast';
-import ColorThief from 'colorthief';
 import Vibrant from 'node-vibrant';
 
 const useGradientsFromImageRef = (

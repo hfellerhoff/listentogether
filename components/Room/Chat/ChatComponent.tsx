@@ -4,10 +4,9 @@ import ChatDisplay from './ChatDisplay';
 import ChatInput from './ChatInput';
 import useBackgroundColor from '../../../hooks/useBackgroundColor';
 import Message from '../../../models/Message';
-import useSupabaseSubscription from '../../../hooks/supabase/useSupabaseSubscription';
 import useMessages from '../../../hooks/supabase/useMessages';
-import {useAtom} from 'jotai';
-import {roomAtom} from '../../../state/roomAtom';
+import { useAtom } from 'jotai';
+import { roomAtom } from '../../../state/roomAtom';
 
 export type ChatComponentType = 'panel' | 'full';
 
@@ -17,10 +16,10 @@ interface Props {
 
 const ChatComponent = ({ type }: Props) => {
   const { backgroundColor } = useBackgroundColor();
-  const [room] = useAtom(roomAtom)
+  const [room] = useAtom(roomAtom);
 
   const messages = useMessages(room.id);
-  console.log(messages)
+  console.log(messages);
 
   const display = {
     full: ['none', 'none', 'flex', 'flex'],

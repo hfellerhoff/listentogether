@@ -91,7 +91,7 @@ const callback = (req: NextApiRequest, res: NextApiResponse) =>
 
           // If user does not exist, insert into database
           if (supabaseResponse.data.length === 0) {
-            supabase
+            await supabase
               .from('users')
               .insert([user])
               .then((insertedUser) => {
@@ -101,7 +101,7 @@ const callback = (req: NextApiRequest, res: NextApiResponse) =>
           }
           // If user exists, update fields
           else {
-            supabase
+            await supabase
               .from('users')
               .update([user])
               .eq('id', supabaseResponse.data[0].id);
