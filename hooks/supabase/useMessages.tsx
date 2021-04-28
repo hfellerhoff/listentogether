@@ -53,7 +53,6 @@ const useMessages = (roomID: number) => {
           case 'UPDATE':
             if (payload.new[whereColumn] !== roomID) return;
 
-            // ==== LOGIC FOR MULTIPLE SONGS ====
             setDictionary((d) => {
               return {
                 ...d,
@@ -61,7 +60,6 @@ const useMessages = (roomID: number) => {
               };
             });
 
-            // ==== LOGIC FOR SINGLE SONG ====
             return;
           case 'DELETE':
             setDictionary((d) => {
