@@ -4,7 +4,7 @@ import Message from '../../models/Message';
 import Song from '../../models/Song';
 import { roomAtom } from '../../state/roomAtom';
 import supabase from '../../util/supabase';
-import useSupabaseSubscription from '../supabase/useSupabaseSubscription';
+// import useSupabaseSubscription from '../supabase/useSupabaseSubscription';
 
 interface RoomUserMessage {
   message_id: number;
