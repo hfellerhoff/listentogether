@@ -54,17 +54,14 @@ const useMessages = (roomID: number) => {
             if (payload.new[whereColumn] !== roomID) return;
 
             // ==== LOGIC FOR MULTIPLE SONGS ====
-            // setDictionary((d) => {
-            //   return {
-            //     ...d,
-            //     [payload.new['id']]: payload.new,
-            //   };
-            // });
+            setDictionary((d) => {
+              return {
+                ...d,
+                [payload.new['id']]: payload.new,
+              };
+            });
 
             // ==== LOGIC FOR SINGLE SONG ====
-            setDictionary({
-              [payload.new['id']]: payload.new,
-            });
             return;
           case 'DELETE':
             setDictionary((d) => {
@@ -86,7 +83,7 @@ const useMessages = (roomID: number) => {
   useEffect(() => {
     setArray(
       Object.values(dictionary).sort((a, b) => {
-        if (a.addedAt <= b.addedAt) return -1;
+        if (a.timestamp <= b.timestamp) return -1;
         else return 1;
       })
     );

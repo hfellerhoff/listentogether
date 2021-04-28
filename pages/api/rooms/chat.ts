@@ -15,23 +15,14 @@ export default function handler(req, res) {
 
   const chat = {
     type: MessageType.UserChat,
-    content: message_data.message
+    content: message_data.message,
+    room_id: message_data.room_id,
+    user_id: message_data.user_id
   };
 
   supabase
     .from('messages')
     .insert([chat])
-    .then((res) => {
-      const entry = {
-        message_id: res.data[0].id,
-        room_id: message_data.room_id,
-        user_id: message_data.user_id
-      }
-      supabase
-        .from('room_user_messages')
-        .insert([entry])
-        .then((res1) => console.log(res1)) 
-    });
 
 
   // res.json(room);
