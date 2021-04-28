@@ -5,7 +5,9 @@ import ChatInput from './ChatInput';
 import useBackgroundColor from '../../../hooks/useBackgroundColor';
 import Message from '../../../models/Message';
 import useSupabaseSubscription from '../../../hooks/supabase/useSupabaseSubscription';
-import useRoomMessages from '../../../hooks/rooms/useRoomMessages';
+import useMessages from '../../../hooks/supabase/useMessages';
+import {useAtom} from 'jotai';
+import {roomAtom} from '../../../state/roomAtom';
 
 export type ChatComponentType = 'panel' | 'full';
 
@@ -15,9 +17,10 @@ interface Props {
 
 const ChatComponent = ({ type }: Props) => {
   const { backgroundColor } = useBackgroundColor();
-  // const roomInformation = useRecoilValue(roomInformationState);
+  const [room] = useAtom(roomAtom)
 
-  const messages = useRoomMessages();
+  const messages = useMessages(room.id);
+  console.log(messages)
 
   const display = {
     full: ['none', 'none', 'flex', 'flex'],
@@ -32,7 +35,7 @@ const ChatComponent = ({ type }: Props) => {
       maxH='100%'
       bottom={0}
     >
-      <ChatDisplay messages={messages} />
+      <ChatDisplay messages={messages.array} />
       <Box height={20} />
       <ChatInput type={type} />
     </Flex>

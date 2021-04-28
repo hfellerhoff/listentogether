@@ -20,9 +20,11 @@ export default function handler(req, res) {
     user_id: message_data.user_id
   };
 
+
   supabase
     .from('messages')
     .insert([chat])
+    .then(res => console.log(res))
 
 
   // res.json(room);
