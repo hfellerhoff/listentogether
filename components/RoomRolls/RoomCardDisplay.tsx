@@ -25,9 +25,8 @@ const RoomCardDisplay = ({ room }: Props) => {
   const [song, setSong] = useState<Song>();
   const track = useSpotifyTrack(song);
 
-  const image = useRef<HTMLImageElement>();
-  const { normalGradient, hoverGradient, isLoading } = useGradientsFromImageRef(
-    image
+  const { normalGradient, hoverGradient } = useGradientsFromImageRef(
+    track ? track.album.images[0].url : undefined
   );
 
   useEffect(() => {
@@ -92,7 +91,7 @@ const RoomCardDisplay = ({ room }: Props) => {
             artist={track.artists[0].name}
             album={track.album.name}
             src={track.album.images[0].url}
-            imageRef={image}
+            // imageRef={image}
             standalone
           />
         </Box>
