@@ -99,6 +99,13 @@ const callback = (req: NextApiRequest, res: NextApiResponse) =>
                 console.log(insertedUser);
               });
           }
+          // If user exists, update fields
+          else {
+            supabase
+              .from('users')
+              .update([user])
+              .eq('id', supabaseResponse.data[0].id);
+          }
 
           // Pass the access token back to the Listen Together client
           // to be able to make client-side API requests
