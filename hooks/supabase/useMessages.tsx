@@ -15,10 +15,6 @@ const useMessages = (roomID: number) => {
   const table = 'messages';
   const whereColumn = 'room_id';
 
-  const scrollToBottom = () => {
-    window.scrollTo(0, document.body.scrollHeight);
-  };
-
   useEffect(() => {
     if (roomID < 0) return;
 
@@ -39,8 +35,6 @@ const useMessages = (roomID: number) => {
 
         setDictionary(updatedDictionary);
       }
-
-      scrollToBottom();
     };
 
     fetchData();
@@ -49,7 +43,7 @@ const useMessages = (roomID: number) => {
   useEffect(() => {
     // Subscribe to future table changes
     const subscription = supabase
-      .from(table)
+      .from(`${table}:${whereColumn}=eq.${roomID}`)
       .on('*', (payload) => {
         // console.log(`=== TABLE (${table}) ${payload.eventType} ===`);
 
@@ -76,8 +70,6 @@ const useMessages = (roomID: number) => {
             });
             break;
         }
-
-        scrollToBottom();
       })
       .subscribe();
 

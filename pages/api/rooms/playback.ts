@@ -32,6 +32,11 @@ export default async function handler(req, res) {
 
   const song: Song = songs[0];
 
+  if (!song.progress) {
+    res.end();
+    return;
+  }
+
   const updatedAtMS = song ? Date.parse(song.updatedAt).valueOf() : 0;
   const x = new Date();
   let now = x.getTime();

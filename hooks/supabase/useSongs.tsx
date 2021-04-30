@@ -43,7 +43,7 @@ const useSongs = (roomID: number) => {
   useEffect(() => {
     // Subscribe to future table changes
     const subscription = supabase
-      .from(table)
+      .from(`${table}:${whereColumn}=eq.${roomID}`)
       .on('*', (payload) => {
         // console.log(`=== TABLE (${table}) ${payload.eventType} ===`);
 
@@ -68,9 +68,13 @@ const useSongs = (roomID: number) => {
             return;
           case 'DELETE':
             setDictionary((d) => {
+              console.log(!d[payload.old.id], d[payload.old.id]);
+
               if (!d[payload.old.id]) return d;
 
               delete d[payload.old.id];
+              console.log(d);
+
               return { ...d };
             });
             return;

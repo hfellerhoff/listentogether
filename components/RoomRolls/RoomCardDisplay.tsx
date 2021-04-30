@@ -45,21 +45,15 @@ const RoomCardDisplay = ({ room }: Props) => {
 
   useEffect(() => {
     const fetchSong = async () => {
-      let { data: roomSongs, error } = await supabase
-        .from('room_song')
+      let { data: songs, error } = await supabase
+        .from('songs')
         .select('*')
+        .order('addedAt', { ascending: true })
         .eq('room_id', room.id)
         .range(0, 1);
-      if (roomSongs.length > 0) {
-        let { data: songs, error } = await supabase
-          .from('songs')
-          .select('*')
-          .eq('id', roomSongs[0].song_id)
-          .range(0, 1);
 
-        if (songs.length > 0) {
-          setSong(songs[0]);
-        }
+      if (songs.length > 0) {
+        setSong(songs[0]);
       }
     };
 
