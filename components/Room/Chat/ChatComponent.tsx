@@ -19,7 +19,6 @@ const ChatComponent = ({ type }: Props) => {
   const [room] = useAtom(roomAtom);
 
   const messages = useMessages(room.id);
-  console.log(messages);
 
   const display = {
     full: ['none', 'none', 'flex', 'flex'],
