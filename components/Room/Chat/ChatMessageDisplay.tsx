@@ -15,8 +15,6 @@ const ChatMessageDisplay = ({ message, index, previousUser }: Props) => {
   const { colorMode } = useColorMode();
   const isSameUser = message.user_id === previousUser;
 
-  console.log(isSameUser, message.user_id, previousUser);
-
   const [user, setUser] = useState<User>();
 
   useEffect(() => {

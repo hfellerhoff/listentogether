@@ -40,6 +40,7 @@ const useSpotifyHandlePlayback = (room: Room, song: Song) => {
       try {
         // The device to play music on
         const targetDeviceID = await getTargetDevice();
+        if (!targetDeviceID) return;
 
         // Current Spotify playback state (is playing? what song? etc.)
         const playback = await spotifyApi.getMyCurrentPlaybackState();
