@@ -13,7 +13,7 @@ const nanoid = customAlphabet(
   10
 );
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   const user: User = JSON.parse(req.body);
 
   const room = {
@@ -23,7 +23,7 @@ export default function handler(req, res) {
     owner_id: user.id,
   };
 
-  supabase
+  await supabase
     .from('rooms')
     .insert([room])
     .then((res) => console.log(res));
