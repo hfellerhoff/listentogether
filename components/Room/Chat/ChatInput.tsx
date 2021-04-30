@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Input } from '@chakra-ui/react';
+import { Box, Input, useToast } from '@chakra-ui/react';
 import useBackgroundColor from '../../../hooks/useBackgroundColor';
 import { ChatComponentType } from './ChatComponent';
 import { Formik } from 'formik';
@@ -18,12 +18,19 @@ const ChatInput = ({ type }: Props) => {
   const [user] = useAtom(userAtom);
   const { foregroundColor } = useBackgroundColor();
   const isPanel = type === 'panel';
+  const toast = useToast();
 
   const onSubmit = async (message: string) => {
     try {
       await fetch('/api/rooms/chat', {
         method: 'POST',
         body: JSON.stringify({ message, room_id: room.id, user_id: user.id }),
+      });
+
+      toast({
+        title: `Message "${message}" sent!`,
+        status: 'success',
+        position: 'bottom-right',
       });
     } catch {
       console.error('Error sending chat message.');
