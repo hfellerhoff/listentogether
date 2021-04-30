@@ -13,10 +13,34 @@ export default async function handler(req, res) {
     req.body
   );
 
+  const { data: songs } = await supabase
+    .from('songs')
+    .select('*')
+    .eq('id', songId);
+
+  const song: Song = songs[0];
+
   // SONG SKIPPING
   if (shouldSkip) {
     await supabase.from('room_song').delete().eq('song_id', songId);
     await supabase.from('songs').delete().eq('id', songId);
+
+    const otherSongs = await supabase
+      .from('songs')
+      .select('*')
+      .eq('room_id', song.room_id)
+      .range(0, 1);
+
+    if (otherSongs.body.length > 0) {
+      const nextSong = otherSongs.body[0] as Song;
+
+      await supabase
+        .from('songs')
+        .update({
+          updatedAt: 'now()',
+        })
+        .eq('song_id', nextSong.id);
+    }
 
     console.log('Successfully skipped song.');
 
@@ -25,14 +49,7 @@ export default async function handler(req, res) {
   }
 
   // PLAYBACK TOGGLING (PAUSE / PLAY)
-  const { data: songs } = await supabase
-    .from('songs')
-    .select('*')
-    .eq('id', songId);
-
-  const song: Song = songs[0];
-
-  if (!song.progress) {
+  if (song.progress === undefined) {
     res.end();
     return;
   }

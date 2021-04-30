@@ -5,6 +5,7 @@ interface Song {
   updatedAt: string; // timestamp
   addedAt: string; // timestamp
   isPaused: boolean;
+  room_id: number;
 }
 
 export default Song;
