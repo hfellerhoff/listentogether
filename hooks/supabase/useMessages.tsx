@@ -51,7 +51,7 @@ const useMessages = (roomID: number) => {
     const subscription = supabase
       .from(table)
       .on('*', (payload) => {
-        console.log(`=== TABLE (${table}) ${payload.eventType} ===`);
+        // console.log(`=== TABLE (${table}) ${payload.eventType} ===`);
 
         // Update data
         switch (payload.eventType) {
