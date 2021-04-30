@@ -7,12 +7,15 @@ import supabase from '../../../util/supabase';
 interface Props {
   message: Message;
   index: number;
+  previousUser: number;
 }
 
-const ChatMessageDisplay = ({ message, index }: Props) => {
+const ChatMessageDisplay = ({ message, index, previousUser }: Props) => {
   const isMessage = message.type === MessageType.UserChat;
   const { colorMode } = useColorMode();
-  const isSameUser = false;
+  const isSameUser = message.user_id === previousUser;
+
+  console.log(isSameUser, message.user_id, previousUser);
 
   const [user, setUser] = useState<User>();
 
@@ -26,8 +29,8 @@ const ChatMessageDisplay = ({ message, index }: Props) => {
       setUser(data[0]);
     };
 
-    if (message) updateUser();
-  }, [message]);
+    if (message && !isSameUser) updateUser();
+  }, [message, isSameUser]);
 
   return (
     <Flex
@@ -38,7 +41,7 @@ const ChatMessageDisplay = ({ message, index }: Props) => {
           ? '#E0E5EA'
           : '#12141C'
       }
-      mt={isSameUser ? 1 : 2}
+      mt={isSameUser ? -1 : 4}
       px={4}
       py={isMessage ? 1 : 4}
       align={isMessage ? 'flex-start' : 'center'}
@@ -51,14 +54,14 @@ const ChatMessageDisplay = ({ message, index }: Props) => {
             <></>
           ) : (
             <Avatar
-              width={8}
-              height={8}
+              width={9}
+              height={9}
               size='sm'
               src={user && user.imageSrc}
               name={user ? user.name : ''}
             />
           )}
-          <Box ml={isSameUser ? 10 : 2}>
+          <Box ml={isSameUser ? 12 : 3}>
             <Text fontSize={12} display={isSameUser ? 'none' : 'block'}>
               {user ? user.name : ''}
             </Text>

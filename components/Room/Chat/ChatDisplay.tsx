@@ -10,12 +10,22 @@ interface Props {
 const ChatDisplay = ({ messages }: Props) => {
   const { colorMode } = useColorMode();
 
+  let lastMessage = 0;
   return (
     <Box flex={1} overflowY='scroll' h='100%' pb={6}>
       {messages &&
-        messages.map((message, index) => (
-          <ChatMessageDisplay message={message} index={index} />
-        ))}
+        messages.map((message, index) => {
+          const id = lastMessage;
+          lastMessage = message.user_id;
+
+          return (
+            <ChatMessageDisplay
+              message={message}
+              previousUser={id}
+              index={index}
+            />
+          );
+        })}
     </Box>
   );
 };

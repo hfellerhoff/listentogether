@@ -15,6 +15,10 @@ const useMessages = (roomID: number) => {
   const table = 'messages';
   const whereColumn = 'room_id';
 
+  const scrollToBottom = () => {
+    window.scrollTo(0, document.body.scrollHeight);
+  };
+
   useEffect(() => {
     if (roomID < 0) return;
 
@@ -35,6 +39,8 @@ const useMessages = (roomID: number) => {
 
         setDictionary(updatedDictionary);
       }
+
+      scrollToBottom();
     };
 
     fetchData();
@@ -60,7 +66,7 @@ const useMessages = (roomID: number) => {
               };
             });
 
-            return;
+            break;
           case 'DELETE':
             setDictionary((d) => {
               if (!d[payload.old.id]) return d;
@@ -68,8 +74,10 @@ const useMessages = (roomID: number) => {
               delete d[payload.old.id];
               return { ...d };
             });
-            return;
+            break;
         }
+
+        scrollToBottom();
       })
       .subscribe();
 
