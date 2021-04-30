@@ -34,15 +34,15 @@ export default async function handler(req, res) {
     if (otherSongs.body.length > 0) {
       const nextSong = otherSongs.body[0] as Song;
 
-      await supabase
+      const res = await supabase
         .from('songs')
         .update({
           updatedAt: 'now()',
         })
-        .eq('song_id', nextSong.id);
-    }
+        .eq('id', nextSong.id);
 
-    console.log('Successfully skipped song.');
+      console.log(res);
+    }
 
     res.end();
     return;
