@@ -56,7 +56,7 @@ export default async function handler(req, res) {
 
   const updatedAtMS = song ? Date.parse(song.updatedAt).valueOf() : 0;
   const x = new Date();
-  let now = x.getTime();
+  let now = x.valueOf();
 
   // Incredibly patchwork fix to an incredibly annoying problem
   if (now - updatedAtMS > 10000000) now -= x.getTimezoneOffset() * 60 * 1000;
