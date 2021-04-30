@@ -71,7 +71,7 @@ export const RoomPage = (props: Props) => {
             w={['100%', '100%', '350px', '350px']}
             h='100%'
           >
-            <Tabs
+            <Tabs 
               pt={4}
               flex={1}
               variant='solid-rounded'

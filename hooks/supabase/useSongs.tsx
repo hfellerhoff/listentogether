@@ -54,17 +54,17 @@ const useSongs = (roomID: number) => {
             if (payload.new[whereColumn] !== roomID) return;
 
             // ==== LOGIC FOR MULTIPLE SONGS ====
-            // setDictionary((d) => {
-            //   return {
-            //     ...d,
-            //     [payload.new['id']]: payload.new,
-            //   };
-            // });
+            setDictionary((d) => {
+              return {
+                ...d,
+                [payload.new['id']]: payload.new,
+              };
+            });
 
             // ==== LOGIC FOR SINGLE SONG ====
-            setDictionary({
-              [payload.new['id']]: payload.new,
-            });
+            // setDictionary({
+            //   [payload.new['id']]: payload.new,
+            // });
             return;
           case 'DELETE':
             setDictionary((d) => {
