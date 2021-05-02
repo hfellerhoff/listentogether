@@ -16,7 +16,6 @@ const useSpotifyHandlePlayback = (room: Room, song: Song) => {
 
   const progress = useSongProgress(song);
   const track = useSpotifyTrack(song);
-  console.log('progress: ' + progress);
 
   useEffect(() => {
     const getTargetDevice = async () => {
@@ -33,6 +32,14 @@ const useSpotifyHandlePlayback = (room: Room, song: Song) => {
       }
     };
 
+    const getPlaybackState = async () => {
+      const playback = await spotifyApi.getMyCurrentPlaybackState();
+      if (playback.repeat_state !== 'off') {
+        spotifyApi.setRepeat('off');
+      }
+      return playback;
+    };
+
     const updatePlayback = async () => {
       // If not linked, don't update playback
       if (!playbackConfiguration.linked) return;
@@ -45,9 +52,9 @@ const useSpotifyHandlePlayback = (room: Room, song: Song) => {
         if (!targetDeviceID) return;
 
         // Current Spotify playback state (is playing? what song? etc.)
-        const playback = await spotifyApi.getMyCurrentPlaybackState();
+        const playback = await getPlaybackState();
 
-        if (song && progress >= 0) {
+        if (song && progress >= 0 && track && song.spotifyUri === track.uri) {
           // If there is playback information,
           if (playback) {
             // CLIENT: Something playing
@@ -60,22 +67,27 @@ const useSpotifyHandlePlayback = (room: Room, song: Song) => {
             // SERVER: Song playing
             else if (!song.isPaused) {
               //If song is finished and there is another song in the queue
-              console.log("time left: " + (track.duration_ms - progress))
-              if (track.duration_ms === progress) {
+              // console.log('time left: ' + (track.duration_ms - progress));
+              if (track.duration_ms <= progress) {
                 await fetch('/api/rooms/playback', {
                   method: 'POST',
                   body: JSON.stringify({
                     shouldSkip: true,
+                    isSkipAtEnd: true,
                     songId: song.id,
+                    track: {
+                      uri: track.uri,
+                      duration_ms: track.duration_ms,
+                    },
                   } as RoomPlaybackQuery),
                 });
               }
               // If the song is finished, do nothing
-              if (track.duration_ms - 1000 <= progress) return;
+              if (track.duration_ms <= progress) return;
 
               // If song playing on Spotify does not match the server's song,
               // play the server's song
-              if (playback.item.uri !== song.spotifyUri) {
+              if (!playback.item || playback.item.uri !== song.spotifyUri) {
                 // Recalculate progress when swapping songs to avoid playing
                 // in the middle of the song
                 const x = new Date();

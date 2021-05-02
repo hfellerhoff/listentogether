@@ -4,14 +4,23 @@ import supabase from '../../../util/supabase/index';
 
 export interface RoomPlaybackQuery {
   songId?: number;
+  track?: {
+    uri: string;
+    duration_ms: number;
+  };
   isPaused?: boolean;
   shouldSkip?: boolean;
+  isSkipAtEnd?: boolean;
 }
 
 export default async function handler(req, res) {
-  const { songId, isPaused, shouldSkip }: RoomPlaybackQuery = JSON.parse(
-    req.body
-  );
+  const {
+    songId,
+    track,
+    isPaused,
+    shouldSkip,
+    isSkipAtEnd,
+  }: RoomPlaybackQuery = JSON.parse(req.body);
 
   const { data: songs } = await supabase
     .from('songs')
@@ -20,14 +29,42 @@ export default async function handler(req, res) {
 
   const song: Song = songs[0];
 
+  if (song.progress === undefined) {
+    res.end();
+    return;
+  }
+
+  // CALCULATE PROGRESS
+  const updatedAtMS = song ? Date.parse(song.updatedAt).valueOf() : 0;
+  const x = new Date();
+  let now = x.valueOf();
+
+  // Incredibly patchwork fix to an incredibly annoying problem
+  if (now - updatedAtMS > 10000000) now -= x.getTimezoneOffset() * 60 * 1000;
+  if (now - updatedAtMS < -10000000) now += x.getTimezoneOffset() * 60 * 1000;
+
+  const progress = now - updatedAtMS + song.progress;
+
   // SONG SKIPPING
   if (shouldSkip) {
-    const {error} = await supabase.from('songs').delete().eq('id', songId);
-    if (error) return;
-    
+    if (!track || song.spotifyUri !== track.uri) {
+      res.end();
+      return;
+    }
+
+    // If the client thinks the song is over but the server doesn't, don't skip
+    if (isSkipAtEnd && track.duration_ms > progress) {
+      res.end();
+      return;
+    }
+
+    await supabase.from('room_song').delete().eq('song_id', songId);
+    await supabase.from('songs').delete().eq('id', songId);
+
     const otherSongs = await supabase
       .from('songs')
       .select('*')
+      .eq('room_id', song.room_id)
       .range(0, 1);
 
     if (otherSongs.body.length > 0) {
@@ -48,20 +85,6 @@ export default async function handler(req, res) {
   }
 
   // PLAYBACK TOGGLING (PAUSE / PLAY)
-  if (song.progress === undefined) {
-    res.end();
-    return;
-  }
-
-  const updatedAtMS = song ? Date.parse(song.updatedAt).valueOf() : 0;
-  const x = new Date();
-  let now = x.valueOf();
-
-  // Incredibly patchwork fix to an incredibly annoying problem
-  if (now - updatedAtMS > 10000000) now -= x.getTimezoneOffset() * 60 * 1000;
-  if (now - updatedAtMS < -10000000) now += x.getTimezoneOffset() * 60 * 1000;
-
-  const progress = now - updatedAtMS + song.progress;
 
   // Update song playback
   try {

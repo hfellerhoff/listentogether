@@ -6,6 +6,7 @@ import { spotifyAtom } from '../state/spotifyAtom';
 import Song from '../models/Song';
 import { RoomPlaybackQuery } from '../pages/api/rooms/playback';
 import { playbackConfigurationAtom } from '../state/playbackConfigurationAtom';
+import useSpotifyTrack from '../hooks/spotify/useSpotifyTrack';
 
 interface Props {
   song: Song;
@@ -13,12 +14,12 @@ interface Props {
 }
 
 const SongControl = ({ song, progress }: Props) => {
-  const [spotifyApi] = useAtom(spotifyAtom);
   const [playbackConfiguration, setPlaybackConfiguration] = useAtom(
     playbackConfigurationAtom
   );
   const [changeToIsPaused, setChangeToIsPaused] = useState(true);
   const [isSkippingSong, setIsSkippingSong] = useState(false);
+  const track = useSpotifyTrack(song);
 
   const isPaused = song ? song.isPaused : false;
 
@@ -41,6 +42,10 @@ const SongControl = ({ song, progress }: Props) => {
       body: JSON.stringify({
         shouldSkip: true,
         songId: song.id,
+        track: {
+          uri: track.uri,
+          duration_ms: track.duration_ms,
+        },
       } as RoomPlaybackQuery),
     });
 

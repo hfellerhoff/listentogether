@@ -11,13 +11,19 @@ const useSpotifyTrack = (song: Song) => {
     spotifyTrack,
     setSpotifyTrack,
   ] = useState<SpotifyApi.SingleTrackResponse>();
+  const [previousSongID, setPreviousSongID] = useState(0);
 
   useEffect(() => {
     if (song && song.spotifyUri) {
-      spotifyApi.setAccessToken(accessToken);
-      spotifyApi
-        .getTrack(song.spotifyUri.split(':')[2])
-        .then((res) => setSpotifyTrack(res));
+      if (previousSongID === song.id) {
+      } else {
+        setSpotifyTrack(undefined);
+        setPreviousSongID(song.id);
+        spotifyApi.setAccessToken(accessToken);
+        spotifyApi
+          .getTrack(song.spotifyUri.split(':')[2])
+          .then((res) => setSpotifyTrack(res));
+      }
     }
   }, [song]);
 
