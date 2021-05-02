@@ -9,6 +9,7 @@ import {
   Text,
   useClipboard,
   Spinner,
+  useColorMode,
 } from '@chakra-ui/react';
 import useBackgroundColor from '../../hooks/useBackgroundColor';
 import { FiLogOut, FiCopy } from 'react-icons/fi';
@@ -34,7 +35,10 @@ const DashboardBottomBar = () => {
         pt={4}
         pb={8}
         px={4}
+        w='100%'
         bg={foregroundColor}
+        position='absolute'
+        bottom={0}
         align='center'
         justify='center'
         display={['none', 'none', 'flex', 'flex']}

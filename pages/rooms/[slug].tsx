@@ -34,6 +34,7 @@ import useRoomSongs from '../../hooks/rooms/useQueue';
 import useSpotifyHandlePlayback from '../../hooks/spotify/useSpotifyHandlePlayback';
 import useQueue from '../../hooks/rooms/useQueue';
 import QueuedSongDisplay from '../../components/Room/QueuedSongDisplay';
+import useGradientsFromImageRef from '../../hooks/useGradientsFromImageRef';
 
 interface Props {}
 
@@ -71,7 +72,7 @@ export const RoomPage = (props: Props) => {
             w={['100%', '100%', '350px', '350px']}
             h='100%'
           >
-            <Tabs 
+            <Tabs
               pt={4}
               flex={1}
               variant='solid-rounded'
@@ -79,6 +80,7 @@ export const RoomPage = (props: Props) => {
               display='flex'
               flexDirection='column'
               size='md'
+              position='relative'
             >
               <Flex
                 align='center'
@@ -119,7 +121,13 @@ export const RoomPage = (props: Props) => {
               <></>
             )} */}
               <TabPanels flex={1}>
-                <TabPanel px={4}>
+                <TabPanel
+                  px={4}
+                  overflowY='scroll'
+                  position='absolute'
+                  top={16}
+                  bottom={32}
+                >
                   <Stack>
                     {queue.map((song) => (
                       <QueuedSongDisplay song={song} key={song.id} />
