@@ -22,13 +22,12 @@ export default async function handler(req, res) {
 
   // SONG SKIPPING
   if (shouldSkip) {
-    await supabase.from('room_song').delete().eq('song_id', songId);
-    await supabase.from('songs').delete().eq('id', songId);
-
+    const {error} = await supabase.from('songs').delete().eq('id', songId);
+    if (error) return;
+    
     const otherSongs = await supabase
       .from('songs')
       .select('*')
-      .eq('room_id', song.room_id)
       .range(0, 1);
 
     if (otherSongs.body.length > 0) {

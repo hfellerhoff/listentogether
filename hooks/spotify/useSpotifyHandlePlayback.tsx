@@ -2,6 +2,7 @@ import { useAtom } from 'jotai';
 import { useEffect } from 'react';
 import Room from '../../models/Room';
 import Song from '../../models/Song';
+import { RoomPlaybackQuery } from '../../pages/api/rooms/playback';
 import { playbackConfigurationAtom } from '../../state/playbackConfigurationAtom';
 import { spotifyAtom } from '../../state/spotifyAtom';
 import useSongProgress from '../rooms/useSongProgress';
@@ -15,6 +16,7 @@ const useSpotifyHandlePlayback = (room: Room, song: Song) => {
 
   const progress = useSongProgress(song);
   const track = useSpotifyTrack(song);
+  console.log('progress: ' + progress);
 
   useEffect(() => {
     const getTargetDevice = async () => {
@@ -57,6 +59,17 @@ const useSpotifyHandlePlayback = (room: Room, song: Song) => {
 
             // SERVER: Song playing
             else if (!song.isPaused) {
+              //If song is finished and there is another song in the queue
+              console.log("time left: " + (track.duration_ms - progress))
+              if (track.duration_ms === progress) {
+                await fetch('/api/rooms/playback', {
+                  method: 'POST',
+                  body: JSON.stringify({
+                    shouldSkip: true,
+                    songId: song.id,
+                  } as RoomPlaybackQuery),
+                });
+              }
               // If the song is finished, do nothing
               if (track.duration_ms - 1000 <= progress) return;
 
