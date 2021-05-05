@@ -4,6 +4,7 @@ import {
   Center,
   Flex,
   Heading,
+  Link,
   Stack,
   Text,
   useColorMode,
@@ -12,7 +13,7 @@ import Head from 'next/head';
 import Image from 'next/image';
 import React from 'react';
 import TextLoop from 'react-text-loop';
-import { FaSpotify } from 'react-icons/fa';
+import { FaExternalLinkAlt, FaSpotify } from 'react-icons/fa';
 import ColorModeButton from '../components/ColorModeButton';
 import Layout from '../components/Layout';
 import useSpotifyAuthentication from '../hooks/spotify/useSpotifyAuthentication';
@@ -67,7 +68,11 @@ export default function Home() {
               music in sync with each other.
             </Text>
           </Stack>
-          <Flex>
+          <Flex
+            align={['flex-start', 'flex-end', 'flex-end']}
+            justify='space-between'
+            direction={['column', 'row', 'row']}
+          >
             <a href={BASE_URL + '/api/spotify/login'}>
               <Button
                 variant='solid'
@@ -79,6 +84,11 @@ export default function Home() {
                 Login with Spotify
               </Button>
             </a>
+            <Link href='https://old.listentogether.app' mt={[4, 0, 0]}>
+              <Button rightIcon={<FaExternalLinkAlt />} variant='link'>
+                Previous Version
+              </Button>
+            </Link>
           </Flex>
         </Flex>
       </Layout>
