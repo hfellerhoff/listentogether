@@ -57,11 +57,11 @@ const DashboardBottomBar = () => {
               >
                 {room.name}
               </Heading>
-              <Tooltip label='Favorite room' aria-label='Favorite room'>
+              {/* <Tooltip label='Favorite room' aria-label='Favorite room'>
                 <Box ml={2}>
                   <FaRegHeart />
                 </Box>
-              </Tooltip>
+              </Tooltip> */}
             </Flex>
             <Flex>
               <Link href='/dashboard'>

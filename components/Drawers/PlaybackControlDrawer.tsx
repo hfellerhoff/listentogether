@@ -18,6 +18,7 @@ import { useAtom } from 'jotai';
 import { Modal, modalAtom } from '../../state/modalAtom';
 import { userAtom } from '../../state/userAtom';
 import { FaChevronDown } from 'react-icons/fa';
+import ColorModeButton from '../ColorModeButton';
 
 interface Props {}
 
@@ -53,9 +54,7 @@ const PlaybackControlDrawer = (props: Props) => {
                   src={user ? user.imageSrc || undefined : undefined}
                 />
               </Button>
-              <Button variant='ghost' onClick={toggleColorMode}>
-                <Icon name={colorMode === 'light' ? 'moon' : 'sun'} />
-              </Button>
+              <ColorModeButton />
             </Flex>
             <Heading flex={1} size='md' mt={8} mb={2}>
               Song Playback

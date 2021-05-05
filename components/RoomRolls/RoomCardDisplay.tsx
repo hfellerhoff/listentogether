@@ -97,8 +97,8 @@ const RoomCardDisplay = ({ room }: Props) => {
           <Text>Be the first to play something!</Text>
         </Box>
       )}
-      <Box height={12} />
-      <Flex
+      {/* <Box height={4} /> */}
+      {/*<Flex
         align='center'
         justify='center'
         position='absolute'
@@ -139,7 +139,7 @@ const RoomCardDisplay = ({ room }: Props) => {
             </Text>
           </Flex>
         </Tooltip>
-      </Flex>
+      </Flex> */}
     </Box>
   );
 };
