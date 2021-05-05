@@ -84,11 +84,11 @@ export default function Home() {
                 Login with Spotify
               </Button>
             </a>
-            <Link href='https://old.listentogether.app' mt={[4, 0, 0]}>
+            {/* <Link href='https://old.listentogether.app' mt={[4, 0, 0]}>
               <Button rightIcon={<FaExternalLinkAlt />} variant='link'>
                 Previous Version
               </Button>
-            </Link>
+            </Link> */}
           </Flex>
         </Flex>
       </Layout>
