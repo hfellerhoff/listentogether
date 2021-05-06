@@ -21,9 +21,9 @@ Listen Together is built with Next.js and Supabase (an open-source Google Fireba
    - Create a Supabase project: https://app.supabase.io/
        1. Create a new Supabase project.
        2. In the left sidebar navigation, go to `Settings > API`.
-       3. Under API Keys, copy the `anon` `public` key and add it to your `.env` file. DO NOT use the `secret` key – this will give any user Read/Write access to your entire database.
-       4. Create the required database tables.
-            > *Note: Further table creation instructions are still in progress. 🚧* 
+          1. Under API Keys, copy the `anon` `public` key and add it to your `.env` file. DO NOT use the `secret` key – this will give any user Read/Write access to your entire database.
+       3. In the left sidebar navigation, go to `SQL`.
+          1. Copy the SQL from the repository's `DATABASE_INIT.sql` file, paste it in the query editor, and run the query to create the required database tables. *Note: This is WIP. Please add a GitHub issues if you run into issues with this command. 🚧* 
    - Create a Spotify app: https://developer.spotify.com/dashboard/login
        1. Log in, create an app, and continue to the app dashboard.
        2. Copy the displayed **Client ID** and add it to your `.env` file.
