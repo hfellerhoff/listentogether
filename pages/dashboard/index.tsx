@@ -12,7 +12,7 @@ const Dashboard = (props: Props) => {
   return (
     <Layout>
       <Head>
-        <title>Dashboard / Listen Together</title>
+        <title>Dashboard | Listen Together</title>
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <Box minH='100vh'>
