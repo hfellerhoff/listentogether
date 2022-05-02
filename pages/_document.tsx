@@ -11,13 +11,12 @@ class MyDocument extends Document {
       <Html>
         <Head>
           {process.env.VERCEL_ENV === 'production' ? (
-            <>
-              <script
-                async
-                defer
-                src='https://scripts.simpleanalyticscdn.com/latest.js'
-              ></script>
-            </>
+            <script
+              async
+              defer
+              data-website-id='bdf79312-c4cd-4783-abb0-d71bbcf4c596'
+              src='https://umami.henryfellerhoff.com/umami.js'
+            ></script>
           ) : (
             <></>
           )}
