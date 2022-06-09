@@ -14,7 +14,7 @@ const ColorModeButton = ({ absolute }: Props) => {
   const handleColorMode = () => {
     toggleColorMode();
 
-    const updatedTheme = theme === 'light' ? 'dark' : 'light';
+    const updatedTheme = colorMode === 'light' ? 'dark' : 'light';
     setTheme(updatedTheme);
   };
 

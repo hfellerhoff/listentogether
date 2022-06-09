@@ -105,7 +105,7 @@ const RoomTitle = styled('h1', {
 
 const FixedButtons = ({ room, song }: Props) => {
   const [, setModal] = useAtom(modalAtom);
-  const { toggleColorMode } = useColorMode();
+  const { colorMode, toggleColorMode } = useColorMode();
   const { theme, setTheme } = useTheme();
   const [sidepanelStatus, setSidepanelStatus] = useAtom(sidepanelAtom);
 
@@ -116,7 +116,7 @@ const FixedButtons = ({ room, song }: Props) => {
   const handleColorMode = () => {
     toggleColorMode();
 
-    const updatedTheme = theme === 'light' ? 'dark' : 'light';
+    const updatedTheme = colorMode === 'light' ? 'dark' : 'light';
     setTheme(updatedTheme);
   };
   const toggleChatVisibility = () => {
