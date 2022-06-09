@@ -21,6 +21,7 @@ import SongProgress from '../../components/SongProgress';
 import Song from '../../models/Song';
 import FixedPlaybackButtons from '../../components/Room/FixedPlaybackButtons';
 import { sidepanelAtom } from '../../state/sidepanelAtom';
+import useSpotifyWebPlayback from '../../hooks/spotify/useSpotifyWebPlayback';
 
 interface Props {}
 
@@ -107,6 +108,7 @@ const AlbumArt = ({
   maxZ: number;
 }) => {
   const track = useSpotifyTrack(song);
+  useSpotifyWebPlayback();
 
   const zIndex = maxZ - position;
 

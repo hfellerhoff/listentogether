@@ -1,5 +1,4 @@
 import { Box, Flex, Heading, Stack, Text, Image } from '@chakra-ui/react';
-import { Spinner } from '@chakra-ui/spinner';
 import React from 'react';
 import useSpotifyTrack from '../../hooks/spotify/useSpotifyTrack';
 import Song from '../../models/Song';
