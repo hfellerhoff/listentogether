@@ -7,11 +7,13 @@ import { userAtom } from '../state/userAtom';
 import User from '../models/User';
 import { useRouter } from 'next/router';
 import supabase from '../util/supabase';
+import { isPremiumAtom } from '../state/isPremiumAtom';
 
 const useUserMonitor = () => {
   const router = useRouter();
   const [spotifyAPI, _] = useAtom(spotifyAtom);
   const [user, setUser] = useAtom(userAtom);
+  const [, setIsPremium] = useAtom(isPremiumAtom);
   const { isLoading, accessToken } = useSpotifyAuthentication();
 
   useEffect(() => {
@@ -20,6 +22,8 @@ const useUserMonitor = () => {
       try {
         spotifyAPI.setAccessToken(accessToken);
         const spotifyUser = await spotifyAPI.getMe();
+
+        setIsPremium(spotifyUser.product === 'premium');
 
         let { data: users, error } = await supabase
           .from('users')

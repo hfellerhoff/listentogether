@@ -1,4 +1,4 @@
-import { Input, useToast } from '@chakra-ui/react';
+import { Input } from '@chakra-ui/react';
 import { useAtom } from 'jotai';
 import { roomAtom } from '../../../state/roomAtom';
 import { userAtom } from '../../../state/userAtom';
@@ -27,7 +27,6 @@ const ChatInput = ({}: Props) => {
   } = useForm();
   const [room] = useAtom(roomAtom);
   const [user] = useAtom(userAtom);
-  const toast = useToast();
 
   const onSubmit = async (data) => {
     const { message } = data;
@@ -36,12 +35,6 @@ const ChatInput = ({}: Props) => {
       await fetch('/api/rooms/chat', {
         method: 'POST',
         body: JSON.stringify({ message, room_id: room.id, user_id: user.id }),
-      });
-
-      toast({
-        title: `Message "${message}" sent!`,
-        status: 'success',
-        position: 'bottom-right',
       });
     } catch {
       console.error('Error sending chat message.');
