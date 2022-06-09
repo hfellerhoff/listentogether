@@ -82,6 +82,7 @@ const useSpotifyHandlePlayback = (room: Room, song: Song) => {
                   } as RoomPlaybackQuery),
                 });
               }
+
               // If the song is finished, do nothing
               if (track.duration_ms <= progress) return;
 

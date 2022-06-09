@@ -5,8 +5,12 @@ const useSpotifyWebPlayback = () => {
   const { accessToken } = useSpotifyAuthentication();
 
   useEffect(() => {
+    console.log('Attempting to create Spotify Web Player...', window);
+
     // @ts-ignore
     window.onSpotifyWebPlaybackSDKReady = () => {
+      console.log('Spotify Web Playback SDK ready.');
+
       // @ts-ignore
       const player = new Spotify.Player({
         name: 'Listen Together Web Application',
@@ -47,7 +51,7 @@ const useSpotifyWebPlayback = () => {
       // Connect to the player!
       player.connect();
     };
-  }, []);
+  }, [accessToken]);
 };
 
 export default useSpotifyWebPlayback;

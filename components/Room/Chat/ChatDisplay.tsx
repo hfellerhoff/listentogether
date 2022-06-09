@@ -3,17 +3,18 @@ import { Box, Flex, Avatar, Text, useColorMode } from '@chakra-ui/react';
 import Message, { MessageType } from '../../../models/Message';
 import ChatMessageDisplay from './ChatMessageDisplay';
 import AlwaysScrollToBottom from './AlwaysScrollToBottom';
+import { styled } from '@stitches/react';
 
 interface Props {
   messages: Message[];
 }
 
-const ChatDisplay = ({ messages }: Props) => {
-  const { colorMode } = useColorMode();
+const Container = styled('div', {});
 
+const ChatDisplay = ({ messages }: Props) => {
   let lastMessage = 0;
   return (
-    <Box flex={1} overflowY='scroll' h='100%' pb={6}>
+    <Container>
       {messages &&
         messages.map((message, index) => {
           const id = lastMessage;
@@ -29,7 +30,7 @@ const ChatDisplay = ({ messages }: Props) => {
           );
         })}
       <AlwaysScrollToBottom />
-    </Box>
+    </Container>
   );
 };
 

@@ -29,7 +29,7 @@ export default async function handler(req, res) {
 
   const song: Song = songs[0];
 
-  if (song.progress === undefined) {
+  if (song.progress === undefined || song.progress === null) {
     res.end();
     return;
   }
@@ -51,7 +51,6 @@ export default async function handler(req, res) {
       res.end();
       return;
     }
-
     // If the client thinks the song is over but the server doesn't, don't skip
     if (isSkipAtEnd && track.duration_ms > progress) {
       res.end();

@@ -1,54 +1,137 @@
-import React, { useEffect, useState } from 'react';
-import {
-  Flex,
-  Grid,
-  Button,
-  Icon,
-  TabList,
-  Tab,
-  TabPanel,
-  TabPanels,
-  Tabs,
-  Tooltip,
-  Box,
-  Stack,
-  Text,
-} from '@chakra-ui/react';
 import ChatComponent from '../../components/Room/Chat/ChatComponent';
-import useBackgroundColor from '../../hooks/useBackgroundColor';
-import PlaybackHeader from '../../components/PlaybackHeader/PlaybackHeader';
-import DashboardBottomBar from '../../components/Room/DashboardBottomBar';
-import ListenerPanel from '../../components/Room/Listeners/ListenerPanel';
 import { useAtom } from 'jotai';
-import { Modal, modalAtom } from '../../state/modalAtom';
 import { useRouter } from 'next/router';
-import { FiPlus } from 'react-icons/fi';
 import Layout from '../../components/Layout';
 import Head from 'next/head';
-import supabase from '../../util/supabase';
-import { roomAtom } from '../../state/roomAtom';
-import useRoomSongRealtime from '../../hooks/rooms/useRoomSongRealtime';
 import useMonitorRoom from '../../hooks/rooms/useMonitorRoom';
-import useSpotifyTrack from '../../hooks/spotify/useSpotifyTrack';
-import useRoomSongs from '../../hooks/rooms/useQueue';
 import useSpotifyHandlePlayback from '../../hooks/spotify/useSpotifyHandlePlayback';
 import useQueue from '../../hooks/rooms/useQueue';
-import QueuedSongDisplay from '../../components/Room/QueuedSongDisplay';
 import useGradientsFromImageRef from '../../hooks/useGradientsFromImageRef';
+import useSpotifyTrack from '../../hooks/spotify/useSpotifyTrack';
+import { css, styled } from '@stitches/react';
+import FixedButtons from '../../components/Room/FixedButtons';
+import Song from '../../models/Song';
+import FixedPlaybackButtons from '../../components/Room/FixedPlaybackButtons';
+import { sidepanelAtom } from '../../state/sidepanelAtom';
+import { neutral } from '../../stitches.config';
 
 interface Props {}
 
+const PageLayout = styled('div', {
+  height: '100vh',
+  width: '100vw',
+  overflow: 'hidden',
+  display: 'flex',
+});
+
+const AlbumBackground = styled('div', {
+  height: '100vh',
+  width: '100%',
+  flex: 1,
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  position: 'relative',
+  background: `linear-gradient(to bottom right, ${neutral.neutral9}, ${neutral.neutral10})`,
+
+  transition: 'all 0.3s',
+  variants: {
+    isFullScreen: {
+      true: {
+        width: '100vw',
+      },
+      false: {
+        width: '100%',
+      },
+    },
+  },
+});
+
+const albumArtCSS = css({
+  boxShadow: '0px 6px 12px 0px rgba(0, 0, 0, 0.18)',
+  position: 'absolute',
+  inset: '0 0 0 0',
+  pointerEvents: 'none',
+});
+
+const AlbumArtContainer = styled('div', {
+  position: 'relative',
+  height: '50vh',
+  width: '50vh',
+});
+
+const AlbumArtPlaceholder = styled('div', {
+  ...albumArtCSS,
+  background: 'linear-gradient(to bottom right, $neutral2, $neutral3)',
+});
+
+const AlbumArtImage = styled('img', {
+  ...albumArtCSS,
+});
+
+const AlbumTitle = styled('h1', {
+  color: 'white',
+  fontSize: '1.5rem',
+  fontWeight: '700',
+  marginTop: '1rem',
+  textShadow: '0px 2px #2F2F2F',
+});
+
+const AlbumArtist = styled('p', {
+  color: 'white',
+  textShadow: '0px 2px #2F2F2F',
+  lineHeight: 0,
+  marginTop: '1rem',
+});
+
+const AlbumArt = ({
+  song,
+  position,
+  maxZ,
+}: {
+  song: Song;
+  position: any;
+  maxZ: number;
+}) => {
+  const track = useSpotifyTrack(song);
+
+  const zIndex = maxZ - position;
+
+  const size = 50 - position * 5;
+  const styles = css({
+    height: `${size}vh`,
+    width: `${size}vh`,
+    zIndex,
+    transform: `translate(${position * 2.5}vh, -${position}rem)`,
+    filter: `contrast(${1 - position * 0.2})`,
+  });
+
+  if (position >= 5) return <></>;
+  if (!track) return <AlbumArtPlaceholder className={styles()} />;
+  return <AlbumArtImage src={track.album.images[0].url} className={styles()} />;
+};
+
 export const RoomPage = (props: Props) => {
   const router = useRouter();
-
-  const { foregroundColor, backgroundColor } = useBackgroundColor();
-  const [, setModal] = useAtom(modalAtom);
-
   const room = useMonitorRoom(router.query.slug as string);
+  const [sidepanelStatus] = useAtom(sidepanelAtom);
   const queue = useQueue(room.id);
   const activeSong = queue ? queue[0] || undefined : undefined;
 
+  const track = useSpotifyTrack(activeSong);
+  const { normalGradient } = useGradientsFromImageRef(
+    track ? track.album.images[0].url : undefined
+  );
+  const backgroundStyles = !!track
+    ? {
+        style: { background: normalGradient },
+      }
+    : {};
+
   useSpotifyHandlePlayback(room, activeSong);
+
+  const isSongInQueue = track && activeSong;
 
   return (
     <Layout>
@@ -56,107 +139,37 @@ export const RoomPage = (props: Props) => {
         <title>{room.name || 'Room'} | Listen Together</title>
         <link rel='icon' href='/favicon.ico' />
       </Head>
-      <Box h='100vh'>
-        <PlaybackHeader room={room} song={activeSong} />
-        <Grid
-          gridTemplateColumns={['1fr', '1fr', '350px 1fr', '350px 1fr']}
-          flex={1}
-          bg={backgroundColor}
-          position='relative'
+
+      <PageLayout>
+        <AlbumBackground
+          {...backgroundStyles}
+          isFullScreen={!sidepanelStatus.isRightOpen}
         >
-          <Flex
-            bg={foregroundColor}
-            pt={24}
-            position='fixed'
-            left={0}
-            w={['100%', '100%', '350px', '350px']}
-            h='100%'
-          >
-            <Tabs
-              pt={4}
-              flex={1}
-              variant='solid-rounded'
-              colorScheme='green'
-              display='flex'
-              flexDirection='column'
-              size='md'
-              position='relative'
-            >
-              <Flex
-                align='center'
-                justify='space-between'
-                mb={4}
-                px={4}
-                direction='row'
-              >
-                <TabList>
-                  <Tab>Queue</Tab>
-                  {/* <Tab ml={1}>Listeners</Tab> */}
-                  <Tab ml={1} display={['block', 'block', 'none', 'none']}>
-                    Chat
-                  </Tab>
-                </TabList>
-                <Tooltip
-                  placement='right'
-                  label='Queue Song'
-                  aria-label='Queue Song'
-                  hasArrow
-                >
-                  <Button
-                    variant='ghost'
-                    onClick={() => setModal(Modal.QueueSong)}
-                    display={[
-                      'none',
-                      'inline-block',
-                      'inline-block',
-                      'inline-block',
-                    ]}
-                    isDisabled={!room.name}
-                  >
-                    <FiPlus />
-                  </Button>
-                </Tooltip>
-              </Flex>
-              {/* ) : (
-              <></>
-            )} */}
-              <TabPanels flex={1}>
-                <TabPanel
-                  px={4}
-                  overflowY='scroll'
-                  position='absolute'
-                  top={16}
-                  bottom={32}
-                >
-                  <Stack>
-                    {queue.map((song) => (
-                      <QueuedSongDisplay song={song} key={song.id} />
-                    ))}
-                  </Stack>
-                </TabPanel>
-                {/* <TabPanel px={4}></TabPanel> */}
-                <TabPanel
-                  overflowY='scroll'
-                  h='100%'
-                  maxH='75vh'
-                  bg={backgroundColor}
-                >
-                  <ChatComponent type='panel' />
-                </TabPanel>
-              </TabPanels>
-              <DashboardBottomBar />
-            </Tabs>
-          </Flex>
-          <Box
-            gridColumn='2/3'
-            minH='100vh'
-            pt={24}
-            display={['none', 'none', 'block', 'block']}
-          >
-            <ChatComponent type='full' />
-          </Box>
-        </Grid>
-      </Box>
+          <FixedButtons room={room} song={activeSong} />
+          {isSongInQueue && (
+            <AlbumArtContainer>
+              <FixedPlaybackButtons song={activeSong} />
+              {queue.map((song, i) => (
+                <AlbumArt
+                  song={song}
+                  position={i}
+                  maxZ={queue.length}
+                  key={song.addedAt}
+                />
+              ))}
+            </AlbumArtContainer>
+          )}
+          <AlbumTitle>
+            {isSongInQueue ? track.name : 'Nothing is playing.'}
+          </AlbumTitle>
+          <AlbumArtist>
+            {isSongInQueue
+              ? track.artists[0].name
+              : 'Queue a song with the "+" icon in the top right!'}
+          </AlbumArtist>
+        </AlbumBackground>
+        <ChatComponent />
+      </PageLayout>
     </Layout>
   );
 };

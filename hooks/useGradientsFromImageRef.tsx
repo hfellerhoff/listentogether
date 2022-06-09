@@ -1,17 +1,18 @@
 import { useState, useEffect } from 'react';
 import Vibrant from 'node-vibrant';
 
-const useGradientsFromImageRef = (
-  // image: React.MutableRefObject<HTMLImageElement | undefined>
-  src: string | undefined
-) => {
+const useGradientsFromImageRef = (src: string | undefined) => {
   const [firstColor, setFirstColor] = useState([0, 0, 0]);
   const [secondColor, setSecondColor] = useState([0, 0, 0]);
 
   useEffect(() => {
     const getGradient = async () => {
-      const v = new Vibrant(src);
-      const palatte = await v.getPalette();
+      const palatte = await Vibrant.from(src)
+        .getPalette()
+        .catch((err) => console.error(err));
+
+      if (!palatte) return;
+
       setFirstColor(palatte.DarkMuted.rgb);
       setSecondColor(palatte.DarkVibrant.rgb);
     };

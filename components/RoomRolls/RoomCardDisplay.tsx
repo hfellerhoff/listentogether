@@ -30,6 +30,8 @@ const RoomCardDisplay = ({ room }: Props) => {
   );
 
   useEffect(() => {
+    if (!room) return;
+
     const fetchOwner = async () => {
       let { data: users, error } = await supabase
         .from('users')
@@ -37,6 +39,7 @@ const RoomCardDisplay = ({ room }: Props) => {
         .eq('id', room.owner_id)
         .range(0, 1);
 
+      if (!users) return;
       if (users.length > 0) setOwner(user[0]);
     };
 
@@ -44,6 +47,8 @@ const RoomCardDisplay = ({ room }: Props) => {
   }, [room]);
 
   useEffect(() => {
+    if (!room) return;
+
     const fetchSong = async () => {
       let { data: songs, error } = await supabase
         .from('songs')
@@ -52,7 +57,7 @@ const RoomCardDisplay = ({ room }: Props) => {
         .eq('room_id', room.id)
         .range(0, 1);
 
-      if (songs.length > 0) {
+      if (songs && songs.length > 0) {
         setSong(songs[0]);
       }
     };
