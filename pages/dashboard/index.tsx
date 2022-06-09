@@ -2,8 +2,10 @@ import { Box, Flex } from '@chakra-ui/react';
 import Head from 'next/head';
 import React from 'react';
 import DashboardWelcome from '../../components/Dashboard/DashboardWelcome';
+import JoinWithRoomCode from '../../components/Dashboard/JoinWithRoomCode';
 import Layout from '../../components/Layout';
 import PlaybackHeader from '../../components/PlaybackHeader/PlaybackHeader';
+import OwnerRoomRoll from '../../components/RoomRolls/OwnerRoomRoll';
 import PublicRoomRoll from '../../components/RoomRolls/PublicRoomRoll';
 
 interface Props {}
@@ -25,7 +27,8 @@ const Dashboard = (props: Props) => {
           margin='0 auto'
         >
           <DashboardWelcome />
-          {/* <DashboardFavoritedRooms rooms={rooms} isLoading={isLoading} /> */}
+          <JoinWithRoomCode />
+          <OwnerRoomRoll />
           <PublicRoomRoll />
         </Flex>
       </Box>

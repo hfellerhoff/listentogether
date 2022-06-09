@@ -1,5 +1,4 @@
 import { atom } from 'jotai';
-import Room from '../models/Room';
 
 type SidepanelAtom = {
   isLeftOpen: boolean;
@@ -7,8 +6,8 @@ type SidepanelAtom = {
 };
 
 export const SIDEPANEL_EMPTY: SidepanelAtom = {
-  isLeftOpen: true,
-  isRightOpen: true,
+  isLeftOpen: false,
+  isRightOpen: false,
 };
 
 export const sidepanelAtom = atom<SidepanelAtom>(SIDEPANEL_EMPTY);

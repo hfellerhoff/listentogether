@@ -29,6 +29,10 @@ const copyColors = (color: Record<string, string>, name: string) =>
     return copiedColors;
   }, {} as Record<string, string>);
 
+export const primary = copyColors(green, 'primary');
+export const error = copyColors(tomato, 'error');
+export const neutral = copyColors(sage, 'neutral');
+
 export const {
   theme: lightTheme,
   styled,
@@ -38,11 +42,11 @@ export const {
   theme: {
     colors: {
       // COLORS
-      ...copyColors(green, 'primary'),
-      ...copyColors(tomato, 'error'),
+      ...primary,
+      ...error,
 
       // GRAYSCALE
-      ...copyColors(sage, 'neutral'),
+      ...neutral,
     },
   },
 });

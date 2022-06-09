@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Room from '../../models/Room';
 import supabase from '../../util/supabase';
 import RoomCardDisplay from './RoomCardDisplay';
+import RoomRoll from './RoomRoll';
 import RoomRollLayout from './RoomRollLayout';
 
 interface Props {
@@ -16,13 +17,28 @@ const PublicRoomRoll = (props: Props) => {
 
   useEffect(() => {
     const fetchRooms = async () => {
-      let { data: rooms, error } = await supabase
-        .from('rooms')
-        .select('*')
-        .eq('isPublic', true);
+      let { data, error } = await supabase
+        .from('songs')
+        .select(
+          `
+          room_id,
+          rooms (
+            id,
+            name,
+            isPublic,
+            slug,
+            owner_id
+          )
+        `
+        )
+        .order('updatedAt', {
+          ascending: false,
+        })
+        .limit(30);
 
       if (!error) {
-        setRooms(rooms);
+        const parsedRooms = Object.values(data).map((d) => d.rooms);
+        setRooms(parsedRooms);
       } else console.error(error);
 
       setIsLoading(false);
@@ -31,17 +47,7 @@ const PublicRoomRoll = (props: Props) => {
     fetchRooms();
   }, []);
 
-  // rooms = rooms ? rooms.filter((room) => room.isPublic) : [];
-
-  if (isLoading) return <Spinner size='lg' />;
-
-  return (
-    <RoomRollLayout>
-      {rooms.map((room, index) => {
-        return <RoomCardDisplay room={room} key={index} />;
-      })}
-    </RoomRollLayout>
-  );
+  return <RoomRoll rooms={rooms} isLoading={isLoading} title='Public Rooms' />;
 };
 
 export default PublicRoomRoll;

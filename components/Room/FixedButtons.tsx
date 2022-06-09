@@ -7,12 +7,14 @@ import {
   MoonIcon,
   DoubleArrowRightIcon,
   ChatBubbleIcon,
+  CopyIcon,
+  CheckIcon,
 } from '@radix-ui/react-icons';
 import Link from 'next/link';
 import { useAtom } from 'jotai';
 import { Modal, modalAtom } from '../../state/modalAtom';
 import { useTheme } from 'next-themes';
-import { Tooltip, useColorMode } from '@chakra-ui/react';
+import { Tooltip, useClipboard, useColorMode } from '@chakra-ui/react';
 import Room from '../../models/Room';
 import SongProgress from '../SongProgress';
 import Song from '../../models/Song';
@@ -33,7 +35,7 @@ const FloatingContainer = styled('div', {
   borderRadius: 9999,
 
   alignItems: 'center',
-  justifyContent: 'center',
+  justifyContent: 'space-between',
   variants: {
     transparent: {
       true: {
@@ -107,6 +109,8 @@ const FixedButtons = ({ room, song }: Props) => {
   const { theme, setTheme } = useTheme();
   const [sidepanelStatus, setSidepanelStatus] = useAtom(sidepanelAtom);
 
+  const { hasCopied, onCopy } = useClipboard(room.slug);
+
   const handleQueue = () => setModal(Modal.QueueSong);
   const handleDevices = () => setModal(Modal.DeviceSelect);
   const handleColorMode = () => {
@@ -139,7 +143,30 @@ const FixedButtons = ({ room, song }: Props) => {
         </FloatingContainer>
       </Link>
       <FloatingContainer position='t'>
+        <Tooltip
+          label={hasCopied ? 'Copied!' : 'Copy room code'}
+          aria-label={hasCopied ? 'Copied!' : 'Copy room code'}
+          placement='bottom-start'
+          zIndex={8}
+        >
+          <CircularButton
+            onClick={onCopy}
+            aria-label={hasCopied ? 'Copied!' : 'Copy room code'}
+          >
+            {hasCopied ? <CheckIcon /> : <CopyIcon />}
+          </CircularButton>
+        </Tooltip>
         <RoomTitle>{room.name}</RoomTitle>
+        <Tooltip
+          label='Toggle theme'
+          aria-label='Toggle theme'
+          placement='bottom-end'
+          zIndex={8}
+        >
+          <CircularButton onClick={handleColorMode} aria-label='Toggle theme'>
+            {theme === 'light' ? <MoonIcon /> : <SunIcon />}
+          </CircularButton>
+        </Tooltip>
       </FloatingContainer>
       <FloatingContainer position='tr'>
         <Tooltip
@@ -171,18 +198,6 @@ const FixedButtons = ({ room, song }: Props) => {
       <FloatingContainer position='b'>
         <SongProgress song={song} />
       </FloatingContainer>
-      {/* <FloatingContainer position='br'>
-        <Tooltip
-          label='Toggle theme'
-          aria-label='Toggle theme'
-          placement='top-end'
-          zIndex={8}
-        >
-          <CircularButton onClick={handleColorMode} aria-label='Toggle theme'>
-            {theme === 'light' ? <MoonIcon /> : <SunIcon />}
-          </CircularButton>
-        </Tooltip>
-      </FloatingContainer> */}
       <FloatingContainer position='br'>
         <Tooltip
           label={sidepanelStatus.isRightOpen ? 'Close chat' : 'Open chat'}

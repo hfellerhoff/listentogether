@@ -1,27 +1,19 @@
 import ChatComponent from '../../components/Room/Chat/ChatComponent';
-import useBackgroundColor from '../../hooks/useBackgroundColor';
-import PlaybackHeader from '../../components/PlaybackHeader/PlaybackHeader';
-import DashboardBottomBar from '../../components/Room/DashboardBottomBar';
 import { useAtom } from 'jotai';
-import { Modal, modalAtom } from '../../state/modalAtom';
 import { useRouter } from 'next/router';
-import { FiPlus } from 'react-icons/fi';
 import Layout from '../../components/Layout';
 import Head from 'next/head';
 import useMonitorRoom from '../../hooks/rooms/useMonitorRoom';
 import useSpotifyHandlePlayback from '../../hooks/spotify/useSpotifyHandlePlayback';
 import useQueue from '../../hooks/rooms/useQueue';
-import QueuedSongDisplay from '../../components/Room/QueuedSongDisplay';
 import useGradientsFromImageRef from '../../hooks/useGradientsFromImageRef';
-import * as AspectRatio from '@radix-ui/react-aspect-ratio';
 import useSpotifyTrack from '../../hooks/spotify/useSpotifyTrack';
 import { css, styled } from '@stitches/react';
 import FixedButtons from '../../components/Room/FixedButtons';
-import SongProgress from '../../components/SongProgress';
 import Song from '../../models/Song';
 import FixedPlaybackButtons from '../../components/Room/FixedPlaybackButtons';
 import { sidepanelAtom } from '../../state/sidepanelAtom';
-import useSpotifyWebPlayback from '../../hooks/spotify/useSpotifyWebPlayback';
+import { neutral } from '../../stitches.config';
 
 interface Props {}
 
@@ -41,15 +33,10 @@ const AlbumBackground = styled('div', {
   alignItems: 'center',
   justifyContent: 'center',
   position: 'relative',
+  background: `linear-gradient(to bottom right, ${neutral.neutral9}, ${neutral.neutral10})`,
 
   transition: 'all 0.3s',
   variants: {
-    placeholder: {
-      true: {
-        background: 'linear-gradient(to bottom right, $neutral6, $neutral7',
-      },
-    },
-
     isFullScreen: {
       true: {
         width: '100vw',
@@ -108,7 +95,6 @@ const AlbumArt = ({
   maxZ: number;
 }) => {
   const track = useSpotifyTrack(song);
-  useSpotifyWebPlayback();
 
   const zIndex = maxZ - position;
 
@@ -156,7 +142,6 @@ export const RoomPage = (props: Props) => {
 
       <PageLayout>
         <AlbumBackground
-          placeholder={!track}
           {...backgroundStyles}
           isFullScreen={!sidepanelStatus.isRightOpen}
         >

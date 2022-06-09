@@ -12,8 +12,6 @@ interface Props {
 const Container = styled('div', {});
 
 const ChatDisplay = ({ messages }: Props) => {
-  const { colorMode } = useColorMode();
-
   let lastMessage = 0;
   return (
     <Container>
@@ -31,7 +29,7 @@ const ChatDisplay = ({ messages }: Props) => {
             />
           );
         })}
-      {/* <AlwaysScrollToBottom /> */}
+      <AlwaysScrollToBottom />
     </Container>
   );
 };

@@ -31,7 +31,9 @@ const SongProgress = ({ song }: Props) => {
   const progress = useSongProgress(song);
 
   const length = track ? track.duration_ms : 1;
-  const progressPercent = ((length - progress) / length) * 100;
+  let progressPercent = ((length - progress) / length) * 100;
+  if (progressPercent < 0) progressPercent = 0;
+  if (progressPercent > 100) progressPercent = 100;
 
   return (
     <StyledProgress value={progressPercent}>

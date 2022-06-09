@@ -57,7 +57,7 @@ const RoomCardDisplay = ({ room }: Props) => {
         .eq('room_id', room.id)
         .range(0, 1);
 
-      if (songs.length > 0) {
+      if (songs && songs.length > 0) {
         setSong(songs[0]);
       }
     };
