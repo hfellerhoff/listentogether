@@ -1,15 +1,9 @@
-import { Spinner } from '@chakra-ui/react';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Room from '../../models/Room';
 import supabase from '../../util/supabase';
-import RoomCardDisplay from './RoomCardDisplay';
 import RoomRoll from './RoomRoll';
-import RoomRollLayout from './RoomRollLayout';
 
-interface Props {
-  // rooms: Room[] | undefined;
-  // isLoading?: boolean;
-}
+interface Props {}
 
 const PublicRoomRoll = (props: Props) => {
   const [isLoading, setIsLoading] = useState(true);

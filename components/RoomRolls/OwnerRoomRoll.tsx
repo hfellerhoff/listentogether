@@ -1,12 +1,9 @@
-import { Spinner } from '@chakra-ui/react';
 import { useAtom } from 'jotai';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Room from '../../models/Room';
 import { userAtom } from '../../state/userAtom';
 import supabase from '../../util/supabase';
-import RoomCardDisplay from './RoomCardDisplay';
 import RoomRoll from './RoomRoll';
-import RoomRollLayout from './RoomRollLayout';
 
 interface Props {}
 

@@ -36,8 +36,7 @@ const JoinWithRoomCode = (props: Props) => {
       <FormContainer onSubmit={handleSubmit(handleNavigate)}>
         <Input
           id='input-room_code'
-          background='white'
-          placeholder='XXXXXXXXX'
+          placeholder='XXXXXXXXXX'
           w={40}
           textAlign='center'
           {...register('slug')}
