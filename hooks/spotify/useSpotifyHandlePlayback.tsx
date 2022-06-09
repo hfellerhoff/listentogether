@@ -19,6 +19,7 @@ const useSpotifyHandlePlayback = (room: Room, song: Song) => {
 
   useEffect(() => {
     const getTargetDevice = async () => {
+      if (!accessToken) return;
       spotifyApi.setAccessToken(accessToken);
       const devices = await spotifyApi.getMyDevices();
 

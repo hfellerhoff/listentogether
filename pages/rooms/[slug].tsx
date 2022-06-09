@@ -14,6 +14,10 @@ import Song from '../../models/Song';
 import FixedPlaybackButtons from '../../components/Room/FixedPlaybackButtons';
 import { sidepanelAtom } from '../../state/sidepanelAtom';
 import { neutral } from '../../stitches.config';
+import { isLoggedInAtom } from '../../state/userAtom';
+import { Button } from '@chakra-ui/react';
+import { BASE_URL } from '../../constants/API_SPOTIFY_AUTH';
+import { FaSpotify } from 'react-icons/fa';
 
 interface Props {}
 
@@ -118,6 +122,7 @@ export const RoomPage = (props: Props) => {
   const [sidepanelStatus] = useAtom(sidepanelAtom);
   const queue = useQueue(room.id);
   const activeSong = queue ? queue[0] || undefined : undefined;
+  const [isLoggedIn] = useAtom(isLoggedInAtom);
 
   const track = useSpotifyTrack(activeSong);
   const { normalGradient } = useGradientsFromImageRef(
@@ -146,7 +151,7 @@ export const RoomPage = (props: Props) => {
           isFullScreen={!sidepanelStatus.isRightOpen}
         >
           <FixedButtons room={room} song={activeSong} />
-          {isSongInQueue && (
+          {isSongInQueue && isLoggedIn && (
             <AlbumArtContainer>
               <FixedPlaybackButtons song={activeSong} />
               {queue.map((song, i) => (
@@ -159,14 +164,44 @@ export const RoomPage = (props: Props) => {
               ))}
             </AlbumArtContainer>
           )}
-          <AlbumTitle>
-            {isSongInQueue ? track.name : 'Nothing is playing.'}
-          </AlbumTitle>
-          <AlbumArtist>
-            {isSongInQueue
-              ? track.artists[0].name
-              : 'Queue a song with the "+" icon in the top right!'}
-          </AlbumArtist>
+          {isLoggedIn ? (
+            <>
+              <AlbumTitle>
+                {isSongInQueue ? track.name : 'Nothing is playing.'}
+              </AlbumTitle>
+              <AlbumArtist>
+                {isSongInQueue
+                  ? track.artists[0].name
+                  : 'Queue a song with the "+" icon in the top right!'}
+              </AlbumArtist>
+            </>
+          ) : (
+            <>
+              <AlbumTitle>Login to listen together!</AlbumTitle>
+              <AlbumArtist
+                style={{
+                  maxWidth: '24rem',
+                  lineHeight: 1.3,
+                  textAlign: 'center',
+                  marginTop: '0.25rem',
+                }}
+              >
+                Join other users in {room.name} to listen to music, queue songs,
+                and chat with friends.
+              </AlbumArtist>
+              <a href={BASE_URL + '/api/spotify/login'}>
+                <Button
+                  mt={4}
+                  variant='solid'
+                  colorScheme='green'
+                  size='lg'
+                  leftIcon={<FaSpotify />}
+                >
+                  Login with Spotify
+                </Button>
+              </a>
+            </>
+          )}
         </AlbumBackground>
         <ChatComponent />
       </PageLayout>

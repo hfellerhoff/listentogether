@@ -7,7 +7,17 @@ enum SpotifyCookies {
   RefreshToken = 'spotify-refresh-token',
 }
 
-const useSpotifyAuthentication = () => {
+type Options = {
+  shouldRedirect?: boolean;
+};
+
+const useSpotifyAuthentication = (
+  options: Options = {
+    shouldRedirect: false,
+  }
+) => {
+  const { shouldRedirect = false } = options;
+
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const [cookies, setCookies] = useCookies([
@@ -31,6 +41,7 @@ const useSpotifyAuthentication = () => {
         });
       } else {
         if (
+          shouldRedirect &&
           router.pathname !== '/' &&
           !isLoading &&
           (!cookies[SpotifyCookies.AccessToken] ||

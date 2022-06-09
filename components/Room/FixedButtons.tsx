@@ -19,6 +19,7 @@ import Room from '../../models/Room';
 import SongProgress from '../SongProgress';
 import Song from '../../models/Song';
 import { sidepanelAtom } from '../../state/sidepanelAtom';
+import { isLoggedInAtom } from '../../state/userAtom';
 
 type Props = {
   room: Room;
@@ -108,6 +109,7 @@ const FixedButtons = ({ room, song }: Props) => {
   const { colorMode, toggleColorMode } = useColorMode();
   const { theme, setTheme } = useTheme();
   const [sidepanelStatus, setSidepanelStatus] = useAtom(sidepanelAtom);
+  const [isLoggedIn] = useAtom(isLoggedInAtom);
 
   const { hasCopied, onCopy } = useClipboard(room.slug);
 
@@ -168,57 +170,63 @@ const FixedButtons = ({ room, song }: Props) => {
           </CircularButton>
         </Tooltip>
       </FloatingContainer>
-      <FloatingContainer position='tr'>
-        <Tooltip
-          label='Queue song'
-          aria-label='Queue song'
-          placement='bottom-end'
-          zIndex={8}
-        >
-          <CircularButton onClick={handleQueue} aria-label='Queue song'>
-            <PlusIcon />
-          </CircularButton>
-        </Tooltip>
-      </FloatingContainer>
-      <FloatingContainer position='bl'>
-        <Tooltip
-          label='Choose playback device'
-          aria-label='Choose playback device'
-          placement='top-start'
-          zIndex={8}
-        >
-          <CircularButton
-            onClick={handleDevices}
-            aria-label='Choose playback device'
-          >
-            <Component1Icon />
-          </CircularButton>
-        </Tooltip>
-      </FloatingContainer>
-      <FloatingContainer position='b'>
-        <SongProgress song={song} />
-      </FloatingContainer>
-      <FloatingContainer position='br'>
-        <Tooltip
-          label={sidepanelStatus.isRightOpen ? 'Close chat' : 'Open chat'}
-          aria-label={sidepanelStatus.isRightOpen ? 'Close chat' : 'Open chat'}
-          placement='top-end'
-          zIndex={8}
-        >
-          <CircularButton
-            onClick={toggleChatVisibility}
-            aria-label={
-              sidepanelStatus.isRightOpen ? 'Close chat' : 'Open chat'
-            }
-          >
-            {sidepanelStatus.isRightOpen ? (
-              <DoubleArrowRightIcon />
-            ) : (
-              <ChatBubbleIcon />
-            )}
-          </CircularButton>
-        </Tooltip>
-      </FloatingContainer>
+      {isLoggedIn && (
+        <>
+          <FloatingContainer position='tr'>
+            <Tooltip
+              label='Queue song'
+              aria-label='Queue song'
+              placement='bottom-end'
+              zIndex={8}
+            >
+              <CircularButton onClick={handleQueue} aria-label='Queue song'>
+                <PlusIcon />
+              </CircularButton>
+            </Tooltip>
+          </FloatingContainer>
+          <FloatingContainer position='bl'>
+            <Tooltip
+              label='Choose playback device'
+              aria-label='Choose playback device'
+              placement='top-start'
+              zIndex={8}
+            >
+              <CircularButton
+                onClick={handleDevices}
+                aria-label='Choose playback device'
+              >
+                <Component1Icon />
+              </CircularButton>
+            </Tooltip>
+          </FloatingContainer>
+          <FloatingContainer position='b'>
+            <SongProgress song={song} />
+          </FloatingContainer>
+          <FloatingContainer position='br'>
+            <Tooltip
+              label={sidepanelStatus.isRightOpen ? 'Close chat' : 'Open chat'}
+              aria-label={
+                sidepanelStatus.isRightOpen ? 'Close chat' : 'Open chat'
+              }
+              placement='top-end'
+              zIndex={8}
+            >
+              <CircularButton
+                onClick={toggleChatVisibility}
+                aria-label={
+                  sidepanelStatus.isRightOpen ? 'Close chat' : 'Open chat'
+                }
+              >
+                {sidepanelStatus.isRightOpen ? (
+                  <DoubleArrowRightIcon />
+                ) : (
+                  <ChatBubbleIcon />
+                )}
+              </CircularButton>
+            </Tooltip>
+          </FloatingContainer>
+        </>
+      )}
     </>
   );
 };

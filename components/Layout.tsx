@@ -1,5 +1,6 @@
 import { Box } from '@chakra-ui/react';
-import React from 'react';
+import { useRouter } from 'next/router';
+import useSpotifyAuthentication from '../hooks/spotify/useSpotifyAuthentication';
 import useBackgroundColor from '../hooks/useBackgroundColor';
 import useUserMonitor from '../hooks/useUserMonitor';
 import DeviceSelectDrawer from './Drawers/DeviceSelectDrawer';
@@ -13,9 +14,12 @@ interface Props {
 
 const Layout = ({ children, publicRoute }: Props) => {
   const { backgroundColor } = useBackgroundColor();
+  const router = useRouter();
+
+  const shouldRedirect = !router.pathname.includes('/rooms/');
 
   if (!publicRoute) {
-    useUserMonitor();
+    useUserMonitor({ shouldRedirect });
   }
 
   return (
@@ -23,14 +27,12 @@ const Layout = ({ children, publicRoute }: Props) => {
       <Box minH='100vh' bg={backgroundColor}>
         {children}
       </Box>
-      {!publicRoute ? (
+      {!publicRoute && (
         <>
           <SongSearchDrawer />
           <DeviceSelectDrawer />
           <PlaybackControlDrawer />
         </>
-      ) : (
-        <></>
       )}
     </main>
   );

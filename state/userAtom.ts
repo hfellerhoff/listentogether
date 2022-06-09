@@ -10,3 +10,5 @@ export const userAtom = atom<User>({
   name: '',
   imageSrc: '',
 });
+
+export const isLoggedInAtom = atom((get) => get(userAtom).id !== '');

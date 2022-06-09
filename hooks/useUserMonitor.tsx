@@ -9,18 +9,31 @@ import { useRouter } from 'next/router';
 import supabase from '../util/supabase';
 import { isPremiumAtom } from '../state/isPremiumAtom';
 
-const useUserMonitor = () => {
+type Options = {
+  shouldRedirect?: boolean;
+};
+
+const useUserMonitor = (
+  options: Options = {
+    shouldRedirect: true,
+  }
+) => {
+  const { shouldRedirect = true } = options;
+
   const router = useRouter();
   const [spotifyAPI, _] = useAtom(spotifyAtom);
   const [user, setUser] = useAtom(userAtom);
   const [, setIsPremium] = useAtom(isPremiumAtom);
-  const { isLoading, accessToken } = useSpotifyAuthentication();
+  const { isLoading, accessToken } = useSpotifyAuthentication({
+    shouldRedirect,
+  });
 
   useEffect(() => {
     const updateUser = async () => {
       if (!accessToken) return;
       try {
         spotifyAPI.setAccessToken(accessToken);
+
         const spotifyUser = await spotifyAPI.getMe();
 
         setIsPremium(spotifyUser.product === 'premium');
@@ -34,9 +47,9 @@ const useUserMonitor = () => {
           setUser(users[0] as User);
         }
       } catch (error) {
-        console.error('User fetch error:');
-        console.error(error);
-        router.push('/api/spotify/login');
+        if (shouldRedirect) {
+          router.push('/api/spotify/login');
+        }
       }
     };
 
