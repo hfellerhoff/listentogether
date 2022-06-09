@@ -1,27 +1,22 @@
 import {
   Box,
   Button,
-  Center,
   Flex,
   Heading,
-  Link,
   Stack,
   Text,
   useColorMode,
 } from '@chakra-ui/react';
 import Head from 'next/head';
 import Image from 'next/image';
-import React from 'react';
 import TextLoop from 'react-text-loop';
-import { FaExternalLinkAlt, FaSpotify } from 'react-icons/fa';
+import { FaSpotify } from 'react-icons/fa';
 import ColorModeButton from '../components/ColorModeButton';
 import Layout from '../components/Layout';
-import useSpotifyAuthentication from '../hooks/spotify/useSpotifyAuthentication';
 import { BASE_URL } from '../constants/API_SPOTIFY_AUTH';
 
 export default function Home() {
   const { colorMode } = useColorMode();
-  const { accessToken, refreshToken } = useSpotifyAuthentication();
 
   return (
     <div>
@@ -84,11 +79,6 @@ export default function Home() {
                 Login with Spotify
               </Button>
             </a>
-            {/* <Link href='https://old.listentogether.app' mt={[4, 0, 0]}>
-              <Button rightIcon={<FaExternalLinkAlt />} variant='link'>
-                Previous Version
-              </Button>
-            </Link> */}
           </Flex>
         </Flex>
       </Layout>
