@@ -23,7 +23,7 @@ class MyDocument extends Document {
         </Head>
         <body>
           {/* TODO: Fix issue with web playback not being defined */}
-          {/* <script src='https://sdk.scdn.co/spotify-player.js'></script> */}
+          <script src='https://sdk.scdn.co/spotify-player.js'></script>
           <Main />
           <NextScript />
         </body>

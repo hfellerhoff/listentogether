@@ -1,26 +1,37 @@
-import React from 'react';
-import { Box, Input, useToast } from '@chakra-ui/react';
-import useBackgroundColor from '../../../hooks/useBackgroundColor';
-import { ChatComponentType } from './ChatComponent';
-import { Formik } from 'formik';
+import { Input, useToast } from '@chakra-ui/react';
 import { useAtom } from 'jotai';
 import { roomAtom } from '../../../state/roomAtom';
 import { userAtom } from '../../../state/userAtom';
-// import sendChatMessage from '../../../services/sendChatMessage';
+import { useForm } from 'react-hook-form';
+import { styled } from '@stitches/react';
 
-interface Props {
-  type: ChatComponentType;
-  // messageDocument: MessagesDocument | undefined;
-}
+interface Props {}
 
-const ChatInput = ({ type }: Props) => {
+const StyledForm = styled('form', {
+  width: '100%',
+  height: '4rem',
+  padding: '0 1rem',
+  zIndex: 1,
+  display: 'grid',
+  placeItems: 'center',
+});
+
+const StyledInput = styled(Input, {});
+
+const ChatInput = ({}: Props) => {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
   const [room] = useAtom(roomAtom);
   const [user] = useAtom(userAtom);
-  const { foregroundColor } = useBackgroundColor();
-  const isPanel = type === 'panel';
   const toast = useToast();
 
-  const onSubmit = async (message: string) => {
+  const onSubmit = async (data) => {
+    const { message } = data;
+
     try {
       await fetch('/api/rooms/chat', {
         method: 'POST',
@@ -35,43 +46,19 @@ const ChatInput = ({ type }: Props) => {
     } catch {
       console.error('Error sending chat message.');
     }
+    reset();
   };
 
   return (
-    <Box
-      bg={foregroundColor}
-      pt={4}
-      pl={isPanel ? [4, 4, 4, 4] : 4}
-      pr={isPanel ? [4, 4, 4, 4] : 4}
-      pb={isPanel ? [3, 4, 4, 4] : 4}
-      position='fixed'
-      width={isPanel ? '100%' : 'calc(100% - 350px)'}
-      bottom={0}
-      right={0}
-    >
-      <Formik
-        initialValues={{ message: '' }}
-        onSubmit={(values, actions) => {
-          onSubmit(values.message);
-          actions.resetForm();
-        }}
-      >
-        {({ handleChange, handleBlur, handleSubmit, values }) => (
-          <form onSubmit={handleSubmit}>
-            <Input
-              isDisabled={!room.name}
-              type='text'
-              name='message'
-              variant='filled'
-              placeholder='Send a message...'
-              onChange={handleChange}
-              onBlur={handleBlur}
-              value={values.message}
-            />
-          </form>
-        )}
-      </Formik>
-    </Box>
+    <StyledForm onSubmit={handleSubmit(onSubmit)}>
+      <StyledInput
+        isDisabled={!room.name}
+        type='text'
+        name='message'
+        placeholder='Send a message...'
+        {...register('message')}
+      />
+    </StyledForm>
   );
 };
 

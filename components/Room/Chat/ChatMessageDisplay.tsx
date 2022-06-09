@@ -1,8 +1,11 @@
-import { Avatar, Box, Flex, useColorMode, Text } from '@chakra-ui/react';
+import { Box, Flex, useColorMode, Text } from '@chakra-ui/react';
+import { styled } from '@stitches/react';
+import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import Message, { MessageType } from '../../../models/Message';
 import User from '../../../models/User';
 import supabase from '../../../util/supabase';
+import Avatar from '../../Avatar';
 
 interface Props {
   message: Message;
@@ -10,8 +13,44 @@ interface Props {
   previousUser: number;
 }
 
+const Container = styled('div', {
+  display: 'flex',
+  marginTop: '1rem',
+  padding: '0.25rem 1rem',
+
+  variants: {
+    isServer: {
+      true: {
+        background: '$neutral2',
+        padding: '1rem',
+        alignItems: 'center',
+        justifyContent: 'center',
+      },
+    },
+    isSameUser: {
+      true: {
+        marginTop: '0.25rem',
+      },
+    },
+  },
+});
+
+const MessageContainer = styled('div', {
+  marginLeft: '1rem',
+  variants: {
+    isServer: {
+      true: {},
+    },
+    isSameUser: {
+      true: {
+        marginLeft: '3.5rem',
+      },
+    },
+  },
+});
+
 const ChatMessageDisplay = ({ message, index, previousUser }: Props) => {
-  const isMessage = message.type === MessageType.UserChat;
+  const isUserChat = message.type === MessageType.UserChat;
   const { colorMode } = useColorMode();
   const isSameUser = message.user_id === previousUser;
 
@@ -31,47 +70,24 @@ const ChatMessageDisplay = ({ message, index, previousUser }: Props) => {
   }, [message, isSameUser]);
 
   return (
-    <Flex
-      bg={
-        isMessage
-          ? 'transparent'
-          : colorMode === 'light'
-          ? '#E0E5EA'
-          : '#12141C'
-      }
-      mt={isSameUser ? -1 : 4}
-      px={4}
-      py={isMessage ? 1 : 4}
-      align={isMessage ? 'flex-start' : 'center'}
-      justify={isMessage ? 'flex-start' : 'center'}
-      key={index}
-    >
-      {isMessage ? (
+    <Container isServer={!isUserChat} isSameUser={isSameUser} key={index}>
+      {isUserChat ? (
         <>
-          {isSameUser ? (
-            <></>
-          ) : (
-            <Avatar
-              width={9}
-              height={9}
-              size='sm'
-              src={user && user.imageSrc}
-              name={user ? user.name : ''}
-            />
+          {!isSameUser && (
+            <Avatar src={user && user.imageSrc} name={user ? user.name : ''} />
           )}
-          <Box ml={isSameUser ? 12 : 3}>
+          <MessageContainer isSameUser={isSameUser}>
             <Text fontSize={12} display={isSameUser ? 'none' : 'block'}>
-              {user ? user.name : ''}
+              {user ? user.name : ''} •{' '}
+              {dayjs(message.timestamp).format('MMM D, YYYY • hh:mm')}
             </Text>
             <Text>{message.content}</Text>
-          </Box>
+          </MessageContainer>
         </>
       ) : (
-        <>
-          <Text textAlign='center'>{message.content}</Text>
-        </>
+        <Text textAlign='center'>{message.content}</Text>
       )}
-    </Flex>
+    </Container>
   );
 };
 
