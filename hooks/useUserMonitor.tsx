@@ -30,7 +30,7 @@ const useUserMonitor = (
 
   useEffect(() => {
     const updateUser = async () => {
-      if (!accessToken) return;
+      if (!accessToken || isLoading) return;
       try {
         spotifyAPI.setAccessToken(accessToken);
 
@@ -54,7 +54,7 @@ const useUserMonitor = (
     };
 
     if (accessToken && !user.id) updateUser();
-  }, [accessToken, user, setUser]);
+  }, [accessToken, isLoading, user, setUser]);
 
   return isLoading;
 };
