@@ -1,30 +1,17 @@
-import Service from '../models/Service';
-import Spotify from 'spotify-web-api-js';
+// import Spotify from 'spotify-web-api-js';
 
-export type SpotifyAPI = Spotify.SpotifyWebApiJs;
+import ListenTogetherAPI from './listen-together';
+import SpotifyAPI from './spotify';
 
-export class API {
-  isInitialized = false;
-  service: Service;
-  api: SpotifyAPI;
+export type ServiceAPI = {
+  Routes: Record<string, string>;
+  Cookies: Record<string, string>;
+  Secrets: Record<string, string>;
+};
 
-  constructor() {}
+const API = {
+  ListenTogether: ListenTogetherAPI,
+  Spotify: SpotifyAPI,
+};
 
-  initialize(service: Service) {
-    this.service = service;
-
-    if (service === Service.Spotify) this.api = new Spotify();
-
-    this.isInitialized = true;
-  }
-  q;
-
-  setAccessToken() {
-    if (this.service === Service.Spotify) {
-    }
-  }
-
-  call() {
-    if (!this.isInitialized) return;
-  }
-}
+export default API;
