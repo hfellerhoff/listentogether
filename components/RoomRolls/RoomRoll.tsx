@@ -28,7 +28,7 @@ const RoomRoll = ({ isLoading, rooms, title }: Props) => {
       {title && <SectionTitle>{title}</SectionTitle>}
       <RoomRollLayout>
         {rooms.map((room, index) => {
-          return <RoomCardDisplay room={room} key={index} />;
+          return <RoomCardDisplay room={room} key={room.id} />;
         })}
       </RoomRollLayout>
     </>
