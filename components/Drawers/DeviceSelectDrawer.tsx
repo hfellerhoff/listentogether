@@ -58,10 +58,12 @@ const DeviceSelectDrawer = (props: Props) => {
   }, [accessToken, getDevices, isOpen, spotifyAPI]);
 
   const updateSelectedDevice = async (device_id: string) => {
-    if (spotifyAPI && device_id !== selectedDevice) {
+    if (spotifyAPI) {
+      // && device_id !== selectedDevice
       setIsTransferingPlayback(true);
-      setSelectedDevice(device_id);
-      await spotifyAPI.transferMyPlayback([device_id]);
+      await spotifyAPI
+        .transferMyPlayback([device_id])
+        .catch((err) => console.error(err));
       console.log('Successfully changed playback to ' + device_id);
       setIsTransferingPlayback(false);
     }

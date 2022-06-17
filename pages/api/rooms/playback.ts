@@ -5,7 +5,8 @@ import supabase from '../../../util/supabase/index';
 export interface RoomPlaybackQuery {
   songId?: number;
   track?: {
-    uri: string;
+    spotify_uri?: string;
+    youtube_video_id?: string;
     duration_ms: number;
   };
   isPaused?: boolean;
@@ -47,10 +48,15 @@ export default async function handler(req, res) {
 
   // SONG SKIPPING
   if (shouldSkip) {
-    if (!track || song.spotifyUri !== track.uri) {
+    if (
+      !track ||
+      (song.spotifyUri !== track.spotify_uri &&
+        song.youtube_video_id !== track.youtube_video_id)
+    ) {
       res.end();
       return;
     }
+
     // If the client thinks the song is over but the server doesn't, don't skip
     if (isSkipAtEnd && track.duration_ms > progress) {
       res.end();

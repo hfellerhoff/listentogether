@@ -18,6 +18,12 @@ import { isLoggedInAtom } from '../../state/userAtom';
 import { Button } from '@chakra-ui/react';
 import { BASE_URL } from '../../constants/API_SPOTIFY_AUTH';
 import { FaSpotify } from 'react-icons/fa';
+import YouTubePlayer from 'components/YouTubePlayer';
+import useIsInactive from 'hooks/useIsInactive';
+import useHasAllowedAutoPlay from 'hooks/useHasAllowedAutoPlay';
+import { useEffect } from 'react';
+import useSpotifyWebPlayback from 'hooks/spotify/useSpotifyWebPlayback';
+import Script from 'next/script';
 
 interface Props {}
 
@@ -57,6 +63,7 @@ const albumArtCSS = css({
   position: 'absolute',
   inset: '0 0 0 0',
   pointerEvents: 'none',
+  background: 'linear-gradient(to bottom right, $error8, $error4)',
 });
 
 const AlbumArtContainer = styled('div', {
@@ -65,14 +72,11 @@ const AlbumArtContainer = styled('div', {
   width: '50vh',
 });
 
-const AlbumArtPlaceholder = styled('div', {
-  ...albumArtCSS,
-  background: 'linear-gradient(to bottom right, $neutral2, $neutral3)',
-});
+const AlbumArtPlaceholder = styled('div', albumArtCSS);
 
-const AlbumArtImage = styled('img', {
-  ...albumArtCSS,
-});
+const YouTubePlaceholder = styled('div', albumArtCSS);
+
+const AlbumArtImage = styled('img', albumArtCSS);
 
 const AlbumTitle = styled('h1', {
   color: 'white',
@@ -103,15 +107,19 @@ const AlbumArt = ({
   const zIndex = maxZ - position;
 
   const size = 50 - position * 5;
+
+  const isSpotifySong = !!song.spotifyUri;
+
   const styles = css({
     height: `${size}vh`,
     width: `${size}vh`,
     zIndex,
     transform: `translate(${position * 2.5}vh, -${position}rem)`,
-    filter: `contrast(${1 - position * 0.2})`,
+    filter: isSpotifySong ? `contrast(${1 - position * 0.2})` : 'none',
   });
 
   if (position >= 5) return <></>;
+  if (song.youtube_video_id) return <YouTubePlaceholder className={styles()} />;
   if (!track) return <AlbumArtPlaceholder className={styles()} />;
   return <AlbumArtImage src={track.album.images[0].url} className={styles()} />;
 };
@@ -134,8 +142,10 @@ export const RoomPage = (props: Props) => {
       }
     : {};
 
-  useSpotifyHandlePlayback(room, activeSong);
+  useSpotifyHandlePlayback(activeSong);
 
+  const hasAllowedAutoPlay = useHasAllowedAutoPlay();
+  const isInactive = useIsInactive();
   const isSongInQueue = track && activeSong;
 
   return (
@@ -149,11 +159,21 @@ export const RoomPage = (props: Props) => {
         <AlbumBackground
           {...backgroundStyles}
           isFullScreen={!sidepanelStatus.isRightOpen}
+          css={{
+            cursor: isInactive ? 'none' : 'inherit',
+          }}
         >
-          <FixedButtons room={room} song={activeSong} />
-          {isSongInQueue && isLoggedIn && (
+          <FixedButtons room={room} song={activeSong} show={!isInactive} />
+          {activeSong && activeSong.youtube_video_id && (
+            <YouTubePlayer
+              song={activeSong}
+              hideCursor={isInactive}
+              hasAllowedAutoPlay={hasAllowedAutoPlay}
+            />
+          )}
+          {activeSong && activeSong.spotifyUri && isLoggedIn && (
             <AlbumArtContainer>
-              <FixedPlaybackButtons song={activeSong} />
+              {/* <FixedPlaybackButtons song={activeSong} /> */}
               {queue.map((song, i) => (
                 <AlbumArt
                   song={song}

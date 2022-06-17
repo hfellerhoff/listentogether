@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
 function getWindowDimensions() {
-  if (!process.browser) return;
+  if (typeof window !== 'object') return;
   const { innerWidth: width, innerHeight: height } = window;
   return {
     width,
@@ -15,7 +15,7 @@ export default function useWindowDimensions() {
   );
 
   useEffect(() => {
-    if (!process.browser) return;
+    if (typeof window !== 'object') return;
 
     function handleResize() {
       setWindowDimensions(getWindowDimensions());
@@ -23,7 +23,7 @@ export default function useWindowDimensions() {
 
     window.addEventListener('resize', handleResize);
     return () => {
-      if (!process.browser) return;
+      if (typeof window !== 'object') return;
       window.removeEventListener('resize', handleResize);
     };
   }, []);

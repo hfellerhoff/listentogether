@@ -1,11 +1,12 @@
 interface Song {
   id: number;
-  spotifyUri: string;
   progress: number; // in milliseconds
   updatedAt: string; // timestamp
   addedAt: string; // timestamp
   isPaused: boolean;
   room_id: number;
+  spotifyUri?: string;
+  youtube_video_id?: string;
 }
 
 export default Song;

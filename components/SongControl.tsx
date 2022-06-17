@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Flex, IconButton, Spinner, Tooltip } from '@chakra-ui/react';
-import { FiPause, FiSkipForward, FiPlay, FiLink2 } from 'react-icons/fi';
+import { Flex, IconButton, Tooltip } from '@chakra-ui/react';
+import {
+  Link1Icon,
+  LinkBreak1Icon,
+  PauseIcon,
+  PlayIcon,
+  TrackNextIcon,
+} from '@radix-ui/react-icons';
 import { useAtom } from 'jotai';
 import { spotifyAtom } from '../state/spotifyAtom';
 import Song from '../models/Song';
 import { RoomPlaybackQuery } from '../pages/api/rooms/playback';
 import { playbackConfigurationAtom } from '../state/playbackConfigurationAtom';
 import useSpotifyTrack from '../hooks/spotify/useSpotifyTrack';
+import { activeSongAtom } from 'state/activeSongAtom';
 
 interface Props {
   song: Song;
@@ -20,6 +27,7 @@ const SongControl = ({ song, progress }: Props) => {
   const [changeToIsPaused, setChangeToIsPaused] = useState(true);
   const [isSkippingSong, setIsSkippingSong] = useState(false);
   const track = useSpotifyTrack(song);
+  const [activeSong] = useAtom(activeSongAtom);
 
   const isPaused = song ? song.isPaused : false;
 
@@ -43,8 +51,9 @@ const SongControl = ({ song, progress }: Props) => {
         shouldSkip: true,
         songId: song.id,
         track: {
-          uri: track.uri,
-          duration_ms: track.duration_ms,
+          spotify_uri: song.spotifyUri,
+          youtube_video_id: song.youtube_video_id,
+          duration_ms: activeSong.duration_ms,
         },
       } as RoomPlaybackQuery),
     });
@@ -100,16 +109,21 @@ const SongControl = ({ song, progress }: Props) => {
             ? 'Unlink playback to room'
             : 'Link playback to room'
         }
-        placement='bottom'
+        placement='top-start'
         zIndex={8}
       >
         <IconButton
           onClick={handleTogglePlaybackConfiguration}
-          icon={<FiLink2 fontSize='1.25em' />}
+          icon={
+            playbackConfiguration.linked ? (
+              <LinkBreak1Icon fontSize='1.25em' />
+            ) : (
+              <Link1Icon fontSize='1.25em' />
+            )
+          }
           aria-label='Return to previous song'
-          variant={playbackConfiguration.linked ? 'solid' : 'ghost'}
-          colorScheme={playbackConfiguration.linked ? 'blue' : 'gray'}
-          size={playbackConfiguration.linked ? 'sm' : 'md'}
+          variant='ghost'
+          rounded='full'
         />
       </Tooltip>
       <IconButton
@@ -118,21 +132,25 @@ const SongControl = ({ song, progress }: Props) => {
         variant='ghost'
         icon={
           isPaused ? (
-            <FiPlay fontSize='1.25em' />
+            <PlayIcon fontSize='1.25em' />
           ) : (
-            <FiPause fontSize='1.25em' />
+            <PauseIcon fontSize='1.25em' />
           )
         }
         isLoading={changeToIsPaused !== isPaused}
         isDisabled={isSkippingSong}
+        rounded='full'
+        mx={-0.5}
       />
       <IconButton
         onClick={handleSkipForward}
-        icon={<FiSkipForward fontSize='1.25em' />}
+        icon={<TrackNextIcon fontSize='1.25em' />}
         aria-label='Skip to next song'
         variant='ghost'
         isLoading={isSkippingSong}
         isDisabled={changeToIsPaused !== isPaused}
+        rounded='full'
+        ml={-0.5}
       />
     </Flex>
   );

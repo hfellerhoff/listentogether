@@ -3,6 +3,8 @@ import * as ProgressPrimitive from '@radix-ui/react-progress';
 import useSpotifyTrack from '../hooks/spotify/useSpotifyTrack';
 import useSongProgress from '../hooks/rooms/useSongProgress';
 import Song from '../models/Song';
+import { useAtom } from 'jotai';
+import { activeSongAtom } from 'state/activeSongAtom';
 
 const StyledProgress = styled(ProgressPrimitive.Root, {
   position: 'relative',
@@ -28,10 +30,10 @@ interface Props {
 
 // Your app...
 const SongProgress = ({ song }: Props) => {
-  const track = useSpotifyTrack(song);
   const progress = useSongProgress(song);
+  const [activeSong] = useAtom(activeSongAtom);
+  const length = activeSong ? activeSong.duration_ms : 1;
 
-  const length = track ? track.duration_ms : 1;
   let progressPercent = ((length - progress) / length) * 100;
   if (progressPercent < 0) progressPercent = 0;
   if (progressPercent > 100) progressPercent = 100;

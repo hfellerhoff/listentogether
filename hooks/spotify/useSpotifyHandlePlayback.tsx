@@ -1,5 +1,6 @@
 import { useAtom } from 'jotai';
 import { useEffect } from 'react';
+import { activeSongAtom } from 'state/activeSongAtom';
 import Room from '../../models/Room';
 import Song from '../../models/Song';
 import { RoomPlaybackQuery } from '../../pages/api/rooms/playback';
@@ -9,13 +10,26 @@ import useSongProgress from '../rooms/useSongProgress';
 import useSpotifyAuthentication from './useSpotifyAuthentication';
 import useSpotifyTrack from './useSpotifyTrack';
 
-const useSpotifyHandlePlayback = (room: Room, song: Song) => {
+const useSpotifyHandlePlayback = (song: Song) => {
   const { accessToken } = useSpotifyAuthentication();
   const [spotifyApi] = useAtom(spotifyAtom);
   const [playbackConfiguration] = useAtom(playbackConfigurationAtom);
+  const [activeSong, setActiveSong] = useAtom(activeSongAtom);
 
   const progress = useSongProgress(song);
   const track = useSpotifyTrack(song);
+
+  useEffect(() => {
+    const setSongDuration = async () => {
+      const duration = track.duration_ms;
+
+      setActiveSong({ ...activeSong, duration_ms: duration });
+    };
+
+    if (track) {
+      setSongDuration();
+    }
+  }, [track]);
 
   useEffect(() => {
     const getTargetDevice = async () => {
@@ -55,6 +69,12 @@ const useSpotifyHandlePlayback = (room: Room, song: Song) => {
         // Current Spotify playback state (is playing? what song? etc.)
         const playback = await getPlaybackState();
 
+        // If not a spotify song, pause playing music
+        if (song && !song.spotifyUri) {
+          if (playback && playback.is_playing) spotifyApi.pause();
+          return;
+        }
+
         if (song && progress >= 0 && track && song.spotifyUri === track.uri) {
           // If there is playback information,
           if (playback) {
@@ -77,7 +97,7 @@ const useSpotifyHandlePlayback = (room: Room, song: Song) => {
                     isSkipAtEnd: true,
                     songId: song.id,
                     track: {
-                      uri: track.uri,
+                      spotify_uri: track.uri,
                       duration_ms: track.duration_ms,
                     },
                   } as RoomPlaybackQuery),
@@ -101,6 +121,7 @@ const useSpotifyHandlePlayback = (room: Room, song: Song) => {
                 await spotifyApi.play({
                   uris: [song.spotifyUri],
                   position_ms,
+                  device_id: targetDeviceID,
                 });
               }
 
@@ -113,6 +134,7 @@ const useSpotifyHandlePlayback = (room: Room, song: Song) => {
                 await spotifyApi.play({
                   uris: [song.spotifyUri],
                   position_ms: progress,
+                  device_id: targetDeviceID,
                 });
               }
 

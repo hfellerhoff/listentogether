@@ -1,4 +1,4 @@
-import { css, styled } from '@stitches/react';
+import { styled } from '@stitches/react';
 import {
   Link1Icon,
   LinkBreak1Icon,
@@ -6,13 +6,9 @@ import {
   PlayIcon,
   TrackNextIcon,
 } from '@radix-ui/react-icons';
-import Link from 'next/link';
 import { useAtom } from 'jotai';
 import { Modal, modalAtom } from '../../state/modalAtom';
-import { useTheme } from 'next-themes';
-import { DarkMode, Spinner, Tooltip, useColorMode } from '@chakra-ui/react';
-import Room from '../../models/Room';
-import SongProgress from '../SongProgress';
+import { DarkMode, Spinner, Tooltip } from '@chakra-ui/react';
 import Song from '../../models/Song';
 import { useState, useEffect } from 'react';
 import useSpotifyTrack from '../../hooks/spotify/useSpotifyTrack';

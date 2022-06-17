@@ -11,6 +11,14 @@ import {
   useColorMode,
   Grid,
   Box,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  Button,
+  Tag,
+  useToast,
 } from '@chakra-ui/react';
 import DashboardSongDisplay from '../Room/DashboardSongDisplay';
 import useWindowDimensions from '../../hooks/useWindowDimensions';
@@ -21,6 +29,8 @@ import { userAtom } from '../../state/userAtom';
 import { Modal, modalAtom } from '../../state/modalAtom';
 import Service from '../../models/Service';
 import { roomAtom } from '../../state/roomAtom';
+import { FaSpotify, FaYoutube } from 'react-icons/fa';
+import { ArrowRightIcon } from '@radix-ui/react-icons';
 
 interface Props {}
 
@@ -54,33 +64,43 @@ const SongSearchDrawer = (props: Props) => {
   const [room] = useAtom(roomAtom);
   const [modal, setModal] = useAtom(modalAtom);
   const { accessToken } = useSpotifyAuthentication();
+  const toast = useToast();
 
   const [searchQuery, setSearchQuery] = useState('');
+  const [youTubeURL, setYouTubeURL] = useState('');
   const [lastSearched, setLastSearched] = useState(0);
   const [searchResults, setSearchResults] = useState<
     SpotifyApi.TrackObjectFull[]
   >([]);
 
-  const queueTrack = async (track: SpotifyApi.TrackObjectFull) => {
-    if (spotifyAPI && user) {
-      spotifyAPI.setAccessToken(accessToken);
-
+  const queueTrack = async ({
+    spotifyUri,
+    youtubeVideoID,
+  }: {
+    spotifyUri?: string;
+    youtubeVideoID?: string;
+  }) => {
+    if (user) {
       console.log('Queuing track...');
 
       const res = await fetch('/api/rooms/queue', {
         method: 'POST',
         body: JSON.stringify({
-          spotifyUri: track.uri,
           roomId: room.id,
+          spotifyUri,
+          youtubeVideoID,
         }),
       });
 
       setSearchQuery('');
+      setYouTubeURL('');
       setModal(Modal.None);
     }
   };
 
-  const onChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChangeSpotifySearchQuery = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setSearchQuery(e.target.value);
     if (e.target.value === '') {
       setSearchResults([]);
@@ -95,6 +115,27 @@ const SongSearchDrawer = (props: Props) => {
       } catch (error) {
         console.error(error);
       }
+    }
+  };
+
+  const onChangeYouTubeURL = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    setYouTubeURL(e.target.value);
+  };
+
+  const handleYouTubeSubmit = (e) => {
+    e.preventDefault();
+
+    if (youTubeURL.includes('youtube') && youTubeURL.includes('v=')) {
+      const youtubeVideoID = new URL(youTubeURL).searchParams.get('v');
+
+      queueTrack({ youtubeVideoID });
+    } else {
+      toast({
+        title: 'Incorrect URL',
+        description:
+          'Something is wrong with the URL you provided. Double-check your URL and try again.',
+        status: 'warning',
+      });
     }
   };
 
@@ -115,50 +156,99 @@ const SongSearchDrawer = (props: Props) => {
           </Heading>
         </DrawerHeader>
         <DrawerBody>
-          <Flex
-            direction='column'
-            align='centre'
-            justify='center'
-            maxW={800}
-            margin='0 auto'
-          >
-            <Input
-              size={dimensions ? (dimensions.width > 600 ? 'lg' : 'md') : 'lg'}
-              placeholder='Search for a song to queue...'
-              onChange={onChange}
-              value={searchQuery}
-            />
-            <Grid
-              pt={searchResults.length > 0 ? 4 : 0}
-              gridTemplateColumns={['1fr', '1fr 1fr', '1fr 1fr', '1fr 1fr']}
-              gridColumnGap={8}
-            >
-              {searchResults.map((track, index) => {
-                return (
-                  <Box
-                    {...grayGhostStyle[colorMode]}
-                    p={2}
-                    mx={-2}
-                    borderRadius={4}
-                    onClick={() => queueTrack(track)}
-                    cursor='pointer'
-                    key={index}
+          <Tabs isFitted maxW={800} margin='0 auto'>
+            <TabList mb='1em'>
+              <Tab gap={1.5}>
+                <FaSpotify />
+                Spotify
+              </Tab>
+              <Tab gap={1.5}>
+                <FaYoutube />
+                YouTube <Tag>Beta</Tag>
+              </Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel>
+                <Flex
+                  direction='column'
+                  align='centre'
+                  justify='center'
+                  maxW={800}
+                  margin='0 auto'
+                >
+                  <Input
+                    size={
+                      dimensions ? (dimensions.width > 600 ? 'lg' : 'md') : 'lg'
+                    }
+                    placeholder='Search for a song to queue...'
+                    onChange={onChangeSpotifySearchQuery}
+                    value={searchQuery}
+                  />
+                  <Grid
+                    pt={searchResults.length > 0 ? 4 : 0}
+                    gridTemplateColumns={[
+                      '1fr',
+                      '1fr 1fr',
+                      '1fr 1fr',
+                      '1fr 1fr',
+                    ]}
+                    gridColumnGap={8}
                   >
-                    <DashboardSongDisplay
-                      title={track.name}
-                      album={track.album.name}
-                      artist={track.artists[0].name}
-                      src={
-                        track.album.images
-                          ? track.album.images[0].url
-                          : undefined
+                    {searchResults.map((track, index) => {
+                      return (
+                        <Box
+                          {...grayGhostStyle[colorMode]}
+                          p={2}
+                          mx={-2}
+                          borderRadius={4}
+                          onClick={() => queueTrack({ spotifyUri: track.uri })}
+                          cursor='pointer'
+                          key={index}
+                        >
+                          <DashboardSongDisplay
+                            title={track.name}
+                            album={track.album.name}
+                            artist={track.artists[0].name}
+                            src={
+                              track.album.images
+                                ? track.album.images[0].url
+                                : undefined
+                            }
+                          />
+                        </Box>
+                      );
+                    })}
+                  </Grid>
+                </Flex>
+              </TabPanel>
+              <TabPanel>
+                <form onSubmit={handleYouTubeSubmit}>
+                  <Flex justify='center' maxW={800} margin='0 auto'>
+                    <Input
+                      size={
+                        dimensions
+                          ? dimensions.width > 600
+                            ? 'lg'
+                            : 'md'
+                          : 'lg'
                       }
+                      placeholder='Enter a YouTube video URL...'
+                      onChange={onChangeYouTubeURL}
+                      value={youTubeURL}
                     />
-                  </Box>
-                );
-              })}
-            </Grid>
-          </Flex>
+                    <Button
+                      type='submit'
+                      ml={4}
+                      size='lg'
+                      rightIcon={<ArrowRightIcon />}
+                    >
+                      Queue
+                    </Button>
+                  </Flex>
+                </form>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
         </DrawerBody>
       </DrawerContent>
     </Drawer>

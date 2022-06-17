@@ -3,16 +3,18 @@ import supabase from '../../../util/supabase';
 
 interface QueueProps {
   spotifyUri?: string;
+  youtubeVideoID?: string;
   roomId?: number;
 }
 
 export default async function handler(req, res) {
   const props: QueueProps = JSON.parse(req.body);
 
-  if (props && props.spotifyUri && props.roomId) {
+  if (props && props.roomId && (props.spotifyUri || props.youtubeVideoID)) {
     // Queue a song
-    const song = {
-      spotifyUri: props.spotifyUri,
+    const song: Partial<Song> = {
+      spotifyUri: props.spotifyUri || null,
+      youtube_video_id: props.youtubeVideoID || null,
       progress: 0,
       isPaused: false,
       room_id: props.roomId,

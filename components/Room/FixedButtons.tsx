@@ -14,16 +14,23 @@ import Link from 'next/link';
 import { useAtom } from 'jotai';
 import { Modal, modalAtom } from '../../state/modalAtom';
 import { useTheme } from 'next-themes';
-import { Tooltip, useClipboard, useColorMode } from '@chakra-ui/react';
+import {
+  IconButton,
+  Tooltip,
+  useClipboard,
+  useColorMode,
+} from '@chakra-ui/react';
 import Room from '../../models/Room';
 import SongProgress from '../SongProgress';
 import Song from '../../models/Song';
 import { sidepanelAtom } from '../../state/sidepanelAtom';
 import { isLoggedInAtom } from '../../state/userAtom';
+import SongControl from 'components/SongControl';
 
 type Props = {
   room: Room;
   song: Song;
+  show: boolean;
 };
 
 const FloatingContainer = styled('div', {
@@ -37,6 +44,7 @@ const FloatingContainer = styled('div', {
 
   alignItems: 'center',
   justifyContent: 'space-between',
+  transition: 'opacity 0.5s',
   variants: {
     transparent: {
       true: {
@@ -76,6 +84,14 @@ const FloatingContainer = styled('div', {
         right: '1rem',
       },
     },
+    show: {
+      true: {
+        opacity: 1,
+      },
+      false: {
+        opacity: 0,
+      },
+    },
   },
 });
 
@@ -104,7 +120,7 @@ const RoomTitle = styled('h1', {
   fontWeight: 700,
 });
 
-const FixedButtons = ({ room, song }: Props) => {
+const FixedButtons = ({ room, song, show }: Props) => {
   const [, setModal] = useAtom(modalAtom);
   const { colorMode, toggleColorMode } = useColorMode();
   const { theme, setTheme } = useTheme();
@@ -131,7 +147,7 @@ const FixedButtons = ({ room, song }: Props) => {
   return (
     <>
       <Link href='/dashboard'>
-        <FloatingContainer position='tl'>
+        <FloatingContainer position='tl' show={show}>
           <Tooltip
             label='Leave room'
             aria-label='Leave room'
@@ -144,7 +160,7 @@ const FixedButtons = ({ room, song }: Props) => {
           </Tooltip>
         </FloatingContainer>
       </Link>
-      <FloatingContainer position='t'>
+      <FloatingContainer position='t' show={show}>
         <Tooltip
           label={hasCopied ? 'Copied!' : 'Copy room code'}
           aria-label={hasCopied ? 'Copied!' : 'Copy room code'}
@@ -172,7 +188,7 @@ const FixedButtons = ({ room, song }: Props) => {
       </FloatingContainer>
       {isLoggedIn && (
         <>
-          <FloatingContainer position='tr'>
+          <FloatingContainer position='tr' show={show}>
             <Tooltip
               label='Queue song'
               aria-label='Queue song'
@@ -184,25 +200,33 @@ const FixedButtons = ({ room, song }: Props) => {
               </CircularButton>
             </Tooltip>
           </FloatingContainer>
-          <FloatingContainer position='bl'>
+          <FloatingContainer
+            position='bl'
+            show={show}
+            css={{
+              padding: '0.5rem 0.75rem',
+            }}
+          >
             <Tooltip
-              label='Choose playback device'
-              aria-label='Choose playback device'
+              label='Choose Spotify playback device'
+              aria-label='Choose Spotify playback device'
               placement='top-start'
-              zIndex={8}
             >
-              <CircularButton
+              <IconButton
                 onClick={handleDevices}
-                aria-label='Choose playback device'
-              >
-                <Component1Icon />
-              </CircularButton>
+                aria-label='Choose Spotify playback device'
+                variant='ghost'
+                icon={<Component1Icon />}
+                rounded='full'
+                mx={-0.5}
+              />
             </Tooltip>
+            <SongControl song={song} progress={1} />
           </FloatingContainer>
-          <FloatingContainer position='b'>
+          <FloatingContainer position='b' show={show}>
             <SongProgress song={song} />
           </FloatingContainer>
-          <FloatingContainer position='br'>
+          <FloatingContainer position='br' show={show}>
             <Tooltip
               label={sidepanelStatus.isRightOpen ? 'Close chat' : 'Open chat'}
               aria-label={

@@ -1,11 +1,14 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import useSpotifyAuthentication from './useSpotifyAuthentication';
 
 const useSpotifyWebPlayback = () => {
   const { accessToken } = useSpotifyAuthentication();
 
   useEffect(() => {
-    console.log('Attempting to create Spotify Web Player...', window);
+    const script = document.createElement('script');
+    script.src = 'https://sdk.scdn.co/spotify-player.js';
+    script.async = true;
+    document.body.appendChild(script);
 
     // @ts-ignore
     window.onSpotifyWebPlaybackSDKReady = () => {
@@ -13,10 +16,11 @@ const useSpotifyWebPlayback = () => {
 
       // @ts-ignore
       const player = new Spotify.Player({
-        name: 'Listen Together Web Application',
+        name: 'Listen Together Web Application [BETA]',
         getOAuthToken: (cb: (token: string) => void) => {
           cb(accessToken);
         },
+        volume: 1,
       });
 
       // Error handling
@@ -35,7 +39,7 @@ const useSpotifyWebPlayback = () => {
 
       // Playback status updates
       player.addListener('player_state_changed', (state) => {
-        console.log(state);
+        // console.log(state);
       });
 
       // Ready
