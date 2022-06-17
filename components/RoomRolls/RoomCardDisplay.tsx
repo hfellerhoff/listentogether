@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Heading, Box, Text, Flex, Tooltip } from '@chakra-ui/react';
 import DashboardSongDisplay from '../Room/DashboardSongDisplay';
-import { FiMusic, FiUser } from 'react-icons/fi';
+import { FiMusic, FiUser, FiYoutube } from 'react-icons/fi';
 import { FaCrown, FaHeart, FaRegHeart } from 'react-icons/fa';
 import Room from '../../models/Room';
 import { useAtom } from 'jotai';
@@ -69,10 +69,10 @@ const RoomCardDisplay = ({ room }: Props) => {
     <Box
       borderRadius={4}
       h='100%'
-      bg={track ? normalGradient : 'gray.700'}
+      bg={track ? normalGradient : song ? 'maroon' : 'gray.700'}
       p={[4, 6, 8, 8]}
       _hover={{
-        background: track ? hoverGradient : 'gray.600',
+        background: track ? hoverGradient : song ? '#990000' : 'gray.600',
       }}
       onClick={async () => router.push(`/rooms/${room.slug}`)}
       textAlign='center'
@@ -93,6 +93,13 @@ const RoomCardDisplay = ({ room }: Props) => {
             // imageRef={image}
             standalone
           />
+        </Box>
+      ) : song ? (
+        <Box mt={4}>
+          <Flex align='center' justify='center' p={12}>
+            <FiYoutube fontSize={48} />
+          </Flex>
+          <Text>Listening to a YouTube video</Text>
         </Box>
       ) : (
         <Box mt={4}>
