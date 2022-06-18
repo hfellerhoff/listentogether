@@ -79,9 +79,9 @@ const SongSearchDrawer = (props: Props) => {
   const [youTubeURL, setYouTubeURL] = useState('');
   const [youTubeDurationMS, setYouTubeDurationMS] = useState(0);
 
-  const [searchResults, setSearchResults] = useState<spotify.TrackObjectFull[]>(
-    []
-  );
+  const [searchResults, setSearchResults] = useState<
+    SpotifyApi.TrackObjectFull[]
+  >([]);
 
   const queueTrack = async ({
     duration_ms,
@@ -138,12 +138,13 @@ const SongSearchDrawer = (props: Props) => {
     setYouTubeURL(e.target.value);
   };
 
-  const handleSpotifyQueue = (track: spotify.TrackObjectFull) => async () => {
-    await queueTrack({
-      spotifyUri: track.uri,
-      duration_ms: track.duration_ms,
-    });
-  };
+  const handleSpotifyQueue =
+    (track: SpotifyApi.TrackObjectFull) => async () => {
+      await queueTrack({
+        spotifyUri: track.uri,
+        duration_ms: track.duration_ms,
+      });
+    };
 
   const handleYouTubeQueue = (e) => {
     e.preventDefault();

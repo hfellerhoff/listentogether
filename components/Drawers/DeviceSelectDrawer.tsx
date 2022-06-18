@@ -36,7 +36,7 @@ const DeviceSelectDrawer = (props: Props) => {
 
   const [isLoading, setIsLoading] = useState(true);
   const [isTransferingPlayback, setIsTransferingPlayback] = useState(false);
-  const [devices, setDevices] = useState<spotify.UserDevice[]>([]);
+  const [devices, setDevices] = useState<SpotifyApi.UserDevice[]>([]);
   const [selectedDevice, setSelectedDevice] = useState('');
 
   const isOpen = modal === Modal.DeviceSelect;
