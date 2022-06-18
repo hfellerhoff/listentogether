@@ -30,7 +30,7 @@ export default async function handler(req, res) {
 
   const song: Song = songs[0];
 
-  if (song.progress === undefined || song.progress === null) {
+  if (!song || song.progress === undefined || song.progress === null) {
     res.end();
     return;
   }

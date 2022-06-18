@@ -4,7 +4,6 @@ import { useRouter } from 'next/router';
 import Layout from '../../components/Layout';
 import Head from 'next/head';
 import useMonitorRoom from '../../hooks/rooms/useMonitorRoom';
-import useSpotifyHandlePlayback from '../../hooks/spotify/useSpotifyHandlePlayback';
 import useQueue from '../../hooks/rooms/useQueue';
 import useGradientsFromImageRef from '../../hooks/useGradientsFromImageRef';
 import useSpotifyTrack from '../../hooks/spotify/useSpotifyTrack';
@@ -16,7 +15,6 @@ import { sidepanelAtom } from '../../state/sidepanelAtom';
 import { neutral } from '../../stitches.config';
 import { isLoggedInAtom } from '../../state/userAtom';
 import { Button } from '@chakra-ui/react';
-import { BASE_URL } from '../../constants/API_SPOTIFY_AUTH';
 import { FaSpotify } from 'react-icons/fa';
 import YouTubePlayer from 'components/YouTubePlayer';
 import useIsInactive from 'hooks/useIsInactive';
@@ -24,6 +22,9 @@ import useHasAllowedAutoPlay from 'hooks/useHasAllowedAutoPlay';
 import { useEffect } from 'react';
 import useSpotifyWebPlayback from 'hooks/spotify/useSpotifyWebPlayback';
 import Script from 'next/script';
+import API from '@/lib/api';
+import PlaybackAPI from '@/lib/playback';
+import useHandlePlayback from 'hooks/useHandlePlayback';
 
 interface Props {}
 
@@ -127,26 +128,28 @@ const AlbumArt = ({
 export const RoomPage = (props: Props) => {
   const router = useRouter();
   const room = useMonitorRoom(router.query.slug as string);
-  const [sidepanelStatus] = useAtom(sidepanelAtom);
   const queue = useQueue(room.id);
-  const activeSong = queue ? queue[0] || undefined : undefined;
-  const [isLoggedIn] = useAtom(isLoggedInAtom);
+  const song = queue ? queue[0] || undefined : undefined;
 
-  const track = useSpotifyTrack(activeSong);
+  useHandlePlayback(song);
+
+  const [sidepanelStatus] = useAtom(sidepanelAtom);
+  const [isLoggedIn] = useAtom(isLoggedInAtom);
+  const track = useSpotifyTrack(song);
+
   const { normalGradient } = useGradientsFromImageRef(
     track ? track.album.images[0].url : undefined
   );
+
   const backgroundStyles = !!track
     ? {
         style: { background: normalGradient },
       }
     : {};
 
-  useSpotifyHandlePlayback(activeSong);
-
   const hasAllowedAutoPlay = useHasAllowedAutoPlay();
   const isInactive = useIsInactive();
-  const isSongInQueue = track && activeSong;
+  const isSongInQueue = track && song;
 
   return (
     <Layout>
@@ -163,27 +166,30 @@ export const RoomPage = (props: Props) => {
             cursor: isInactive ? 'none' : 'inherit',
           }}
         >
-          <FixedButtons room={room} song={activeSong} show={!isInactive} />
-          {activeSong && activeSong.youtube_video_id && (
+          <FixedButtons room={room} song={song} show={!isInactive} />
+          {song && song.youtube_video_id && (
             <YouTubePlayer
-              song={activeSong}
+              song={song}
               hideCursor={isInactive}
               hasAllowedAutoPlay={hasAllowedAutoPlay}
             />
           )}
-          {activeSong && activeSong.spotifyUri && isLoggedIn && (
-            <AlbumArtContainer>
-              {/* <FixedPlaybackButtons song={activeSong} /> */}
-              {queue.map((song, i) => (
-                <AlbumArt
-                  song={song}
-                  position={i}
-                  maxZ={queue.length}
-                  key={song.addedAt}
-                />
-              ))}
-            </AlbumArtContainer>
-          )}
+          {queue &&
+            queue.length > 0 &&
+            song &&
+            !song.youtube_video_id &&
+            isLoggedIn && (
+              <AlbumArtContainer>
+                {queue.map((song, i) => (
+                  <AlbumArt
+                    song={song}
+                    position={i}
+                    maxZ={queue.length}
+                    key={song.addedAt}
+                  />
+                ))}
+              </AlbumArtContainer>
+            )}
           {isLoggedIn ? (
             <>
               <AlbumTitle>
@@ -209,7 +215,7 @@ export const RoomPage = (props: Props) => {
                 Join other users in {room.name} to listen to music, queue songs,
                 and chat with friends.
               </AlbumArtist>
-              <a href={BASE_URL + '/api/spotify/login'}>
+              <a href={API.Spotify.Routes.authLogin.get()}>
                 <Button
                   mt={4}
                   variant='solid'

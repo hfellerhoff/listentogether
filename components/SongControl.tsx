@@ -8,12 +8,10 @@ import {
   TrackNextIcon,
 } from '@radix-ui/react-icons';
 import { useAtom } from 'jotai';
-import { spotifyAtom } from '../state/spotifyAtom';
 import Song from '../models/Song';
 import { RoomPlaybackQuery } from '../pages/api/rooms/playback';
 import { playbackConfigurationAtom } from '../state/playbackConfigurationAtom';
 import useSpotifyTrack from '../hooks/spotify/useSpotifyTrack';
-import { activeSongAtom } from 'state/activeSongAtom';
 
 interface Props {
   song: Song;
@@ -27,7 +25,6 @@ const SongControl = ({ song, progress }: Props) => {
   const [changeToIsPaused, setChangeToIsPaused] = useState(true);
   const [isSkippingSong, setIsSkippingSong] = useState(false);
   const track = useSpotifyTrack(song);
-  const [activeSong] = useAtom(activeSongAtom);
 
   const isPaused = song ? song.isPaused : false;
 
@@ -53,7 +50,7 @@ const SongControl = ({ song, progress }: Props) => {
         track: {
           spotify_uri: song.spotifyUri,
           youtube_video_id: song.youtube_video_id,
-          duration_ms: activeSong.duration_ms,
+          duration_ms: song.duration_ms,
         },
       } as RoomPlaybackQuery),
     });

@@ -24,6 +24,7 @@
     "dayjs": "^1.11.3",
     "formik": "^2.2.6",
     "framer-motion": "^6",
+    "immer": "^9.0.15",
     "jotai": "^1.7.1",
     "nanoid": "^4.0.0",
     "next": "12.1.6",
@@ -38,7 +39,8 @@
     "react-youtube": "^9.0.2",
     "request": "^2.88.2",
     "spotify-web-api-js": "^1.5.1",
-    "spotify-web-api-node": "^5.0.2"
+    "spotify-web-api-node": "^5.0.2",
+    "zustand": "4.0.0-rc.1"
   },
   "devDependencies": {
     "@types/cookie": "^0.5.1",

@@ -12,7 +12,6 @@ import {
 } from '@radix-ui/react-icons';
 import Link from 'next/link';
 import { useAtom } from 'jotai';
-import { Modal, modalAtom } from '../../state/modalAtom';
 import { useTheme } from 'next-themes';
 import {
   IconButton,
@@ -26,6 +25,7 @@ import Song from '../../models/Song';
 import { sidepanelAtom } from '../../state/sidepanelAtom';
 import { isLoggedInAtom } from '../../state/userAtom';
 import SongControl from 'components/SongControl';
+import useStore, { Modal } from 'state/store';
 
 type Props = {
   room: Room;
@@ -121,7 +121,9 @@ const RoomTitle = styled('h1', {
 });
 
 const FixedButtons = ({ room, song, show }: Props) => {
-  const [, setModal] = useAtom(modalAtom);
+  const { handleSetModal } = useStore((store) => ({
+    handleSetModal: store.handleSetModal,
+  }));
   const { colorMode, toggleColorMode } = useColorMode();
   const { theme, setTheme } = useTheme();
   const [sidepanelStatus, setSidepanelStatus] = useAtom(sidepanelAtom);
@@ -129,8 +131,9 @@ const FixedButtons = ({ room, song, show }: Props) => {
 
   const { hasCopied, onCopy } = useClipboard(room.slug);
 
-  const handleQueue = () => setModal(Modal.QueueSong);
-  const handleDevices = () => setModal(Modal.DeviceSelect);
+  const handleQueue = handleSetModal(Modal.QueueSong);
+  const handleDevices = handleSetModal(Modal.DeviceSelect);
+
   const handleColorMode = () => {
     toggleColorMode();
 

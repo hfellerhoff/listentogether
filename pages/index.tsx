@@ -13,7 +13,7 @@ import TextLoop from 'react-text-loop';
 import { FaSpotify } from 'react-icons/fa';
 import ColorModeButton from '../components/ColorModeButton';
 import Layout from '../components/Layout';
-import { BASE_URL } from '../constants/API_SPOTIFY_AUTH';
+import API from '@/lib/api';
 
 export default function Home() {
   const { colorMode } = useColorMode();
@@ -68,7 +68,7 @@ export default function Home() {
             justify='space-between'
             direction={['column', 'row', 'row']}
           >
-            <a href={BASE_URL + '/api/spotify/login'}>
+            <a href={API.Spotify.Routes.authLogin.get()}>
               <Button
                 variant='solid'
                 colorScheme='green'

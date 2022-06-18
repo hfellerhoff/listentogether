@@ -1,13 +1,12 @@
 import { useEffect } from 'react';
-import Service from '../models/Service';
 import { useAtom } from 'jotai';
-import { spotifyAtom } from '../state/spotifyAtom';
 import useSpotifyAuthentication from './spotify/useSpotifyAuthentication';
 import { userAtom } from '../state/userAtom';
 import User from '../models/User';
 import { useRouter } from 'next/router';
 import supabase from '../util/supabase';
 import { isPremiumAtom } from '../state/isPremiumAtom';
+import useStore from 'state/store';
 
 type Options = {
   shouldRedirect?: boolean;
@@ -21,7 +20,9 @@ const useUserMonitor = (
   const { shouldRedirect = true } = options;
 
   const router = useRouter();
-  const [spotifyAPI, _] = useAtom(spotifyAtom);
+  const { spotify } = useStore((store) => ({
+    spotify: store.spotify,
+  }));
   const [user, setUser] = useAtom(userAtom);
   const [, setIsPremium] = useAtom(isPremiumAtom);
   const { isLoading, accessToken } = useSpotifyAuthentication({
@@ -32,9 +33,8 @@ const useUserMonitor = (
     const updateUser = async () => {
       if (!accessToken || isLoading) return;
       try {
-        spotifyAPI.setAccessToken(accessToken);
-
-        const spotifyUser = await spotifyAPI.getMe();
+        spotify.setAccessToken(accessToken);
+        const spotifyUser = await spotify.getMe();
 
         setIsPremium(spotifyUser.product === 'premium');
 

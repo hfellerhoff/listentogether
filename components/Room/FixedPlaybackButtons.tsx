@@ -7,7 +7,6 @@ import {
   TrackNextIcon,
 } from '@radix-ui/react-icons';
 import { useAtom } from 'jotai';
-import { Modal, modalAtom } from '../../state/modalAtom';
 import { DarkMode, Spinner, Tooltip } from '@chakra-ui/react';
 import Song from '../../models/Song';
 import { useState, useEffect } from 'react';
@@ -53,7 +52,6 @@ const CircularButton = styled('button', {
 });
 
 const FixedPlaybackButtons = ({ song }: Props) => {
-  const [, setModal] = useAtom(modalAtom);
   const progress = useSongProgress(song);
 
   const [playbackConfiguration, setPlaybackConfiguration] = useAtom(

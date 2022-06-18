@@ -5,7 +5,6 @@ import VolumeAndDeviceControl from '../Room/VolumeAndDeviceControl';
 import { FiChevronDown, FiMusic, FiPlus } from 'react-icons/fi';
 import PlaybackHeaderSongDisplay from './PlaybackHeaderSongDisplay';
 import { useAtom } from 'jotai';
-import { Modal, modalAtom } from '../../state/modalAtom';
 import { userAtom } from '../../state/userAtom';
 import useBackgroundColor from '../../hooks/useBackgroundColor';
 import Link from 'next/link';
@@ -14,6 +13,7 @@ import Room, { Queue } from '../../models/Room';
 import { useRouter } from 'next/router';
 import { roomAtom } from '../../state/roomAtom';
 import Song from '../../models/Song';
+import useStore, { Modal } from 'state/store';
 
 interface Props {
   placement?: 'top' | 'bottom';
@@ -26,7 +26,9 @@ const PlaybackHeader = ({ placement, isHome, song, room }: Props) => {
   placement = placement || 'top';
   const router = useRouter();
   const [user] = useAtom(userAtom);
-  const [, setModal] = useAtom(modalAtom);
+  const { handleSetModal } = useStore((store) => ({
+    handleSetModal: store.handleSetModal,
+  }));
   const { foregroundColor } = useBackgroundColor();
 
   const [isCreatingRoom, setIsCreatingRoom] = useState(false);
@@ -94,7 +96,7 @@ const PlaybackHeader = ({ placement, isHome, song, room }: Props) => {
           <PlaybackHeaderSongDisplay song={song} room={room} />
           <Box display={['none', 'none', 'none', 'block']}>
             <VolumeAndDeviceControl
-              onSpeakerClick={() => setModal(Modal.DeviceSelect)}
+              onSpeakerClick={handleSetModal(Modal.DeviceSelect)}
             />
           </Box>
         </Flex>
@@ -120,7 +122,7 @@ const PlaybackHeader = ({ placement, isHome, song, room }: Props) => {
             hasArrow
             placement='bottom-end'
           >
-            <Button onClick={() => setModal(Modal.PlaybackControl)}>
+            <Button onClick={handleSetModal(Modal.PlaybackControl)}>
               <FiMusic fontSize={20} />
             </Button>
           </Tooltip>

@@ -21,6 +21,7 @@ specifiers:
   dayjs: ^1.11.3
   formik: ^2.2.6
   framer-motion: ^6
+  immer: ^9.0.15
   jotai: ^1.7.1
   nanoid: ^4.0.0
   next: 12.1.6
@@ -38,6 +39,7 @@ specifiers:
   spotify-web-api-node: ^5.0.2
   typescript: ^4.1.3
   worker-loader: ^3.0.8
+  zustand: 4.0.0-rc.1
 
 dependencies:
   '@chakra-ui/icons': 2.0.2_react@18.1.0
@@ -56,7 +58,8 @@ dependencies:
   dayjs: 1.11.3
   formik: 2.2.9_react@18.1.0
   framer-motion: 6.3.11_ef5jwxihqo6n7gxfmzogljlgcm
-  jotai: 1.7.1_react@18.1.0
+  immer: 9.0.15
+  jotai: 1.7.1_immer@9.0.15+react@18.1.0
   nanoid: 4.0.0
   next: 12.1.6_ef5jwxihqo6n7gxfmzogljlgcm
   next-themes: 0.2.0_2mgcgz5qhsdxw4fgpqzqeafmkq
@@ -71,6 +74,7 @@ dependencies:
   request: 2.88.2
   spotify-web-api-js: 1.5.2
   spotify-web-api-node: 5.0.2
+  zustand: 4.0.0-rc.1_immer@9.0.15+react@18.1.0
 
 devDependencies:
   '@types/cookie': 0.5.1
@@ -2146,6 +2150,10 @@ packages:
       '@types/node': 16.9.1
     dev: false
 
+  /immer/9.0.15:
+    resolution: {integrity: sha512-2eB/sswms9AEUSkOm4SbV5Y7Vmt/bKRwByd52jfLkW4OLYeaTP3EEiJ9agqU0O/tq6Dk62Zfj+TJSqfm1rLVGQ==}
+    dev: false
+
   /import-fresh/3.3.0:
     resolution: {integrity: sha512-veYYhQa+D1QBKznvhUHxb8faxlrwUnxseDAbAp457E0wLNio2bOSKnjYDhMj+YiAq61xrMGhQk9iXVk5FzgQMw==}
     engines: {node: '>=6'}
@@ -2186,7 +2194,7 @@ packages:
     resolution: {integrity: sha512-Yljz7ffyPbrLpLngrMtZ7NduUgVvi6wG9RJ9IUcyCd59YQ911PBJphODUcbOVbqYfxe1wuYf/LJ8PauMRwsM/g==}
     dev: false
 
-  /jotai/1.7.1_react@18.1.0:
+  /jotai/1.7.1_immer@9.0.15+react@18.1.0:
     resolution: {integrity: sha512-Ucighxm0GwjvMpnLn7//CrHFSgLoL7LxHhXm7ofUNIktsRE4TAAhzrwsBb0LjJ0DuBJqQEJq9/jbHFfjO0ylYQ==}
     engines: {node: '>=12.7.0'}
     peerDependencies:
@@ -2220,6 +2228,7 @@ packages:
       xstate:
         optional: true
     dependencies:
+      immer: 9.0.15
       react: 18.1.0
     dev: false
 
@@ -3141,6 +3150,14 @@ packages:
       tslib: 2.4.0
     dev: false
 
+  /use-sync-external-store/1.1.0_react@18.1.0:
+    resolution: {integrity: sha512-SEnieB2FPKEVne66NpXPd1Np4R1lTNKfjuy3XdIoPQKYBAFdzbzSZlSn1KJZUiihQLQC5Znot4SBz1EOTBwQAQ==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: 18.1.0
+    dev: false
+
   /utf-8-validate/5.0.9:
     resolution: {integrity: sha512-Yek7dAy0v3Kl0orwMlvi7TPtiCNrdfHNd7Gcc/pLq4BLXqfAmd0J7OWMizUQnTTJsyjKn02mU7anqwfmUP4J8Q==}
     engines: {node: '>=6.14.2'}
@@ -3258,4 +3275,21 @@ packages:
       debug: 2.6.9
       load-script: 1.0.0
       sister: 3.0.2
+    dev: false
+
+  /zustand/4.0.0-rc.1_immer@9.0.15+react@18.1.0:
+    resolution: {integrity: sha512-qgcs7zLqBdHu0PuT3GW4WCIY5SgXdsv30GQMu9Qpp1BA2aS+sNS8l4x0hWuyEhjXkN+701aGWawhKDv6oWJAcw==}
+    engines: {node: '>=12.7.0'}
+    peerDependencies:
+      immer: '>=9.0'
+      react: '>=16.8'
+    peerDependenciesMeta:
+      immer:
+        optional: true
+      react:
+        optional: true
+    dependencies:
+      immer: 9.0.15
+      react: 18.1.0
+      use-sync-external-store: 1.1.0_react@18.1.0
     dev: false

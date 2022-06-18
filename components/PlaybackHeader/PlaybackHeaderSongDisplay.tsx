@@ -1,15 +1,10 @@
-import React, { useEffect, useState } from 'react';
 import { Box, Button, Text } from '@chakra-ui/react';
 import DashboardSongDisplay from '../Room/DashboardSongDisplay';
-import { useAtom } from 'jotai';
-import { Modal, modalAtom } from '../../state/modalAtom';
-import { roomAtom } from '../../state/roomAtom';
-import { spotifyAtom } from '../../state/spotifyAtom';
-import useSpotifyAuthentication from '../../hooks/spotify/useSpotifyAuthentication';
 import Song from '../../models/Song';
 import { FaPlus } from 'react-icons/fa';
 import Room from '../../models/Room';
 import useSpotifyTrack from '../../hooks/spotify/useSpotifyTrack';
+import useStore, { Modal } from 'state/store';
 
 interface Props {
   song?: Song;
@@ -17,9 +12,10 @@ interface Props {
 }
 
 const PlaybackHeaderSongDisplay = ({ song, room }: Props) => {
-  const [, setModal] = useAtom(modalAtom);
-  const [spotifyApi] = useAtom(spotifyAtom);
-  const { accessToken } = useSpotifyAuthentication();
+  const { handleSetModal } = useStore((store) => ({
+    handleSetModal: store.handleSetModal,
+  }));
+
   const track = useSpotifyTrack(song);
 
   return (
@@ -36,7 +32,7 @@ const PlaybackHeaderSongDisplay = ({ song, room }: Props) => {
           <Button
             leftIcon={<FaPlus />}
             variant='ghost'
-            onClick={() => setModal(Modal.QueueSong)}
+            onClick={handleSetModal(Modal.QueueSong)}
           >
             <Text ml={1}>Pick a song to play!</Text>
           </Button>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Flex,
   Slider,
@@ -9,22 +9,21 @@ import {
   IconButton,
 } from '@chakra-ui/react';
 import { FiVolumeX, FiVolume, FiVolume1, FiVolume2 } from 'react-icons/fi';
-import { useAtom } from 'jotai';
-import { spotifyAtom } from '../../state/spotifyAtom';
-import useSpotifyAuthentication from '../../hooks/spotify/useSpotifyAuthentication';
+import useStore from 'state/store';
 
 interface Props {}
 
 const VolumeSlider = (props: Props) => {
-  const [spotifyApi] = useAtom(spotifyAtom);
-  const { accessToken } = useSpotifyAuthentication();
+  const { spotify } = useStore((store) => ({
+    spotify: store.spotify,
+  }));
 
   const [localVolume, setLocalVolume] = useState(100);
 
   const updateSpotifyVolume = (value: number) => {
     setLocalVolume(value);
 
-    if (spotifyApi) {
+    if (spotify) {
       // spotifyApi.setAccessToken(accessToken);
       // spotifyApi.setVolume(value);
     }

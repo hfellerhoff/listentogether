@@ -5,6 +5,7 @@ interface Song {
   addedAt: string; // timestamp
   isPaused: boolean;
   room_id: number;
+  duration_ms: number;
   spotifyUri?: string;
   youtube_video_id?: string;
 }

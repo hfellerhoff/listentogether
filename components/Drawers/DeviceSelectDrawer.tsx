@@ -20,48 +20,49 @@ import {
 } from '@chakra-ui/react';
 import { FiRefreshCcw } from 'react-icons/fi';
 import { useAtom } from 'jotai';
-import { spotifyAtom } from '../../state/spotifyAtom';
 import useSpotifyAuthentication from '../../hooks/spotify/useSpotifyAuthentication';
-import { Modal, modalAtom } from '../../state/modalAtom';
 import RadioCardGroup from '../RadioCardGroup';
+import useStore, { Modal } from 'state/store';
 
 interface Props {}
 
 const DeviceSelectDrawer = (props: Props) => {
-  const [spotifyAPI] = useAtom(spotifyAtom);
   const { accessToken } = useSpotifyAuthentication();
-  const [modal, setModal] = useAtom(modalAtom);
+  const { spotify, modal, handleSetModal } = useStore((store) => ({
+    spotify: store.spotify,
+    modal: store.modal,
+    handleSetModal: store.handleSetModal,
+  }));
 
   const [isLoading, setIsLoading] = useState(true);
   const [isTransferingPlayback, setIsTransferingPlayback] = useState(false);
-  const [devices, setDevices] = useState<SpotifyApi.UserDevice[]>([]);
+  const [devices, setDevices] = useState<spotify.UserDevice[]>([]);
   const [selectedDevice, setSelectedDevice] = useState('');
 
-  const onClose = () => setModal(Modal.None);
   const isOpen = modal === Modal.DeviceSelect;
 
   const getDevices = useCallback(async () => {
-    if (spotifyAPI) {
+    if (accessToken && spotify) {
       setIsLoading(true);
-      spotifyAPI.setAccessToken(accessToken);
-      const devicesResponse = await spotifyAPI.getMyDevices();
+      spotify.setAccessToken(accessToken);
+      const devicesResponse = await spotify.getMyDevices();
       setDevices(devicesResponse.devices);
       devicesResponse.devices.forEach((device) => {
         if (device.is_active) setSelectedDevice(device.id as string);
       });
       setIsLoading(false);
     }
-  }, [accessToken, spotifyAPI]);
+  }, [accessToken, spotify]);
 
   useEffect(() => {
     if (isOpen) getDevices();
-  }, [accessToken, getDevices, isOpen, spotifyAPI]);
+  }, [accessToken, getDevices, isOpen, spotify]);
 
   const updateSelectedDevice = async (device_id: string) => {
-    if (spotifyAPI) {
+    if (spotify) {
       // && device_id !== selectedDevice
       setIsTransferingPlayback(true);
-      await spotifyAPI
+      await spotify
         .transferMyPlayback([device_id])
         .catch((err) => console.error(err));
       console.log('Successfully changed playback to ' + device_id);
@@ -70,7 +71,11 @@ const DeviceSelectDrawer = (props: Props) => {
   };
 
   return (
-    <Drawer placement='top' onClose={onClose} isOpen={isOpen}>
+    <Drawer
+      placement='top'
+      onClose={handleSetModal(Modal.None)}
+      isOpen={isOpen}
+    >
       <DrawerOverlay />
       <DrawerContent p={[2, 4, 8, 8]}>
         <DrawerHeader>

@@ -6,9 +6,7 @@ import { sidepanelAtom } from 'state/sidepanelAtom';
 import { useAtom } from 'jotai';
 import useWindowDimensions from 'hooks/useWindowDimensions';
 import Song from 'models/Song';
-import { activeSongAtom } from 'state/activeSongAtom';
-import useSongProgress from 'hooks/rooms/useSongProgress';
-import useYouTubeHandlePlayback from 'hooks/useYouTubeHandlePlayback';
+import useStore from 'state/store';
 
 type Props = {
   song: Song;
@@ -21,20 +19,32 @@ const YouTubePlayer = ({ song, hideCursor, hasAllowedAutoPlay }: Props) => {
   const [isReady, setIsReady] = useState(false);
   const [sidepanelStatus] = useAtom(sidepanelAtom);
   const { width, height } = useWindowDimensions();
+  const { setYouTube } = useStore((store) => ({
+    youtube: store.youtube,
+    setYouTube: store.setYouTube,
+  }));
 
   const onPlayerReady: YouTubeProps['onReady'] = (event) => {
     setIsReady(true);
   };
 
-  const canPlayVideo = !!videoRef.current && isReady && hasAllowedAutoPlay;
+  useEffect(() => {
+    if (videoRef.current && videoRef.current.internalPlayer) {
+      setYouTube(videoRef.current.internalPlayer);
+    }
 
-  useYouTubeHandlePlayback(song, videoRef.current, canPlayVideo);
+    return () => {
+      setYouTube(null);
+    };
+  }, [videoRef.current]);
+
+  // const canPlayVideo = !!videoRef.current && isReady && hasAllowedAutoPlay;
 
   const opts = {
     width: sidepanelStatus.isRightOpen ? width - 28 * 16 : width,
     height: height,
     playerVars: {
-      autoplay: 1,
+      autoplay: 0,
       controls: 0,
       rel: 0,
     },
@@ -50,7 +60,7 @@ const YouTubePlayer = ({ song, hideCursor, hasAllowedAutoPlay }: Props) => {
       {!hasAllowedAutoPlay && (
         <Center position='absolute' zIndex='modal' inset={0}>
           <Box bg='gray.800' p={4} borderRadius='md'>
-            <Button variant='solid'>Listen In</Button>
+            <Button variant='solid'>Start Listening</Button>
           </Box>
         </Center>
       )}

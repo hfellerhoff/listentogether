@@ -11,6 +11,7 @@ const ListenTogetherAPI = {
   Routes: {},
   Cookies: {},
   Secrets: {},
+  BASE_URL,
 };
 
 export default ListenTogetherAPI;

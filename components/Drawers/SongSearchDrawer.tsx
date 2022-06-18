@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Drawer,
   DrawerOverlay,
@@ -19,18 +19,19 @@ import {
   Button,
   Tag,
   useToast,
+  Center,
 } from '@chakra-ui/react';
 import DashboardSongDisplay from '../Room/DashboardSongDisplay';
 import useWindowDimensions from '../../hooks/useWindowDimensions';
 import useSpotifyAuthentication from '../../hooks/spotify/useSpotifyAuthentication';
 import { useAtom } from 'jotai';
-import { spotifyAtom } from '../../state/spotifyAtom';
 import { userAtom } from '../../state/userAtom';
-import { Modal, modalAtom } from '../../state/modalAtom';
-import Service from '../../models/Service';
 import { roomAtom } from '../../state/roomAtom';
 import { FaSpotify, FaYoutube } from 'react-icons/fa';
 import { ArrowRightIcon } from '@radix-ui/react-icons';
+import useStore, { Modal } from 'state/store';
+import { QueueProps } from 'pages/api/rooms/queue';
+import YouTubePlayerPreview from 'components/YouTubePlayerPreview';
 
 interface Props {}
 
@@ -59,26 +60,39 @@ const SongSearchDrawer = (props: Props) => {
   const { colorMode } = useColorMode();
   const dimensions = useWindowDimensions();
 
-  const [spotifyAPI] = useAtom(spotifyAtom);
   const [user] = useAtom(userAtom);
   const [room] = useAtom(roomAtom);
-  const [modal, setModal] = useAtom(modalAtom);
+  const { spotify, modal, setModal, handleSetModal } = useStore((store) => ({
+    spotify: store.spotify,
+    modal: store.modal,
+    setModal: store.setModal,
+    handleSetModal: store.handleSetModal,
+  }));
   const { accessToken } = useSpotifyAuthentication();
   const toast = useToast();
 
+  // SPOTIFY
   const [searchQuery, setSearchQuery] = useState('');
-  const [youTubeURL, setYouTubeURL] = useState('');
   const [lastSearched, setLastSearched] = useState(0);
-  const [searchResults, setSearchResults] = useState<
-    SpotifyApi.TrackObjectFull[]
-  >([]);
+
+  // YOUTUBE
+  const [youTubeURL, setYouTubeURL] = useState('');
+  const [youTubeDurationMS, setYouTubeDurationMS] = useState(0);
+
+  const [searchResults, setSearchResults] = useState<spotify.TrackObjectFull[]>(
+    []
+  );
 
   const queueTrack = async ({
+    duration_ms,
     spotifyUri,
     youtubeVideoID,
+    progress,
   }: {
+    duration_ms: number;
     spotifyUri?: string;
     youtubeVideoID?: string;
+    progress?: number;
   }) => {
     if (user) {
       console.log('Queuing track...');
@@ -89,8 +103,10 @@ const SongSearchDrawer = (props: Props) => {
           roomId: room.id,
           spotifyUri,
           youtubeVideoID,
-        }),
-      });
+          progress,
+          duration_ms,
+        } as QueueProps),
+      }).catch(console.error);
 
       setSearchQuery('');
       setYouTubeURL('');
@@ -106,11 +122,11 @@ const SongSearchDrawer = (props: Props) => {
       setSearchResults([]);
       return;
     }
-    if (spotifyAPI && Date.now() - lastSearched > 250) {
+    if (spotify && Date.now() - lastSearched > 250) {
       try {
         setLastSearched(Date.now());
-        spotifyAPI.setAccessToken(accessToken);
-        const results = await spotifyAPI.searchTracks(e.target.value);
+        spotify.setAccessToken(accessToken);
+        const results = await spotify.searchTracks(e.target.value);
         setSearchResults(results.tracks.items.slice(0, 10));
       } catch (error) {
         console.error(error);
@@ -122,13 +138,37 @@ const SongSearchDrawer = (props: Props) => {
     setYouTubeURL(e.target.value);
   };
 
-  const handleYouTubeSubmit = (e) => {
+  const handleSpotifyQueue = (track: spotify.TrackObjectFull) => async () => {
+    await queueTrack({
+      spotifyUri: track.uri,
+      duration_ms: track.duration_ms,
+    });
+  };
+
+  const handleYouTubeQueue = (e) => {
     e.preventDefault();
 
-    if (youTubeURL.includes('youtube') && youTubeURL.includes('v=')) {
-      const youtubeVideoID = new URL(youTubeURL).searchParams.get('v');
+    if (
+      youTubeURL.includes('youtube') &&
+      youTubeURL.includes('v=') &&
+      youTubeDurationMS
+    ) {
+      const params = new URL(youTubeURL).searchParams;
+      const youtubeVideoID = params.get('v');
 
-      queueTrack({ youtubeVideoID });
+      if (!youtubeVideoID.match(/[0-9A-Za-z_-]{10}[048AEIMQUYcgkosw]/)) {
+        toast({
+          title: 'Incorrect URL',
+          description:
+            'Something is wrong with the URL you provided. Double-check your URL and try again.',
+          status: 'warning',
+        });
+      }
+
+      const tParam = params.get('t');
+      const progress = tParam ? parseInt(tParam.replace('s', '')) * 1000 : 0;
+
+      queueTrack({ youtubeVideoID, progress, duration_ms: youTubeDurationMS });
     } else {
       toast({
         title: 'Incorrect URL',
@@ -139,11 +179,32 @@ const SongSearchDrawer = (props: Props) => {
     }
   };
 
-  const onClose = () => setModal(Modal.None);
   const isOpen = modal === Modal.QueueSong;
 
+  const videoID = useMemo(() => {
+    if (youTubeURL.includes('youtube') && youTubeURL.includes('v=')) {
+      const params = new URL(youTubeURL).searchParams;
+      const youtubeVideoID = params.get('v');
+
+      if (!youtubeVideoID.match(/[0-9A-Za-z_-]{10}[048AEIMQUYcgkosw]/))
+        return null;
+
+      const tParam = params.get('t');
+      const progress = tParam ? parseInt(tParam.replace('s', '')) * 1000 : 0;
+
+      setYouTubeDurationMS(0);
+      return youtubeVideoID;
+    }
+
+    return null;
+  }, [youTubeURL]);
+
   return (
-    <Drawer placement='top' onClose={onClose} isOpen={isOpen}>
+    <Drawer
+      placement='top'
+      onClose={handleSetModal(Modal.None)}
+      isOpen={isOpen}
+    >
       <DrawerOverlay />
       <DrawerContent p={[2, 4, 8, 8]}>
         <DrawerHeader>
@@ -201,7 +262,7 @@ const SongSearchDrawer = (props: Props) => {
                           p={2}
                           mx={-2}
                           borderRadius={4}
-                          onClick={() => queueTrack({ spotifyUri: track.uri })}
+                          onClick={handleSpotifyQueue(track)}
                           cursor='pointer'
                           key={index}
                         >
@@ -211,7 +272,7 @@ const SongSearchDrawer = (props: Props) => {
                             artist={track.artists[0].name}
                             src={
                               track.album.images
-                                ? track.album.images[0].url
+                                ? track.album.images[0]?.url || undefined
                                 : undefined
                             }
                           />
@@ -222,7 +283,7 @@ const SongSearchDrawer = (props: Props) => {
                 </Flex>
               </TabPanel>
               <TabPanel>
-                <form onSubmit={handleYouTubeSubmit}>
+                <form onSubmit={handleYouTubeQueue}>
                   <Flex justify='center' maxW={800} margin='0 auto'>
                     <Input
                       size={
@@ -241,11 +302,23 @@ const SongSearchDrawer = (props: Props) => {
                       ml={4}
                       size='lg'
                       rightIcon={<ArrowRightIcon />}
+                      isLoading={videoID && !youTubeDurationMS}
+                      isDisabled={!videoID || !youTubeDurationMS}
                     >
                       Queue
                     </Button>
                   </Flex>
                 </form>
+                {videoID && (
+                  <Center mt={8}>
+                    <YouTubePlayerPreview
+                      videoID={videoID}
+                      onGetDurationMS={(duration) =>
+                        setYouTubeDurationMS(duration)
+                      }
+                    />
+                  </Center>
+                )}
               </TabPanel>
             </TabPanels>
           </Tabs>

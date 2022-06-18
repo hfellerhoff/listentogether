@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Drawer,
   DrawerOverlay,
@@ -8,31 +7,33 @@ import {
   Heading,
   Button,
   Avatar,
-  Icon,
-  useColorMode,
   Box,
 } from '@chakra-ui/react';
 import DashboardSongControls from '../Room/DashboardSongControls';
 import VolumeAndDeviceControl from '../Room/VolumeAndDeviceControl';
 import { useAtom } from 'jotai';
-import { Modal, modalAtom } from '../../state/modalAtom';
 import { userAtom } from '../../state/userAtom';
 import { FaChevronDown } from 'react-icons/fa';
 import ColorModeButton from '../ColorModeButton';
+import useStore, { Modal } from 'state/store';
 
 interface Props {}
 
 const PlaybackControlDrawer = (props: Props) => {
-  const { colorMode, toggleColorMode } = useColorMode();
   const [user] = useAtom(userAtom);
-  const [modal, setModal] = useAtom(modalAtom);
+  const { modal, handleSetModal } = useStore((store) => ({
+    modal: store.modal,
+    handleSetModal: store.handleSetModal,
+  }));
 
-  const onClose = () => setModal(Modal.None);
-  const onSpeakerClick = () => setModal(Modal.PlaybackControl);
   const isOpen = modal === Modal.PlaybackControl;
 
   return (
-    <Drawer placement='top' onClose={onClose} isOpen={isOpen}>
+    <Drawer
+      placement='top'
+      onClose={handleSetModal(Modal.None)}
+      isOpen={isOpen}
+    >
       <DrawerOverlay />
       <DrawerContent p={[2, 4, 8, 8]}>
         <DrawerBody>
@@ -64,7 +65,9 @@ const PlaybackControlDrawer = (props: Props) => {
             <Heading flex={1} size='md' mt={8} mb={2}>
               Volume + Device
             </Heading>
-            <VolumeAndDeviceControl onSpeakerClick={onSpeakerClick} />
+            <VolumeAndDeviceControl
+              onSpeakerClick={handleSetModal(Modal.PlaybackControl)}
+            />
           </Flex>
         </DrawerBody>
       </DrawerContent>
