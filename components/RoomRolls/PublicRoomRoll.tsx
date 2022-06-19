@@ -28,7 +28,6 @@ const PublicRoomRoll = (props: Props) => {
         .order('updatedAt', {
           ascending: false,
         })
-        .eq('isPublic', true)
         .limit(30);
 
       if (!error) {
