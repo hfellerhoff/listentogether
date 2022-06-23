@@ -14,7 +14,7 @@ class MyDocument extends Document {
             <script
               async
               defer
-              data-website-id='fb58a977-885c-4dc9-a5d8-425e4de59f84'
+              data-website-id='bdf79312-c4cd-4783-abb0-d71bbcf4c596'
               src='https://umami.henryfellerhoff.com/umami.js'
             ></script>
           ) : (
