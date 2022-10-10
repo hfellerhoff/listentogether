@@ -138,7 +138,7 @@ export const RoomPage = (props: Props) => {
   const track = useSpotifyTrack(song);
 
   const { normalGradient } = useGradientsFromImageRef(
-    track ? track.album.images[0].url : undefined
+    !!track ? track.album.images[0].url : undefined
   );
 
   const backgroundStyles = !!track
@@ -148,8 +148,8 @@ export const RoomPage = (props: Props) => {
     : {};
 
   const hasAllowedAutoPlay = useHasAllowedAutoPlay();
-  const isInactive = useIsInactive();
-  const isSongInQueue = track && song;
+  const isInactive = false; //useIsInactive();
+  const isSongInQueue = !!track && !!song;
 
   return (
     <Layout>

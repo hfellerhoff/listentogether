@@ -14,6 +14,7 @@ import Link from 'next/link';
 import { useAtom } from 'jotai';
 import { useTheme } from 'next-themes';
 import {
+  Box,
   IconButton,
   Tooltip,
   useClipboard,
@@ -33,7 +34,7 @@ type Props = {
   show: boolean;
 };
 
-const FloatingContainer = styled('div', {
+const FloatingContainer = styled(Box, {
   position: 'absolute',
   zIndex: 1,
   display: 'flex',
@@ -149,20 +150,30 @@ const FixedButtons = ({ room, song, show }: Props) => {
 
   return (
     <>
-      <Link href='/dashboard'>
-        <FloatingContainer position='tl' show={show}>
-          <Tooltip
-            label='Leave room'
-            aria-label='Leave room'
-            placement='bottom-start'
-            zIndex={8}
-          >
-            <CircularLinkButton aria-label='Leave room'>
-              <ArrowLeftIcon />
-            </CircularLinkButton>
-          </Tooltip>
+      <Tooltip
+        label='Leave room'
+        aria-label='Leave room'
+        placement='bottom-start'
+        zIndex={8}
+      >
+        <FloatingContainer
+          position='tl'
+          show={show}
+          css={{
+            padding: '0.5rem',
+          }}
+        >
+          <Link href='/dashboard' passHref>
+            <IconButton
+              as='a'
+              aria-label='Leave room'
+              variant='ghost'
+              icon={<ArrowLeftIcon />}
+              rounded='full'
+            />
+          </Link>
         </FloatingContainer>
-      </Link>
+      </Tooltip>
       <FloatingContainer position='t' show={show}>
         <Tooltip
           label={hasCopied ? 'Copied!' : 'Copy room code'}
