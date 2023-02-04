@@ -1,12 +1,9 @@
-const redirectURI =
-  process.env.NODE_ENV === 'development'
-    ? 'http://localhost:3000/rooms/'
-    : 'http://listentogether.app/rooms/';
+import { NextApiHandler } from 'next';
 
-import supabase from '../../../util/supabase/index';
-import { MessageType } from '../../../models/Message';
+import { MessageType } from '../../../src/models/Message';
+import supabase from '../../../src/util/supabase/index';
 
-export default async function handler(req, res) {
+const handler: NextApiHandler = async (req, res) => {
   const message_data = JSON.parse(req.body);
 
   const chat = {
@@ -23,4 +20,5 @@ export default async function handler(req, res) {
 
   // res.json(room);
   res.end();
-}
+};
+export default handler;

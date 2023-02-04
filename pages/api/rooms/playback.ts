@@ -1,6 +1,7 @@
-import { customAlphabet } from 'nanoid';
-import Song from '../../../models/Song';
-import supabase from '../../../util/supabase/index';
+import { NextApiHandler } from 'next';
+
+import Song from '../../../src/models/Song';
+import supabase from '../../../src/util/supabase/index';
 
 export interface RoomPlaybackQuery {
   songId?: number;
@@ -14,7 +15,7 @@ export interface RoomPlaybackQuery {
   isSkipAtEnd?: boolean;
 }
 
-export default async function handler(req, res) {
+const handler: NextApiHandler = async (req, res) => {
   const {
     songId,
     track,
@@ -27,6 +28,11 @@ export default async function handler(req, res) {
     .from('songs')
     .select('*')
     .eq('id', songId);
+
+  if (!songs?.length) {
+    res.end();
+    return;
+  }
 
   const song: Song = songs[0];
 
@@ -72,13 +78,14 @@ export default async function handler(req, res) {
       .eq('room_id', song.room_id)
       .range(0, 1);
 
-    if (otherSongs.body.length > 0) {
-      const nextSong = otherSongs.body[0] as Song;
+    if (otherSongs.data?.length) {
+      const nextSong = otherSongs.data[0] as Song;
 
       const res = await supabase
         .from('songs')
         .update({
           updatedAt: 'now()',
+          isPaused: false,
         })
         .eq('id', nextSong.id);
 
@@ -115,4 +122,5 @@ export default async function handler(req, res) {
   }
 
   res.end();
-}
+};
+export default handler;

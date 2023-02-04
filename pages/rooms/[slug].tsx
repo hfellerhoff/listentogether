@@ -1,32 +1,28 @@
-import ChatComponent from '../../components/Room/Chat/ChatComponent';
-import { useAtom } from 'jotai';
-import { useRouter } from 'next/router';
-import Layout from '../../components/Layout';
-import Head from 'next/head';
-import useMonitorRoom from '../../hooks/rooms/useMonitorRoom';
-import useQueue from '../../hooks/rooms/useQueue';
-import useGradientsFromImageRef from '../../hooks/useGradientsFromImageRef';
-import useSpotifyTrack from '../../hooks/spotify/useSpotifyTrack';
-import { css, styled } from '@stitches/react';
-import FixedButtons from '../../components/Room/FixedButtons';
-import Song from '../../models/Song';
-import FixedPlaybackButtons from '../../components/Room/FixedPlaybackButtons';
-import { sidepanelAtom } from '../../state/sidepanelAtom';
-import { neutral } from '../../stitches.config';
-import { isLoggedInAtom } from '../../state/userAtom';
-import { Button } from '@chakra-ui/react';
-import { FaSpotify } from 'react-icons/fa';
-import YouTubePlayer from 'components/YouTubePlayer';
-import useIsInactive from 'hooks/useIsInactive';
-import useHasAllowedAutoPlay from 'hooks/useHasAllowedAutoPlay';
-import { useEffect } from 'react';
-import useSpotifyWebPlayback from 'hooks/spotify/useSpotifyWebPlayback';
-import Script from 'next/script';
-import API from '@/lib/api';
-import PlaybackAPI from '@/lib/playback';
-import useHandlePlayback from 'hooks/useHandlePlayback';
+import { useMemo } from 'react';
 
-interface Props {}
+import { Button } from '@chakra-ui/react';
+import { css, styled } from '@stitches/react';
+import { useAtom } from 'jotai';
+import Head from 'next/head';
+import { useRouter } from 'next/router';
+import { FaSpotify } from 'react-icons/fa';
+
+import YouTubePlayer from 'src/components/YouTubePlayer';
+import useHandlePlayback from 'src/hooks/useHandlePlayback';
+import useHasAllowedAutoPlay from 'src/hooks/useHasAllowedAutoPlay';
+import useIsInactive from 'src/hooks/useIsInactive';
+
+import Layout from '../../src/components/Layout';
+import ChatComponent from '../../src/components/Room/Chat/ChatComponent';
+import FixedButtons from '../../src/components/Room/FixedButtons';
+import useMonitorRoom from '../../src/hooks/rooms/useMonitorRoom';
+import useQueue from '../../src/hooks/rooms/useQueue';
+import useSpotifyTrack from '../../src/hooks/spotify/useSpotifyTrack';
+import useGradientsFromImageRef from '../../src/hooks/useGradientsFromImageRef';
+import Song from '../../src/models/Song';
+import { sidepanelAtom } from '../../src/state/sidepanelAtom';
+import { neutral } from '../../stitches.config';
+import { useAuthContext } from '@/lib/AuthProvider';
 
 const PageLayout = styled('div', {
   height: '100vh',
@@ -100,7 +96,7 @@ const AlbumArt = ({
   maxZ,
 }: {
   song: Song;
-  position: any;
+  position: number;
   maxZ: number;
 }) => {
   const track = useSpotifyTrack(song);
@@ -125,30 +121,46 @@ const AlbumArt = ({
   return <AlbumArtImage src={track.album.images[0].url} className={styles()} />;
 };
 
-export const RoomPage = (props: Props) => {
+export const RoomPage = () => {
   const router = useRouter();
-  const room = useMonitorRoom(router.query.slug as string);
+  const slug = useMemo(() => {
+    if (router.query.slug && typeof router.query.slug === 'string') {
+      return router.query.slug;
+    }
+
+    if (window) {
+      const urlPortions = new URL(window.location.toString()).pathname.split(
+        '/'
+      );
+      const windowSlug = urlPortions[urlPortions.length - 1];
+      if (windowSlug) return windowSlug;
+    }
+
+    return undefined;
+  }, [router.query.slug]);
+
+  const room = useMonitorRoom(slug);
   const queue = useQueue(room.id);
   const song = queue ? queue[0] || undefined : undefined;
 
   useHandlePlayback(song);
 
   const [sidepanelStatus] = useAtom(sidepanelAtom);
-  const [isLoggedIn] = useAtom(isLoggedInAtom);
+  const { isAuthenticated, signIn } = useAuthContext();
   const track = useSpotifyTrack(song);
 
   const { normalGradient } = useGradientsFromImageRef(
-    !!track ? track.album.images[0].url : undefined
+    track ? track.album.images[0].url : undefined
   );
 
-  const backgroundStyles = !!track
+  const backgroundStyles = track
     ? {
         style: { background: normalGradient },
       }
     : {};
 
   const hasAllowedAutoPlay = useHasAllowedAutoPlay();
-  const isInactive = false; //useIsInactive();
+  const isInactive = useIsInactive();
   const isSongInQueue = !!track && !!song;
 
   return (
@@ -178,7 +190,7 @@ export const RoomPage = (props: Props) => {
             queue.length > 0 &&
             song &&
             !song.youtube_video_id &&
-            isLoggedIn && (
+            isAuthenticated && (
               <AlbumArtContainer>
                 {queue.map((song, i) => (
                   <AlbumArt
@@ -190,7 +202,7 @@ export const RoomPage = (props: Props) => {
                 ))}
               </AlbumArtContainer>
             )}
-          {isLoggedIn ? (
+          {isAuthenticated ? (
             <>
               <AlbumTitle>
                 {isSongInQueue ? track.name : 'Nothing is playing.'}
@@ -203,7 +215,7 @@ export const RoomPage = (props: Props) => {
             </>
           ) : (
             <>
-              <AlbumTitle>Login to listen together!</AlbumTitle>
+              <AlbumTitle>Log in to listen together!</AlbumTitle>
               <AlbumArtist
                 style={{
                   maxWidth: '24rem',
@@ -215,17 +227,17 @@ export const RoomPage = (props: Props) => {
                 Join other users in {room.name} to listen to music, queue songs,
                 and chat with friends.
               </AlbumArtist>
-              <a href={API.Spotify.Routes.authLogin.get()}>
-                <Button
-                  mt={4}
-                  variant='solid'
-                  colorScheme='green'
-                  size='lg'
-                  leftIcon={<FaSpotify />}
-                >
-                  Login with Spotify
-                </Button>
-              </a>
+
+              <Button
+                mt={4}
+                variant='solid'
+                colorScheme='green'
+                size='lg'
+                leftIcon={<FaSpotify />}
+                onClick={() => signIn('spotify')}
+              >
+                Login with Spotify
+              </Button>
             </>
           )}
         </AlbumBackground>

@@ -1,6 +1,8 @@
-import generateRandomString from '../../../util/api/generateRandomString';
 import { serialize } from 'cookie';
-import API from '@/lib/api';
+
+import API from 'src/lib/api';
+
+import generateRandomString from '../../../src/util/api/generateRandomString';
 
 const redirect_uri = API.Spotify.Routes.authRedirect.get();
 

@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.0.17",
@@ -20,6 +21,11 @@
     "@radix-ui/react-scroll-area": "^1.0.2",
     "@stitches/react": "^1.2.8",
     "@supabase/supabase-js": "^2.7.0",
+    "@tanstack/react-query": "^4.24.4",
+    "@trpc/client": "^10.10.0",
+    "@trpc/next": "^10.10.0",
+    "@trpc/react-query": "^10.10.0",
+    "@trpc/server": "^10.10.0",
     "cookie": "^0.5.0",
     "dayjs": "^1.11.7",
     "formik": "^2.2.9",
@@ -47,6 +53,7 @@
     "@types/node": "^18.11.18",
     "@types/react": "^18.0.27",
     "@types/request": "^2.48.8",
+    "@types/spotify-web-playback-sdk": "^0.1.15",
     "@typescript-eslint/eslint-plugin": "^5.50.0",
     "@typescript-eslint/parser": "^5.50.0",
     "autoprefixer": "^10.4.13",

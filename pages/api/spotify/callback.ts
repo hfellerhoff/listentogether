@@ -1,10 +1,11 @@
 import { serialize } from 'cookie';
 import { NextApiRequest, NextApiResponse } from 'next';
 import * as request from 'request';
-import supabase from '../../../util/supabase/index';
-
 import Spotify from 'spotify-web-api-node';
-import API from '@/lib/api';
+
+import API from 'src/lib/api';
+
+import supabase from '../../../src/util/supabase/index';
 
 const callbackURI = API.Spotify.Routes.authCallback;
 

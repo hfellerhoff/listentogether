@@ -1,5 +1,7 @@
-import Song from '../../../models/Song';
-import supabase from '../../../util/supabase';
+import { NextApiHandler } from 'next';
+
+import Song from '../../../src/models/Song';
+import supabase from '../../../src/util/supabase';
 
 export interface QueueProps {
   spotifyUri?: string;
@@ -9,25 +11,30 @@ export interface QueueProps {
   duration_ms: number;
 }
 
-export default async function handler(req, res) {
+const handler: NextApiHandler = async (req, res) => {
   const props: QueueProps = JSON.parse(req.body);
 
   const { roomId, spotifyUri, youtubeVideoID, progress, duration_ms } = props;
 
   if (props && roomId && (spotifyUri || youtubeVideoID) && duration_ms) {
-    // Queue a song
+    const roomSongResponse = await supabase
+      .from('songs')
+      .select('id')
+      .eq('room_id', roomId);
+    const hasCurrentSong = !!roomSongResponse.data?.length;
+
     const song: Partial<Song> = {
-      spotifyUri: spotifyUri || null,
-      youtube_video_id: youtubeVideoID || null,
+      spotifyUri: spotifyUri || undefined,
+      youtube_video_id: youtubeVideoID || undefined,
       progress: progress || 0,
-      isPaused: false,
+      isPaused: hasCurrentSong,
       room_id: roomId,
       duration_ms: duration_ms,
     };
 
     const songResponse = await supabase.from('songs').insert([song]);
-    if (songResponse.body && songResponse.body[0]) {
-      const supabaseSong: Song = songResponse.body[0];
+    if (songResponse.data?.length) {
+      const supabaseSong = songResponse.data[0] as unknown as Song;
 
       res.json({
         room_id: roomId,
@@ -37,4 +44,5 @@ export default async function handler(req, res) {
   }
 
   res.end();
-}
+};
+export default handler;

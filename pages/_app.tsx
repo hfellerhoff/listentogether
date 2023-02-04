@@ -1,23 +1,32 @@
-import { ChakraProvider } from '@chakra-ui/react';
 import '../styles/globals.css';
-import { Provider } from 'jotai';
-
-import { globalStyles } from '../stitches.config';
-import StitchesThemeController from '../components/StitchesThemeController';
+import { ChakraProvider } from '@chakra-ui/react';
+import { Provider as JotaiProvider } from 'jotai';
+import { AppProps } from 'next/app';
 import { ThemeProvider } from 'next-themes';
-import useSpotifyWebPlayback from 'hooks/spotify/useSpotifyWebPlayback';
 
-export default function App({ Component, pageProps }) {
+import AuthProvider from 'src/lib/AuthProvider';
+import UserProvider from 'src/lib/UserProvider';
+
+import StitchesThemeController from '../src/components/StitchesThemeController';
+import { globalStyles } from '../stitches.config';
+import SpotifyWebPlayback from '@/lib/spotify/SpotifyWebPlayback';
+
+export default function App({ Component, pageProps }: AppProps) {
   globalStyles();
-  useSpotifyWebPlayback();
 
   return (
     <ThemeProvider>
       <StitchesThemeController>
         <ChakraProvider>
-          <Provider>
-            <Component {...pageProps} />
-          </Provider>
+          <AuthProvider>
+            <UserProvider>
+              <JotaiProvider>
+                <SpotifyWebPlayback>
+                  <Component {...pageProps} />
+                </SpotifyWebPlayback>
+              </JotaiProvider>
+            </UserProvider>
+          </AuthProvider>
         </ChakraProvider>
       </StitchesThemeController>
     </ThemeProvider>
