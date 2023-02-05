@@ -15,13 +15,18 @@ const SPOTIFY_SCOPES =
 export type AuthService = 'spotify';
 const signIn = async (service: AuthService) => {
   if (service === 'spotify') {
-    await supabase.auth.signInWithOAuth({
-      provider: 'spotify',
-      options: {
-        scopes: SPOTIFY_SCOPES,
-        redirectTo: window?.location?.href || 'https://www.listentogether.app',
-      },
-    });
+    try {
+      await supabase.auth.signInWithOAuth({
+        provider: 'spotify',
+        options: {
+          scopes: SPOTIFY_SCOPES,
+          redirectTo:
+            window?.location?.href || 'https://www.listentogether.app',
+        },
+      });
+    } catch (error) {
+      console.error(error);
+    }
   }
 };
 

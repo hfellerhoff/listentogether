@@ -10,7 +10,6 @@ export const ROOM_EMPTY: Room = {
   owner_id: '',
   users: [],
   messages: [],
-  isPublic: true,
   visibility: 'public',
 };
 

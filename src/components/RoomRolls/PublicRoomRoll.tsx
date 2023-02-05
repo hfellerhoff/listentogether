@@ -18,9 +18,9 @@ const PublicRoomRoll = () => {
           rooms (
             id,
             name,
-            isPublic,
             slug,
-            creator_id
+            creator_id,
+            visibility
           )
         `
         )
