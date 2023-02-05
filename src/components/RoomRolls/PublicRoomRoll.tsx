@@ -12,7 +12,18 @@ const PublicRoomRoll = () => {
     const fetchRooms = async () => {
       const { data, error } = await supabase
         .from('rooms')
-        .select('*')
+        .select(
+          `
+          room_id,
+          rooms (
+            id,
+            name,
+            slug,
+            creator_id,
+            visibility
+          )
+        `
+        )
         .order('updatedAt', {
           ascending: false,
         })
