@@ -11,7 +11,7 @@ import {
 } from '@chakra-ui/react';
 import { FaChevronDown } from 'react-icons/fa';
 
-import { usePlatformUserContext } from 'src/lib/UserProvider';
+import { useProfileContext } from 'src/lib/UserProvider';
 import useStore, { Modal } from 'src/state/store';
 
 import ColorModeButton from '../ColorModeButton';
@@ -19,7 +19,7 @@ import DashboardSongControls from '../Room/DashboardSongControls';
 import VolumeAndDeviceControl from '../Room/VolumeAndDeviceControl';
 
 const PlaybackControlDrawer = () => {
-  const { user } = usePlatformUserContext();
+  const { user } = useProfileContext();
   const { modal, handleSetModal } = useStore((store) => ({
     modal: store.modal,
     handleSetModal: store.handleSetModal,
@@ -51,7 +51,7 @@ const PlaybackControlDrawer = () => {
                 <Avatar
                   size='sm'
                   name={user?.name || 'Guest User'}
-                  src={user ? user.profilePhoto || undefined : undefined}
+                  src={user ? user.avatarUrl || undefined : undefined}
                 />
               </Button>
               <ColorModeButton />

@@ -1,7 +1,7 @@
 import { Avatar, Box, Button, Flex, Grid, Tooltip } from '@chakra-ui/react';
 import { FiChevronDown, FiMusic } from 'react-icons/fi';
 
-import { usePlatformUserContext } from 'src/lib/UserProvider';
+import { useProfileContext } from 'src/lib/UserProvider';
 import useStore, { Modal } from 'src/state/store';
 
 import CreateRoomButton from './CreateRoomButton';
@@ -23,7 +23,7 @@ interface Props {
 const PlaybackHeader = ({ placement, isHome, song, room }: Props) => {
   placement = placement || 'top';
 
-  const { user } = usePlatformUserContext();
+  const { user } = useProfileContext();
   const { handleSetModal } = useStore((store) => ({
     handleSetModal: store.handleSetModal,
   }));
@@ -82,7 +82,7 @@ const PlaybackHeader = ({ placement, isHome, song, room }: Props) => {
           display={['none', 'none', 'none', 'flex']}
         >
           <Button variant='ghost' rightIcon={<FiChevronDown />}>
-            <Avatar size='sm' name={user?.name} src={user?.profilePhoto} />
+            <Avatar size='sm' name={user?.name} src={user?.avatarUrl} />
           </Button>
           <ColorModeButton />
         </Flex>

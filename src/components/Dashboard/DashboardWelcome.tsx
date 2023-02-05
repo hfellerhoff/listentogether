@@ -12,14 +12,14 @@ import {
 } from '@chakra-ui/react';
 import { useAtom } from 'jotai';
 
-import { usePlatformUserContext } from 'src/lib/UserProvider';
+import { useProfileContext } from 'src/lib/UserProvider';
 
 import { isPremiumAtom } from '../../state/isPremiumAtom';
 import { getFirstName } from '../../util/helpers/getFirstName';
 
 const DashboardWelcome = () => {
   const { colorMode } = useColorMode();
-  const { user } = usePlatformUserContext();
+  const { user } = useProfileContext();
   const [isPremium] = useAtom(isPremiumAtom);
 
   return (

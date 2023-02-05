@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { usePlatformUserContext } from '@/lib/UserProvider';
+import { useProfileContext } from '@/lib/UserProvider';
 
 import RoomRoll from './RoomRoll';
 import Room from '../../models/Room';
@@ -10,7 +10,7 @@ const OwnerRoomRoll = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [rooms, setRooms] = useState<Room[]>([]);
 
-  const { user } = usePlatformUserContext();
+  const { user } = useProfileContext();
 
   useEffect(() => {
     const fetchRooms = async () => {

@@ -20,13 +20,13 @@ import { useForm } from 'react-hook-form';
 import { FiPlus } from 'react-icons/fi';
 
 import { useAuthContext } from '@/lib/AuthProvider';
-import { usePlatformUserContext } from '@/lib/UserProvider';
+import { useProfileContext } from '@/lib/UserProvider';
 import { trpc } from 'src/server/client';
 
 export default function CreateRoomButton() {
   const router = useRouter();
   const { session } = useAuthContext();
-  const { user } = usePlatformUserContext();
+  const { user } = useProfileContext();
 
   const [isCreatingRoom, setIsCreatingRoom] = useState(false);
   const [isRoomCreationModalOpen, setIsRoomCreationModalOpen] = useState(false);

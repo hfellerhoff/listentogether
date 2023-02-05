@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { useAuthContext } from '@/lib/AuthProvider';
-import { usePlatformUserContext } from '@/lib/UserProvider';
+import { useProfileContext } from '@/lib/UserProvider';
 import supabase from '@/util/supabase';
 
 export interface ConnectedRoomUser {
@@ -18,7 +18,7 @@ export default function useConnectedRoomUsers(
 ): ConnectedRoomUser[] {
   const [presenceState, setPresenceState] = useState<ConnectedRoomUser[]>([]);
   const { session } = useAuthContext();
-  const { user } = usePlatformUserContext();
+  const { user } = useProfileContext();
 
   useEffect(() => {
     if (!roomSlug) return;
@@ -55,7 +55,7 @@ export default function useConnectedRoomUsers(
         await channel.track({
           user: session.user.id,
           name: user?.name || 'Anonymous Listener',
-          profile_photo: user?.profilePhoto || '',
+          profile_photo: user?.avatarUrl || '',
           online_at: new Date().toISOString(),
         });
       }
@@ -64,7 +64,7 @@ export default function useConnectedRoomUsers(
     return () => {
       channel.unsubscribe();
     };
-  }, [roomSlug, session, user?.name, user?.profilePhoto]);
+  }, [roomSlug, session, user?.name, user?.avatarUrl]);
 
   return presenceState;
 }

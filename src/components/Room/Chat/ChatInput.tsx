@@ -4,9 +4,10 @@ import { useAtom } from 'jotai';
 import { useForm } from 'react-hook-form';
 
 import { useAuthContext } from '@/lib/AuthProvider';
+import { MessageType } from 'src/models/Message';
+import { trpc } from 'src/server/client';
 
 import { roomAtom } from '../../../state/roomAtom';
-
 
 const StyledForm = styled('form', {
   width: '100%',
@@ -23,6 +24,7 @@ const ChatInput = () => {
   const { register, handleSubmit, reset } = useForm();
   const [room] = useAtom(roomAtom);
   const { session } = useAuthContext();
+  const { mutateAsync: sendChatMessage } = trpc.sendChatMessage.useMutation();
 
   const onSubmit = handleSubmit(async (data) => {
     const { message } = data;
@@ -30,13 +32,11 @@ const ChatInput = () => {
     if (!session?.user) return;
 
     try {
-      await fetch('/api/rooms/chat', {
-        method: 'POST',
-        body: JSON.stringify({
-          message,
-          room_id: room.id,
-          user_id: session.user.id,
-        }),
+      await sendChatMessage({
+        type: MessageType.UserChat,
+        content: message,
+        room_id: room.id,
+        user_id: session.user.id,
       });
     } catch {
       console.error('Error sending chat message.');

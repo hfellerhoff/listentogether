@@ -2,6 +2,7 @@ import { customAlphabet } from 'nanoid';
 import { z } from 'zod';
 
 import supabase from '@/util/supabase';
+import { MessageType } from 'src/models/Message';
 import Song from 'src/models/Song';
 
 import { publicProcedure, router } from '../trpc';
@@ -186,6 +187,17 @@ const appRouter = router({
         console.log(err);
       }
     }),
+  sendChatMessage: publicProcedure.input(z.object({
+    type: z.literal(MessageType.UserChat),
+    content: z.string(),
+    room_id: z.number(),
+    user_id: z.string()
+  })).mutation(async ({input}) => {
+    await supabase
+    .from('messages')
+    .insert([input])
+    .then((res) => console.log(res));
+  })
 });
 export type AppRouter = typeof appRouter;
 
