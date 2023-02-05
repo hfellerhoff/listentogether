@@ -4,7 +4,8 @@
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
-    "strict": false,
+    "strict": true,
+    "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
     "noEmit": true,
@@ -17,8 +18,8 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "@/lib/*": ["lib/*"],
-      "@/util/*": ["util/*"]
+      "@/lib/*": ["src/lib/*"],
+      "@/util/*": ["src/util/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
