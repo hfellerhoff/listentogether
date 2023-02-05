@@ -11,7 +11,7 @@ export type SupabaseProfile = {
 export type Profile = {
   id: string;
   service: 'spotify';
-  displayName: string | null;
-  avatarUrl: string | null;
   isPremium: boolean;
+  displayName?: string;
+  avatarUrl?: string;
 };

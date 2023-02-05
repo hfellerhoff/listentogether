@@ -17,7 +17,7 @@ const ChatDisplay = ({ messages }: Props) => {
       {messages &&
         messages.map((message, index) => {
           const id = lastMessage;
-          lastMessage = message.user_id;
+          lastMessage = message.author_id;
 
           return (
             <ChatMessageDisplay

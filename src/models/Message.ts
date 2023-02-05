@@ -9,7 +9,7 @@ interface Message {
   type: MessageType;
   content: string;
   timestamp: string;
-  user_id: number;
+  author_id: number;
   message_id: number;
 }
 

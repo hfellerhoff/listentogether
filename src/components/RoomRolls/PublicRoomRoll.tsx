@@ -20,7 +20,7 @@ const PublicRoomRoll = () => {
             name,
             isPublic,
             slug,
-            owner_id
+            creator_id
           )
         `
         )

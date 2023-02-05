@@ -36,7 +36,7 @@ const ChatInput = () => {
         type: MessageType.UserChat,
         content: message,
         room_id: room.id,
-        user_id: session.user.id,
+        author_id: session.user.id,
       });
     } catch {
       console.error('Error sending chat message.');

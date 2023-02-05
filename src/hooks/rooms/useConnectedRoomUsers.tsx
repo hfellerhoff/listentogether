@@ -54,7 +54,7 @@ export default function useConnectedRoomUsers(
       if (status === 'SUBSCRIBED' && session) {
         await channel.track({
           user: session.user.id,
-          name: user?.name || 'Anonymous Listener',
+          name: user?.displayName || 'Anonymous Listener',
           profile_photo: user?.avatarUrl || '',
           online_at: new Date().toISOString(),
         });
@@ -64,7 +64,7 @@ export default function useConnectedRoomUsers(
     return () => {
       channel.unsubscribe();
     };
-  }, [roomSlug, session, user?.name, user?.avatarUrl]);
+  }, [roomSlug, session, user?.displayName, user?.avatarUrl]);
 
   return presenceState;
 }

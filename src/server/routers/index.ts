@@ -17,14 +17,15 @@ const appRouter = router({
     .input(
       z.object({
         name: z.string(),
-        isPublic: z.boolean().optional().default(true),
-        owner_id: z.string(),
+        visibility: z.enum(['public', 'private']),
+        creator_id: z.string(),
       })
     )
     .mutation(async ({ input }) => {
       const room = {
         name: input.name,
-        isPublic: input.isPublic,
+        visibility: input.visibility,
+        creator_id: input.creator_id,
         slug: nanoid(),
       };
 
@@ -187,17 +188,21 @@ const appRouter = router({
         console.log(err);
       }
     }),
-  sendChatMessage: publicProcedure.input(z.object({
-    type: z.literal(MessageType.UserChat),
-    content: z.string(),
-    room_id: z.number(),
-    user_id: z.string()
-  })).mutation(async ({input}) => {
-    await supabase
-    .from('messages')
-    .insert([input])
-    .then((res) => console.log(res));
-  })
+  sendChatMessage: publicProcedure
+    .input(
+      z.object({
+        type: z.literal(MessageType.UserChat),
+        content: z.string(),
+        room_id: z.number(),
+        author_id: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      await supabase
+        .from('messages')
+        .insert([input])
+        .then((res) => console.log(res));
+    }),
 });
 export type AppRouter = typeof appRouter;
 

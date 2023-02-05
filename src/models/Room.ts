@@ -10,7 +10,11 @@ interface Room {
   owner_id: string;
   users: User[];
   messages: Message[];
+  /**
+   * @deprecated
+   */
   isPublic: boolean;
+  visibility: 'public' | 'private';
 }
 
 export type Queue = Song[];

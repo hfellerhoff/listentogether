@@ -20,10 +20,10 @@ import {
 } from '@chakra-ui/react';
 import { FiRefreshCcw } from 'react-icons/fi';
 
+import { useAuthContext } from '@/lib/AuthProvider';
 import useStore, { Modal } from 'src/state/store';
 
 import RadioCardGroup from '../RadioCardGroup';
-import { useAuthContext } from '@/lib/AuthProvider';
 
 const DeviceSelectDrawer = () => {
   const { session } = useAuthContext();

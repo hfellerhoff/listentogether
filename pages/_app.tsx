@@ -4,13 +4,13 @@ import { Provider as JotaiProvider } from 'jotai';
 import { AppType } from 'next/app';
 import { ThemeProvider } from 'next-themes';
 
+import SpotifyWebPlayback from '@/lib/spotify/SpotifyWebPlayback';
 import AuthProvider from 'src/lib/AuthProvider';
 import UserProvider from 'src/lib/UserProvider';
 import { trpc } from 'src/server/client';
 
 import StitchesThemeController from '../src/components/StitchesThemeController';
 import { globalStyles } from '../stitches.config';
-import SpotifyWebPlayback from '@/lib/spotify/SpotifyWebPlayback';
 
 const App: AppType = ({ Component, pageProps }) => {
   globalStyles();

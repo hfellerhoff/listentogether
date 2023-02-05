@@ -42,13 +42,14 @@ const useMessages = (roomID: number) => {
   useEffect(() => {
     // Subscribe to future table changes
     const subscription = supabase
-      .channel(`public:${table}:${whereColumn}=eq.${roomID}`)
+      .channel(`public:${table}:${roomID}`)
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
-          table: `${table}:${whereColumn}=eq.${roomID}`,
+          table: table,
+          filter: `${whereColumn}=eq.${roomID}`,
         },
         (payload) => {
           switch (payload.eventType) {

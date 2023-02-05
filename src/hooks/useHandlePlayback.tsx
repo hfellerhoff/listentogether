@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 
 import { useAtom } from 'jotai';
 
+import { useAuthContext } from '@/lib/AuthProvider';
 import { PLAYBACK_STATE } from 'constants/playback';
 import PlaybackAPI from 'src/lib/playback';
 import Song from 'src/models/Song';
@@ -9,7 +10,6 @@ import { playbackConfigurationAtom } from 'src/state/playbackConfigurationAtom';
 import useStore from 'src/state/store';
 
 import useSongProgress from './rooms/useSongProgress';
-import { useAuthContext } from '@/lib/AuthProvider';
 
 export default function useHandlePlayback(song?: Song) {
   const { session } = useAuthContext();
@@ -54,6 +54,7 @@ export default function useHandlePlayback(song?: Song) {
 
       if (isSongOver) {
         console.log('Song is over, skipping...');
+        await PlaybackAPI.pause(props);
         await PlaybackAPI.skip(props);
       } else if (isClientPlaying && song.isPaused) {
         console.log('Song should not be playing, pausing...');

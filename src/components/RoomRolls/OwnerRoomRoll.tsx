@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { useProfileContext } from '@/lib/UserProvider';
+import { useAuthContext } from '@/lib/AuthProvider';
 
 import RoomRoll from './RoomRoll';
 import Room from '../../models/Room';
@@ -10,23 +10,16 @@ const OwnerRoomRoll = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [rooms, setRooms] = useState<Room[]>([]);
 
-  const { user } = useProfileContext();
+  const { session } = useAuthContext();
 
   useEffect(() => {
     const fetchRooms = async () => {
-      if (!user?.name) return;
-
-      const { data: legacyUsers } = await supabase
-        .from('users')
-        .select('id')
-        .eq('name', user?.name);
-      if (!legacyUsers?.length) return;
-      const legacyUserId = legacyUsers[0].id;
+      if (!session) return;
 
       const { data: rooms, error } = await supabase
         .from('rooms')
         .select('*')
-        .eq('owner_id', legacyUserId)
+        .eq('creator_id', session.user.id)
         .order('id');
 
       if (!error) {
@@ -37,8 +30,9 @@ const OwnerRoomRoll = () => {
     };
 
     fetchRooms();
-  }, [user?.name]);
+  }, [session]);
 
+  if (!rooms.length) return <></>;
   return <RoomRoll rooms={rooms} isLoading={isLoading} title='Your Rooms' />;
 };
 

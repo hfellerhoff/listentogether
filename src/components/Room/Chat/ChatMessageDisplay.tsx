@@ -4,8 +4,9 @@ import { Text } from '@chakra-ui/react';
 import { styled } from '@stitches/react';
 import dayjs from 'dayjs';
 
+import { SupabaseProfile } from 'src/models/Profile';
+
 import Message, { MessageType } from '../../../models/Message';
-import User from '../../../models/User';
 import supabase from '../../../util/supabase';
 import Avatar from '../../Avatar';
 
@@ -53,16 +54,16 @@ const MessageContainer = styled('div', {
 
 const ChatMessageDisplay = ({ message, index, previousUser }: Props) => {
   const isUserChat = message.type === MessageType.UserChat;
-  const isSameUser = message.user_id === previousUser;
+  const isSameUser = message.author_id === previousUser;
 
-  const [user, setUser] = useState<User>();
+  const [user, setUser] = useState<SupabaseProfile>();
 
   useEffect(() => {
     const updateUser = async () => {
       const { data } = await supabase
-        .from('users')
+        .from('profiles')
         .select('*')
-        .eq('id', message.user_id);
+        .eq('id', message.author_id);
 
       if (data?.length) setUser(data[0]);
     };
@@ -70,17 +71,18 @@ const ChatMessageDisplay = ({ message, index, previousUser }: Props) => {
     if (message && !isSameUser) updateUser();
   }, [message, isSameUser]);
 
+  const displayName = user?.display_name || '';
+  const avatarUrl = user?.service_avatar_url || '';
+
   return (
     <Container isServer={!isUserChat} isSameUser={isSameUser} key={index}>
       {isUserChat ? (
         <>
-          {!isSameUser && (
-            <Avatar src={user?.imageSrc || ''} name={user?.name || ''} />
-          )}
+          {!isSameUser && <Avatar src={avatarUrl} name={displayName} />}
           <MessageContainer isSameUser={isSameUser}>
             <Text fontSize={12} display={isSameUser ? 'none' : 'block'}>
-              {user ? user.name : ''} •{' '}
-              {dayjs(message.timestamp).format('MMM D, YYYY • hh:mm')}
+              {displayName} •{' '}
+              {dayjs(message.timestamp).format('MMM D, YYYY • hh:mma')}
             </Text>
             <Text>{message.content}</Text>
           </MessageContainer>

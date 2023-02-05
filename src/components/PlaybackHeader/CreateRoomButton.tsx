@@ -39,11 +39,10 @@ export default function CreateRoomButton() {
 
     setIsCreatingRoom(true);
 
-    const isPublic = visibility === 'public';
     const room = await createRoom({
       name,
-      isPublic,
-      owner_id: session.user.id,
+      visibility,
+      creator_id: session.user.id,
     });
 
     if (room) router.push(`/rooms/${room.slug}`);
@@ -74,7 +73,11 @@ export default function CreateRoomButton() {
             <ModalBody>
               <FormLabel>Room Name</FormLabel>
               <Input
-                defaultValue={`${user?.name}'s Room`}
+                defaultValue={
+                  user?.displayName
+                    ? `${user?.displayName}'s Room`
+                    : 'My New Room'
+                }
                 {...register('name')}
               />
               <FormLabel className='mt-6'>Room Visibility</FormLabel>
