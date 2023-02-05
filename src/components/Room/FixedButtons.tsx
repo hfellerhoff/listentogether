@@ -22,12 +22,14 @@ import Link from 'next/link';
 import { useTheme } from 'next-themes';
 
 import SongControl from 'src/components/SongControl';
+import { ConnectedRoomUser } from 'src/hooks/rooms/useConnectedRoomUsers';
 import { useAuthContext } from 'src/lib/AuthProvider';
 import useStore, { Modal } from 'src/state/store';
 
 import Room from '../../models/Room';
 import Song from '../../models/Song';
 import { sidepanelAtom } from '../../state/sidepanelAtom';
+import Avatar from '../Avatar';
 import SongProgress from '../SongProgress';
 
 const FloatingContainer = styled(Box, {
@@ -60,6 +62,12 @@ const FloatingContainer = styled(Box, {
         marginLeft: '-12rem',
         width: '24rem',
         borderRadius: 8,
+      },
+      tr2: {
+        top: '1rem',
+        right: '4.5rem',
+        background: 'transparent',
+        boxShadow: 'none',
       },
       tr: {
         top: '1rem',
@@ -121,9 +129,10 @@ type Props = {
   room: Room;
   song?: Song;
   show: boolean;
+  users: ConnectedRoomUser[];
 };
 
-const FixedButtons = ({ room, song, show }: Props) => {
+const FixedButtons = ({ room, song, show, users }: Props) => {
   const { handleSetModal } = useStore((store) => ({
     handleSetModal: store.handleSetModal,
   }));
@@ -149,6 +158,9 @@ const FixedButtons = ({ room, song, show }: Props) => {
       isRightOpen: !sidepanelStatus.isRightOpen,
     });
   };
+
+  const displayedUsers = users.slice(0, 5);
+  const hiddenUsers = users.slice(5);
 
   return (
     <>
@@ -192,6 +204,7 @@ const FixedButtons = ({ room, song, show }: Props) => {
           </CircularButton>
         </Tooltip>
         <RoomTitle>{room.name}</RoomTitle>
+
         <Tooltip
           label='Toggle theme'
           aria-label='Toggle theme'
@@ -202,6 +215,36 @@ const FixedButtons = ({ room, song, show }: Props) => {
             {theme === 'light' ? <MoonIcon /> : <SunIcon />}
           </CircularButton>
         </Tooltip>
+      </FloatingContainer>
+      <FloatingContainer position='tr2' show={show}>
+        <div className='flex flex-row-reverse items-center justify-center w-full'>
+          {hiddenUsers.length > 0 && (
+            <Tooltip
+              key='Overflow users'
+              label={hiddenUsers.map((user) => user.name).join(', ')}
+              aria-label='Other users in the room'
+              placement='bottom-end'
+              zIndex={8}
+            >
+              <div className='p-0.5 bg-white rounded-full shadow -ml-[1rem]'>
+                <Avatar src='' name={`${hiddenUsers.length.toString()}`} />
+              </div>
+            </Tooltip>
+          )}
+          {displayedUsers.map((user) => (
+            <Tooltip
+              key={user.connection_id}
+              label={user.name}
+              aria-label={user.name}
+              placement='bottom-end'
+              zIndex={8}
+            >
+              <div className='p-0.5 bg-white rounded-full shadow -ml-[1rem]'>
+                <Avatar src={user.profile_photo} name={user.name} />
+              </div>
+            </Tooltip>
+          ))}
+        </div>
       </FloatingContainer>
       {isAuthenticated && (
         <>

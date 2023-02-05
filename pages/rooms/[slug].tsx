@@ -7,7 +7,9 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { FaSpotify } from 'react-icons/fa';
 
+import { useAuthContext } from '@/lib/AuthProvider';
 import YouTubePlayer from 'src/components/YouTubePlayer';
+import useConnectedRoomUsers from 'src/hooks/rooms/useConnectedRoomUsers';
 import useHandlePlayback from 'src/hooks/useHandlePlayback';
 import useHasAllowedAutoPlay from 'src/hooks/useHasAllowedAutoPlay';
 import useIsInactive from 'src/hooks/useIsInactive';
@@ -22,7 +24,6 @@ import useGradientsFromImageRef from '../../src/hooks/useGradientsFromImageRef';
 import Song from '../../src/models/Song';
 import { sidepanelAtom } from '../../src/state/sidepanelAtom';
 import { neutral } from '../../stitches.config';
-import { useAuthContext } from '@/lib/AuthProvider';
 
 const PageLayout = styled('div', {
   height: '100vh',
@@ -138,6 +139,7 @@ export const RoomPage = () => {
 
     return undefined;
   }, [router.query.slug]);
+  const connectedUsers = useConnectedRoomUsers(slug);
 
   const room = useMonitorRoom(slug);
   const queue = useQueue(room.id);
@@ -178,7 +180,12 @@ export const RoomPage = () => {
             cursor: isInactive ? 'none' : 'inherit',
           }}
         >
-          <FixedButtons room={room} song={song} show={!isInactive} />
+          <FixedButtons
+            room={room}
+            song={song}
+            show={!isInactive}
+            users={connectedUsers}
+          />
           {song && song.youtube_video_id && (
             <YouTubePlayer
               song={song}

@@ -1,17 +1,18 @@
 import '../styles/globals.css';
 import { ChakraProvider } from '@chakra-ui/react';
 import { Provider as JotaiProvider } from 'jotai';
-import { AppProps } from 'next/app';
+import { AppType } from 'next/app';
 import { ThemeProvider } from 'next-themes';
 
 import AuthProvider from 'src/lib/AuthProvider';
 import UserProvider from 'src/lib/UserProvider';
+import { trpc } from 'src/server/client';
 
 import StitchesThemeController from '../src/components/StitchesThemeController';
 import { globalStyles } from '../stitches.config';
 import SpotifyWebPlayback from '@/lib/spotify/SpotifyWebPlayback';
 
-export default function App({ Component, pageProps }: AppProps) {
+const App: AppType = ({ Component, pageProps }) => {
   globalStyles();
 
   return (
@@ -31,4 +32,6 @@ export default function App({ Component, pageProps }: AppProps) {
       </StitchesThemeController>
     </ThemeProvider>
   );
-}
+};
+
+export default trpc.withTRPC(App);

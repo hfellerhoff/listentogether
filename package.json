@@ -46,6 +46,8 @@
     "request": "^2.88.2",
     "spotify-web-api-js": "^1.5.2",
     "spotify-web-api-node": "^5.0.2",
+    "superjson": "^1.12.2",
+    "zod": "^3.20.2",
     "zustand": "4.3.2"
   },
   "devDependencies": {
