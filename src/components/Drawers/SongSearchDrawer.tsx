@@ -26,14 +26,14 @@ import { ArrowRightIcon } from '@radix-ui/react-icons';
 import { useAtom } from 'jotai';
 import { FaSpotify, FaYoutube } from 'react-icons/fa';
 
-import { QueueProps } from 'pages/api/rooms/queue';
+import { useAuthContext } from '@/lib/AuthProvider';
 import YouTubePlayerPreview from 'src/components/YouTubePlayerPreview';
+import { trpc } from 'src/server/client';
 import useStore, { Modal } from 'src/state/store';
 
 import useWindowDimensions from '../../hooks/useWindowDimensions';
 import { roomAtom } from '../../state/roomAtom';
 import DashboardSongDisplay from '../Room/DashboardSongDisplay';
-import { useAuthContext } from '@/lib/AuthProvider';
 
 const grayGhostStyle = {
   light: {
@@ -83,7 +83,9 @@ const SongSearchDrawer = () => {
     SpotifyApi.TrackObjectFull[]
   >([]);
 
-  const queueTrack = async ({
+  const { mutateAsync: queueTrack } = trpc.queueSong.useMutation();
+
+  const handleQueueTrack = async ({
     duration_ms,
     spotifyUri,
     youtubeVideoID,
@@ -94,17 +96,12 @@ const SongSearchDrawer = () => {
     youtubeVideoID?: string;
     progress?: number;
   }) => {
-    console.log('Queuing track...');
-
-    await fetch('/api/rooms/queue', {
-      method: 'POST',
-      body: JSON.stringify({
-        roomId: room.id,
-        spotifyUri,
-        youtubeVideoID,
-        progress,
-        duration_ms,
-      } as QueueProps),
+    await queueTrack({
+      roomId: room.id,
+      spotifyUri,
+      youtubeVideoID,
+      progress,
+      duration_ms,
     }).catch(console.error);
 
     setSearchQuery('');
@@ -138,7 +135,7 @@ const SongSearchDrawer = () => {
 
   const handleSpotifyQueue =
     (track: SpotifyApi.TrackObjectFull) => async () => {
-      await queueTrack({
+      await handleQueueTrack({
         spotifyUri: track.uri,
         duration_ms: track.duration_ms,
       });
@@ -171,7 +168,11 @@ const SongSearchDrawer = () => {
       const tParam = params.get('t');
       const progress = tParam ? parseInt(tParam.replace('s', '')) * 1000 : 0;
 
-      queueTrack({ youtubeVideoID, progress, duration_ms: youTubeDurationMS });
+      handleQueueTrack({
+        youtubeVideoID,
+        progress,
+        duration_ms: youTubeDurationMS,
+      });
     } else {
       toast({
         title: 'Incorrect URL',
