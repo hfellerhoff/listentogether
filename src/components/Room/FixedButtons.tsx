@@ -17,6 +17,7 @@ import {
   SunIcon,
 } from '@radix-ui/react-icons';
 import { css, styled } from '@stitches/react';
+import clsx from 'clsx';
 import { useAtom } from 'jotai';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
@@ -226,7 +227,12 @@ const FixedButtons = ({ room, song, show, users }: Props) => {
               placement='bottom-end'
               zIndex={8}
             >
-              <div className='p-0.5 bg-white rounded-full shadow -ml-[1rem]'>
+              <div
+                className={clsx('p-0.5 rounded-full shadow -ml-[1rem]', {
+                  'bg-[#f8faf9]': colorMode === 'light',
+                  'bg-[#191d1b]': colorMode !== 'light',
+                })}
+              >
                 <Avatar src='' name={`${hiddenUsers.length.toString()}`} />
               </div>
             </Tooltip>
@@ -239,7 +245,12 @@ const FixedButtons = ({ room, song, show, users }: Props) => {
               placement='bottom-end'
               zIndex={8}
             >
-              <div className='p-0.5 bg-white rounded-full shadow -ml-[1rem]'>
+              <div
+                className={clsx('p-0.5 rounded-full shadow -ml-[1rem]', {
+                  'bg-[#f8faf9]': colorMode === 'light',
+                  'bg-[#191d1b]': colorMode !== 'light',
+                })}
+              >
                 <Avatar src={user.profile_photo} name={user.name} />
               </div>
             </Tooltip>

@@ -1,13 +1,10 @@
-import { useState } from 'react';
-
 import { Avatar, Box, Button, Flex, Grid, Tooltip } from '@chakra-ui/react';
-import { useRouter } from 'next/router';
-import { FiChevronDown, FiMusic, FiPlus } from 'react-icons/fi';
+import { FiChevronDown, FiMusic } from 'react-icons/fi';
 
 import { usePlatformUserContext } from 'src/lib/UserProvider';
-import { trpc } from 'src/server/client';
 import useStore, { Modal } from 'src/state/store';
 
+import CreateRoomButton from './CreateRoomButton';
 import PlaybackHeaderSongDisplay from './PlaybackHeaderSongDisplay';
 import useBackgroundColor from '../../hooks/useBackgroundColor';
 import Room from '../../models/Room';
@@ -15,7 +12,6 @@ import Song from '../../models/Song';
 import ColorModeButton from '../ColorModeButton';
 import DashboardSongControls from '../Room/DashboardSongControls';
 import VolumeAndDeviceControl from '../Room/VolumeAndDeviceControl';
-import { useAuthContext } from '@/lib/AuthProvider';
 
 interface Props {
   placement?: 'top' | 'bottom';
@@ -26,32 +22,12 @@ interface Props {
 
 const PlaybackHeader = ({ placement, isHome, song, room }: Props) => {
   placement = placement || 'top';
-  const router = useRouter();
-  const { session } = useAuthContext();
+
   const { user } = usePlatformUserContext();
   const { handleSetModal } = useStore((store) => ({
     handleSetModal: store.handleSetModal,
   }));
   const { foregroundColor } = useBackgroundColor();
-  const { mutateAsync: createRoom } = trpc.createRoom.useMutation();
-
-  const [isCreatingRoom, setIsCreatingRoom] = useState(false);
-
-  const onRoomCreate = async () => {
-    if (!user || !session) return;
-
-    setIsCreatingRoom(true);
-
-    const room = await createRoom({
-      name: `${user?.name}'s Room`,
-      owner_id: session.user.id,
-      isPublic: true,
-    });
-
-    if (room) router.push(`/rooms/${room.slug}`);
-
-    setIsCreatingRoom(false);
-  };
 
   return (
     <>
@@ -81,14 +57,7 @@ const PlaybackHeader = ({ placement, isHome, song, room }: Props) => {
           justify='center'
         >
           {!room || !room.name ? (
-            <Button
-              colorScheme='green'
-              leftIcon={<FiPlus />}
-              onClick={onRoomCreate}
-              isLoading={isCreatingRoom}
-            >
-              Create Room
-            </Button>
+            <CreateRoomButton />
           ) : (
             <DashboardSongControls song={song} />
           )}

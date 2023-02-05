@@ -26,6 +26,7 @@
     "@trpc/next": "^10.10.0",
     "@trpc/react-query": "^10.10.0",
     "@trpc/server": "^10.10.0",
+    "clsx": "^1.2.1",
     "cookie": "^0.5.0",
     "dayjs": "^1.11.7",
     "formik": "^2.2.9",

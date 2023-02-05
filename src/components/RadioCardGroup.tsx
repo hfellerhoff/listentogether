@@ -124,13 +124,17 @@ const RadioCardGroup = ({ name, options, onChange, isLoading }: Props) => {
           leftIcon = <FiSmartphone fontSize={20} />;
         }
         const radio = getRadioProps({ value: option.value });
+
+        const isWebApplication =
+          option.label === 'Listen Together Web Application';
+
         return (
           <RadioCard
             title={option.label}
             key={option.value}
-            description={option.type}
+            description={isWebApplication ? 'Browser' : option.type || ''}
             leftIcon={leftIcon}
-            isLoading={isLoading}
+            isLoading={isLoading || false}
             {...radio}
           />
         );

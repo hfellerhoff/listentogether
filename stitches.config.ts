@@ -1,4 +1,3 @@
-import { createStitches, globalCss } from '@stitches/react';
 import {
   // Brand Scales
   tomato,
@@ -10,6 +9,7 @@ import {
   sage,
   sageDark,
 } from '@radix-ui/colors';
+import { createStitches, globalCss } from '@stitches/react';
 
 export const globalStyles = globalCss({
   '*': {

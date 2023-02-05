@@ -51,7 +51,7 @@ const PlatformUserContext = createContext<PlatformUserContext | null>(null);
 
 export default function PlatformUserProvider({ children }: PropsWithChildren) {
   const [isUserLoading, setIsUserLoading] = useState(true);
-  const { session } = useAuthContext();
+  const { session, signIn } = useAuthContext();
   const [user, setUser] = useState<PlatformUser | null>(null);
 
   const fetchAndSetUser = useCallback(async () => {
@@ -60,11 +60,12 @@ export default function PlatformUserProvider({ children }: PropsWithChildren) {
     try {
       const updatedUser = await getUser('spotify', session.provider_token);
       setUser(updatedUser);
-    } catch {
+    } catch (error) {
       setUser(null);
+      signIn('spotify');
     }
     setIsUserLoading(false);
-  }, [session]);
+  }, [session?.provider_token, signIn]);
 
   useEffect(() => {
     fetchAndSetUser();
