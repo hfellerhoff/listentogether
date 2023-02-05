@@ -5,7 +5,7 @@ export const play = async ({
   song,
   progress,
 }: PlaybackAPIPlayProps) => {
-  if (!youtube || !song.youtube_video_id) return;
+  if (!youtube || !song?.youtube_video_id) return;
 
   return await youtube.loadVideoById({
     videoId: song.youtube_video_id,

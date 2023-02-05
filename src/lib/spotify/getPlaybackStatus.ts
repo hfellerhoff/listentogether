@@ -5,7 +5,9 @@ import { PlaybackProps } from '../playback';
 export const getPlaybackStatus = async ({ spotify }: PlaybackProps) => {
   const playback = await spotify.getMyCurrentPlaybackState();
 
-  if (!playback) return PLAYBACK_STATE.NONE;
+  if (playback?.progress_ms === null || !playback?.item) {
+    return PLAYBACK_STATE.NONE;
+  }
 
   if (playback.repeat_state !== 'off') {
     spotify.setRepeat('off');

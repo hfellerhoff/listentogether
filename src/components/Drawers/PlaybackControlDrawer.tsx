@@ -50,7 +50,7 @@ const PlaybackControlDrawer = () => {
               <Button variant='ghost' rightIcon={<FaChevronDown />}>
                 <Avatar
                   size='sm'
-                  name={user?.name || 'Guest User'}
+                  name={user?.displayName || 'Guest User'}
                   src={user ? user.avatarUrl || undefined : undefined}
                 />
               </Button>

@@ -4,7 +4,7 @@ export const getSongDuration = async ({
   spotify,
   song,
 }: PlaybackAPIPlayProps) => {
-  if (!song.spotifyUri) return;
+  if (!song?.spotifyUri) return;
 
   const track = await spotify.getTrack(song.spotifyUri.split(':')[2]);
 

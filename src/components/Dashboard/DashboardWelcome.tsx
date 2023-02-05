@@ -34,8 +34,8 @@ const DashboardWelcome = () => {
       </Box>
       <Box textAlign='center' mb={[4, 4, 8, 8]} mt={[4, 4, 8, 8]}>
         <Heading size='2xl'>
-          {user?.name
-            ? `Welcome back, ${getFirstName(user.name)}!`
+          {user?.displayName
+            ? `Welcome back, ${getFirstName(user.displayName)}!`
             : 'Welcome back!'}
         </Heading>
         <Text fontSize={20}>It&apos;s great to see you again.</Text>

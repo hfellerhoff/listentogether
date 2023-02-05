@@ -82,7 +82,7 @@ const PlaybackHeader = ({ placement, isHome, song, room }: Props) => {
           display={['none', 'none', 'none', 'flex']}
         >
           <Button variant='ghost' rightIcon={<FiChevronDown />}>
-            <Avatar size='sm' name={user?.name} src={user?.avatarUrl} />
+            <Avatar size='sm' name={user?.displayName} src={user?.avatarUrl} />
           </Button>
           <ColorModeButton />
         </Flex>

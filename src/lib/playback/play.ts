@@ -10,7 +10,7 @@ export type PlaybackAPIPlayProps = PlaybackProps & {
 
 export const play = async (
   props: PlaybackAPIPlayProps
-): Promise<PlaybackResponse<void>> => {
+): Promise<PlaybackResponse<void> | void> => {
   const { song } = props;
 
   if (!song) return;

@@ -2,7 +2,7 @@ import { PlaybackAPIPlayProps } from '../playback/play';
 
 export const getTargetDevice = async ({
   spotify,
-}: PlaybackAPIPlayProps): Promise<string> => {
+}: PlaybackAPIPlayProps): Promise<string | null> => {
   const devices = await spotify.getMyDevices();
 
   const activeDevices = devices.devices.filter((d) => d.is_active);
@@ -13,4 +13,5 @@ export const getTargetDevice = async ({
       return activeDevices[0].id;
     }
   }
+  return null;
 };

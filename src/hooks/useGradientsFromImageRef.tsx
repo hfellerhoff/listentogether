@@ -8,11 +8,13 @@ const useGradientsFromImageRef = (src: string | undefined) => {
 
   useEffect(() => {
     const getGradient = async () => {
+      if (!src) return;
+
       const palatte = await Vibrant.from(src)
         .getPalette()
         .catch((err) => console.error(err));
 
-      if (!palatte) return;
+      if (!palatte?.DarkMuted || !palatte?.DarkVibrant) return;
 
       setFirstColor(palatte.DarkMuted.rgb);
       setSecondColor(palatte.DarkVibrant.rgb);
