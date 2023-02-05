@@ -11,19 +11,8 @@ const PublicRoomRoll = () => {
   useEffect(() => {
     const fetchRooms = async () => {
       const { data, error } = await supabase
-        .from('songs')
-        .select(
-          `
-          room_id,
-          rooms (
-            id,
-            name,
-            slug,
-            creator_id,
-            visibility
-          )
-        `
-        )
+        .from('rooms')
+        .select('*')
         .order('updatedAt', {
           ascending: false,
         })
