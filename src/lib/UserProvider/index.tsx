@@ -64,7 +64,7 @@ export default function ProfileProvider({ children }: PropsWithChildren) {
         serviceAvatarUrl = serviceProfile.images[0].url;
       }
       if (userProfile) {
-        await supabase.from('profiles').insert({
+        await supabase.from('profiles').update({
           id: session.user.id,
           service: 'spotify',
           service_id: serviceProfile.id,
