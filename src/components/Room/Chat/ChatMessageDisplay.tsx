@@ -78,7 +78,9 @@ const ChatMessageDisplay = ({ message, index, previousUser }: Props) => {
     <Container isServer={!isUserChat} isSameUser={isSameUser} key={index}>
       {isUserChat ? (
         <>
-          {!isSameUser && <Avatar src={avatarUrl} name={displayName} />}
+          <div className='flex-shrink-0 w-10 h-10 min-w-[10rem] min-h-[10rem]'>
+            {!isSameUser && <Avatar src={avatarUrl} name={displayName} />}
+          </div>
           <MessageContainer isSameUser={isSameUser}>
             <Text fontSize={12} display={isSameUser ? 'none' : 'block'}>
               {displayName} •{' '}
