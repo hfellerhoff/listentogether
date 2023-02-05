@@ -46,25 +46,20 @@ export default function useConnectedRoomUsers(
       );
 
       setPresenceState([...transformedState]);
-      console.log(transformedState);
     });
 
-    channel.on('presence', { event: 'join' }, (params) => {
-      console.log(params);
-    });
+    // channel.on('presence', { event: 'join' }, (params) => {});
 
     channel.subscribe(async (status) => {
       if (status === 'SUBSCRIBED' && session) {
-        const presenceTrackStatus = await channel.track({
+        await channel.track({
           user: session.user.id,
           name: user?.name || 'Anonymous Listener',
           profile_photo: user?.profilePhoto || '',
           online_at: new Date().toISOString(),
         });
-        console.log(presenceTrackStatus);
       }
     });
-    console.log(`Joined channel room:${roomSlug}`);
 
     return () => {
       channel.unsubscribe();
