@@ -10,21 +10,23 @@ import {
 } from '@radix-ui/react-icons';
 import { useAtom } from 'jotai';
 
-import { RoomPlaybackQuery } from '../../pages/api/rooms/playback';
+import { trpc } from 'src/server/client';
+
 import Song from '../models/Song';
 import { playbackConfigurationAtom } from '../state/playbackConfigurationAtom';
 
 interface Props {
   song?: Song;
-  progress: number;
 }
 
-const SongControl = ({ song, progress }: Props) => {
+const SongControl = ({ song }: Props) => {
   const [playbackConfiguration, setPlaybackConfiguration] = useAtom(
     playbackConfigurationAtom
   );
   const [changeToIsPaused, setChangeToIsPaused] = useState(true);
   const [isSkippingSong, setIsSkippingSong] = useState(false);
+
+  const { mutateAsync: updatePlayback } = trpc.updatePlayback.useMutation();
 
   const isPaused = song ? song.isPaused : false;
 
@@ -44,17 +46,14 @@ const SongControl = ({ song, progress }: Props) => {
     console.log('Skipping song...');
     setIsSkippingSong(true);
 
-    await fetch('/api/rooms/playback', {
-      method: 'POST',
-      body: JSON.stringify({
-        shouldSkip: true,
-        songId: song.id,
-        track: {
-          spotify_uri: song.spotifyUri,
-          youtube_video_id: song.youtube_video_id,
-          duration_ms: song.duration_ms,
-        },
-      } as RoomPlaybackQuery),
+    await updatePlayback({
+      shouldSkip: true,
+      songId: song.id,
+      track: {
+        spotify_uri: song.spotifyUri,
+        youtube_video_id: song.youtube_video_id,
+        duration_ms: song.duration_ms,
+      },
     });
 
     setIsSkippingSong(false);
@@ -69,12 +68,9 @@ const SongControl = ({ song, progress }: Props) => {
     if (isPaused) {
       console.log('Playing song...');
 
-      await fetch('/api/rooms/playback', {
-        method: 'POST',
-        body: JSON.stringify({
-          isPaused: !isPaused,
-          songId: song.id,
-        } as RoomPlaybackQuery),
+      await updatePlayback({
+        isPaused: !isPaused,
+        songId: song.id,
       });
 
       console.log('Played song.');
@@ -83,13 +79,9 @@ const SongControl = ({ song, progress }: Props) => {
     else {
       console.log('Pausing song...');
 
-      await fetch('/api/rooms/playback', {
-        method: 'POST',
-        body: JSON.stringify({
-          isPaused: !isPaused,
-          songId: song.id,
-          progress,
-        } as RoomPlaybackQuery),
+      await updatePlayback({
+        isPaused: !isPaused,
+        songId: song.id,
       });
 
       console.log('Paused song.');

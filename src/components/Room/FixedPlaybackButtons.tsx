@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { DarkMode, Spinner, Tooltip } from '@chakra-ui/react';
 import {
@@ -11,8 +11,8 @@ import {
 import { styled } from '@stitches/react';
 import { useAtom } from 'jotai';
 
-import { RoomPlaybackQuery } from '../../../pages/api/rooms/playback';
-import useSongProgress from '../../hooks/rooms/useSongProgress';
+import { trpc } from 'src/server/client';
+
 import useSpotifyTrack from '../../hooks/spotify/useSpotifyTrack';
 import Song from '../../models/Song';
 import { playbackConfigurationAtom } from '../../state/playbackConfigurationAtom';
@@ -54,14 +54,14 @@ const CircularButton = styled('button', {
 });
 
 const FixedPlaybackButtons = ({ song }: Props) => {
-  const progress = useSongProgress(song);
-
   const [playbackConfiguration, setPlaybackConfiguration] = useAtom(
     playbackConfigurationAtom
   );
   const [changeToIsPaused, setChangeToIsPaused] = useState(true);
   const [isSkippingSong, setIsSkippingSong] = useState(false);
   const track = useSpotifyTrack(song);
+
+  const { mutateAsync: updatePlayback } = trpc.updatePlayback.useMutation();
 
   const isPaused = song ? song.isPaused : false;
 
@@ -76,57 +76,28 @@ const FixedPlaybackButtons = ({ song }: Props) => {
     });
 
   const handleSkipForward = async () => {
-    console.log('Skipping song...');
+    if (!track) return;
     setIsSkippingSong(true);
 
-    await fetch('/api/rooms/playback', {
-      method: 'POST',
-      body: JSON.stringify({
-        shouldSkip: true,
-        songId: song.id,
-        track: {
-          uri: track.uri,
-          duration_ms: track.duration_ms,
-        },
-      } as RoomPlaybackQuery),
+    await updatePlayback({
+      shouldSkip: true,
+      songId: song.id,
+      track: {
+        spotify_uri: track.uri,
+        duration_ms: track.duration_ms,
+      },
     });
 
     setIsSkippingSong(false);
-    console.log('Skipped song.');
   };
 
   const handleTogglePlay = async () => {
     setChangeToIsPaused(!isPaused);
 
-    // Play song
-    if (isPaused) {
-      console.log('Playing song...');
-
-      await fetch('/api/rooms/playback', {
-        method: 'POST',
-        body: JSON.stringify({
-          isPaused: !isPaused,
-          songId: song.id,
-        } as RoomPlaybackQuery),
-      });
-
-      console.log('Played song.');
-    }
-    // Pause song
-    else {
-      console.log('Pausing song...');
-
-      await fetch('/api/rooms/playback', {
-        method: 'POST',
-        body: JSON.stringify({
-          isPaused: !isPaused,
-          songId: song.id,
-          progress,
-        } as RoomPlaybackQuery),
-      });
-
-      console.log('Paused song.');
-    }
+    await updatePlayback({
+      isPaused: !isPaused,
+      songId: song.id,
+    });
   };
 
   if (!song) return <></>;

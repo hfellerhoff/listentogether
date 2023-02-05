@@ -292,7 +292,7 @@ const FixedButtons = ({ room, song, show, users }: Props) => {
                 mx={-0.5}
               />
             </Tooltip>
-            <SongControl song={song} progress={1} />
+            <SongControl song={song} />
           </FloatingContainer>
           <FloatingContainer position='b' show={show}>
             <SongProgress song={song} />

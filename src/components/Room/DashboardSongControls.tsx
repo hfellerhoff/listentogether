@@ -18,7 +18,7 @@ const DashboardSongControls = ({ song }: Props) => {
 
   return (
     <Flex direction='column' align='center' justify='center'>
-      <SongControl song={song} progress={progress} />
+      <SongControl song={song} />
       <ProgressSlider
         playback={{
           progress,
