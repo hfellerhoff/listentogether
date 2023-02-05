@@ -1,18 +1,17 @@
 export type SupabaseProfile = {
   id: string;
-  service_id: string;
   service: 'spotify';
+  service_id: string;
+  service_avatar_url: string | null;
+  service_display_name: string | null;
+  display_name: string | null;
   updated_at: string;
-  username: string | null;
-  avatar_url: string | null;
-  website: string | null;
 };
 
 export type Profile = {
   id: string;
-  serviceId: string;
   service: 'spotify';
-  username: string | null;
+  displayName: string | null;
   avatarUrl: string | null;
   isPremium: boolean;
 };

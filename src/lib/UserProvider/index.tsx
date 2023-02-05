@@ -17,25 +17,13 @@ import { AuthService, useAuthContext } from '../AuthProvider';
 const getUser = async (
   service: AuthService,
   session: ReturnType<typeof useAuthContext>['session']
-): Promise<Profile | null> => {
+): Promise<SpotifyApi.CurrentUsersProfileResponse | null> => {
   if (service === 'spotify' && session) {
     const spotify = new SpotifyWebApi();
     spotify.setAccessToken(session.provider_token);
     const spotifyUser = await spotify.getMe();
 
-    let profilePhoto = '';
-    if (spotifyUser.images?.length) {
-      profilePhoto = spotifyUser.images[0].url;
-    }
-
-    return {
-      id: session.user.id,
-      serviceId: spotifyUser.id,
-      service: service,
-      username: spotifyUser.display_name || null,
-      isPremium: spotifyUser.product === 'premium',
-      avatarUrl: profilePhoto,
-    };
+    return spotifyUser;
   }
 
   return null;
@@ -51,34 +39,57 @@ const PlatformUserContext = createContext<PlatformUserContext | null>(null);
 export default function ProfileProvider({ children }: PropsWithChildren) {
   const [isUserLoading, setIsUserLoading] = useState(true);
   const { session, signIn } = useAuthContext();
-  const [user, setUser] = useState<Profile | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
 
   const fetchAndSetUser = useCallback(async () => {
     if (!session?.provider_token) return;
 
     try {
-      const updatedUser = await getUser('spotify', session);
-      if (!updatedUser) return;
+      const profileData = await getUser('spotify', session);
+      if (!profileData) return;
+
+      const serviceProfile = profileData;
 
       const supabaseProfiles = await supabase
         .from('profiles')
-        .select('id')
+        .select('*')
         .eq('id', session.user.id)
         .limit(1);
+      const userProfile = supabaseProfiles.data?.length
+        ? (supabaseProfiles.data[0] as SupabaseProfile)
+        : null;
 
-      if (supabaseProfiles.data?.length === 0) {
+      let serviceAvatarUrl;
+      if (serviceProfile.images?.length) {
+        serviceAvatarUrl = serviceProfile.images[0].url;
+      }
+      if (userProfile) {
         await supabase.from('profiles').insert({
           id: session.user.id,
-          service_id: updatedUser.serviceId,
-          service: updatedUser.service,
-          username: updatedUser.username,
-          avatar_url: updatedUser.avatarUrl,
+          service: 'spotify',
+          service_id: serviceProfile.id,
+          service_avatar_url: serviceAvatarUrl,
+          service_display_name: serviceProfile.display_name,
+          display_name: serviceProfile.display_name,
+        } as Partial<SupabaseProfile>);
+      } else {
+        // TODO: Only update if avatar/display name have changed
+        await supabase.from('profiles').update({
+          id: session.user.id,
+          service_avatar_url: serviceAvatarUrl,
+          service_display_name: serviceProfile.display_name,
         } as Partial<SupabaseProfile>);
       }
 
-      setUser(updatedUser);
+      setProfile({
+        id: session.user.id,
+        service: 'spotify',
+        displayName: userProfile?.display_name || serviceProfile.display_name,
+        avatarUrl: serviceAvatarUrl,
+        isPremium: serviceProfile.product === 'premium',
+      });
     } catch (error) {
-      setUser(null);
+      setProfile(null);
       signIn('spotify');
     }
     setIsUserLoading(false);
@@ -91,7 +102,7 @@ export default function ProfileProvider({ children }: PropsWithChildren) {
   return (
     <PlatformUserContext.Provider
       value={{
-        user,
+        user: profile,
         isUserLoading,
         refetchUser: fetchAndSetUser,
       }}
