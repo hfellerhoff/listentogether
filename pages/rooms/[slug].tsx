@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 import { Button } from '@chakra-ui/react';
 import { css, styled } from '@stitches/react';
@@ -150,6 +150,7 @@ export const RoomPage = () => {
   const [sidepanelStatus] = useAtom(sidepanelAtom);
   const { isAuthenticated, signIn } = useAuthContext();
   const track = useSpotifyTrack(song);
+  const [shouldAlwaysShowUI, setShouldAlwaysShowUI] = useState(false);
 
   const { normalGradient } = useGradientsFromImageRef(
     track ? track.album.images[0].url : undefined
@@ -163,6 +164,7 @@ export const RoomPage = () => {
 
   const hasAllowedAutoPlay = useHasAllowedAutoPlay();
   const isInactive = useIsInactive();
+  const shouldHideUI = isInactive && !shouldAlwaysShowUI;
   const isSongInQueue = !!track && !!song;
 
   return (
@@ -183,8 +185,10 @@ export const RoomPage = () => {
           <FixedButtons
             room={room}
             song={song}
-            show={!isInactive}
+            show={!shouldHideUI}
             users={connectedUsers}
+            shouldAlwaysShowUI={shouldAlwaysShowUI}
+            setShouldAlwaysShowUI={setShouldAlwaysShowUI}
           />
           {song && song.youtube_video_id && (
             <YouTubePlayer

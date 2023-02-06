@@ -1,3 +1,5 @@
+import { Dispatch } from 'react';
+
 import {
   Box,
   IconButton,
@@ -10,6 +12,8 @@ import {
   ChatBubbleIcon,
   CheckIcon,
   Component1Icon,
+  EyeClosedIcon,
+  EyeOpenIcon,
   CopyIcon,
   DoubleArrowRightIcon,
   MoonIcon,
@@ -18,7 +22,7 @@ import {
 } from '@radix-ui/react-icons';
 import { css, styled } from '@stitches/react';
 import clsx from 'clsx';
-import { useAtom } from 'jotai';
+import { SetStateAction, useAtom } from 'jotai';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 
@@ -131,9 +135,18 @@ type Props = {
   song?: Song;
   show: boolean;
   users: ConnectedRoomUser[];
+  shouldAlwaysShowUI: boolean;
+  setShouldAlwaysShowUI: Dispatch<SetStateAction<boolean>>;
 };
 
-const FixedButtons = ({ room, song, show, users }: Props) => {
+const FixedButtons = ({
+  room,
+  song,
+  show,
+  users,
+  shouldAlwaysShowUI,
+  setShouldAlwaysShowUI,
+}: Props) => {
   const { handleSetModal } = useStore((store) => ({
     handleSetModal: store.handleSetModal,
   }));
@@ -288,6 +301,28 @@ const FixedButtons = ({ room, song, show, users }: Props) => {
                 aria-label='Choose Spotify playback device'
                 variant='ghost'
                 icon={<Component1Icon />}
+                rounded='full'
+                mx={-0.5}
+              />
+            </Tooltip>
+            <Tooltip
+              label={
+                shouldAlwaysShowUI ? 'Hide UI when inactive' : 'Always show UI'
+              }
+              aria-label={
+                shouldAlwaysShowUI ? 'Hide UI when inactive' : 'Always show UI'
+              }
+              placement='top-start'
+            >
+              <IconButton
+                onClick={() => setShouldAlwaysShowUI((previous) => !previous)}
+                aria-label={
+                  shouldAlwaysShowUI
+                    ? 'Hide UI when inactive'
+                    : 'Always show UI'
+                }
+                variant='ghost'
+                icon={shouldAlwaysShowUI ? <EyeOpenIcon /> : <EyeClosedIcon />}
                 rounded='full'
                 mx={-0.5}
               />
