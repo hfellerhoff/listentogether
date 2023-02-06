@@ -5,5 +5,9 @@ export const pause = async (props: PlaybackProps) => {
   const device_id = await SpotifyAPI.getTargetDevice(props);
   if (!device_id) return;
 
-  return await props.spotify.pause();
+  try {
+    return await props.spotify.pause();
+  } catch {
+    return null;
+  }
 };
