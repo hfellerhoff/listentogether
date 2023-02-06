@@ -63,7 +63,7 @@ export default function ProfileProvider({ children }: PropsWithChildren) {
       if (serviceProfile.images?.length) {
         serviceAvatarUrl = serviceProfile.images[0].url;
       }
-      if (userProfile) {
+      if (!userProfile?.service) {
         await supabase.from('profiles').update({
           id: session.user.id,
           service: 'spotify',
@@ -72,7 +72,7 @@ export default function ProfileProvider({ children }: PropsWithChildren) {
           service_display_name: serviceProfile.display_name,
           display_name: serviceProfile.display_name,
         } as Partial<SupabaseProfile>);
-      } else {
+      } else if (userProfile?.service) {
         // TODO: Only update if avatar/display name have changed
         await supabase.from('profiles').update({
           id: session.user.id,
