@@ -63,22 +63,29 @@ export default function ProfileProvider({ children }: PropsWithChildren) {
       if (serviceProfile.images?.length) {
         serviceAvatarUrl = serviceProfile.images[0].url;
       }
+
+      console.log(userProfile);
       if (!userProfile?.service) {
-        await supabase.from('profiles').update({
-          id: session.user.id,
-          service: 'spotify',
-          service_id: serviceProfile.id,
-          service_avatar_url: serviceAvatarUrl,
-          service_display_name: serviceProfile.display_name,
-          display_name: serviceProfile.display_name,
-        } as Partial<SupabaseProfile>);
+        console.log('update');
+        await supabase
+          .from('profiles')
+          .update({
+            service: 'spotify',
+            service_id: serviceProfile.id,
+            service_avatar_url: serviceAvatarUrl,
+            service_display_name: serviceProfile.display_name,
+            display_name: serviceProfile.display_name,
+          } as Partial<SupabaseProfile>)
+          .eq('id', session.user.id);
       } else if (userProfile?.service) {
         // TODO: Only update if avatar/display name have changed
-        await supabase.from('profiles').update({
-          id: session.user.id,
-          service_avatar_url: serviceAvatarUrl,
-          service_display_name: serviceProfile.display_name,
-        } as Partial<SupabaseProfile>);
+        await supabase
+          .from('profiles')
+          .update({
+            service_avatar_url: serviceAvatarUrl,
+            service_display_name: serviceProfile.display_name,
+          } as Partial<SupabaseProfile>)
+          .eq('id', session.user.id);
       }
 
       setProfile({
