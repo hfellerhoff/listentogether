@@ -64,7 +64,6 @@ export default function ProfileProvider({ children }: PropsWithChildren) {
         serviceAvatarUrl = serviceProfile.images[0].url;
       }
 
-      console.log(userProfile);
       if (!userProfile?.service) {
         console.log('update');
         await supabase
