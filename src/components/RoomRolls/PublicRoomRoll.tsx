@@ -11,30 +11,35 @@ const PublicRoomRoll = () => {
   useEffect(() => {
     const fetchRooms = async () => {
       const { data, error } = await supabase
-        .from('songs')
-        .select(
-          `
-        room_id,
-        rooms (
-          id,
-          name,
-          visibility,
-          slug,
-          creator_id
-        )
-      `
-        )
-        .order('updatedAt', {
-          ascending: false,
-        })
+        .from('rooms')
+        .select('*')
+        .eq('visibility', 'public')
+        //   .from('songs')
+        //   .select(
+        //     `
+        //   room_id,
+        //   rooms (
+        //     id,
+        //     name,
+        //     visibility,
+        //     slug,
+        //     creator_id
+        //   )
+        // `
+        //   )
+        // .order('updatedAt', {
+        //   ascending: false,
+        // })
         .limit(30);
 
+      console.log(data);
+
       if (!error) {
-        const parsedRooms = Object.values(data).map((d) => d.rooms);
-        if (!parsedRooms) return;
+        // const parsedRooms = Object.values(data).map((d) => d.rooms);
+        // if (!parsedRooms) return;
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        setRooms(parsedRooms);
+        setRooms(data);
       } else console.error(error);
 
       setIsLoading(false);
