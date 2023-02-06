@@ -4,7 +4,7 @@ import Song from '../../models/Song';
 
 // The amount of time for realtime playback to lag behind the server queue time.
 // Useful for not cutting off the beginnings of songs.
-const PROGRESS_DELAY = 0;
+const PROGRESS_DELAY = 2000;
 
 const useSongProgress = (song?: Song) => {
   const [progress, setProgress] = useState(-1);

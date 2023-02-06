@@ -5,7 +5,7 @@ import { calculateProgress } from './utils/calculateProgress';
 import SpotifyAPI from '../spotify';
 import YouTubeAPI from '../youtube';
 
-const OUT_OF_SYNC_MS = 2000;
+const OUT_OF_SYNC_MS = 3000;
 
 export type PlaybackIsSynchronizedProps = PlaybackProps & {
   progress: number; // server song progress ms
