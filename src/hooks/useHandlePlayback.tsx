@@ -61,6 +61,7 @@ export default function useHandlePlayback(song?: Song) {
         await PlaybackAPI.pause(props);
       } else if (!isClientPlaying && !song.isPaused) {
         console.log('Song should be playing, playing...');
+        console.log(props);
         await PlaybackAPI.play(props);
       } else if (!isSynchronized && !song.isPaused) {
         console.log('Song is out of sync, synchronizing...');
