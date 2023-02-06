@@ -29,8 +29,6 @@ const PublicRoomRoll = () => {
         })
         .limit(30);
 
-      console.log(data);
-
       if (!error) {
         const parsedRooms = Object.values(data).map((d) => d.rooms);
         if (!parsedRooms) return;
