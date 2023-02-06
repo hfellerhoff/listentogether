@@ -2,10 +2,7 @@ import { PlaybackAPIPlayProps } from '../playback/play';
 
 export const getTargetDevice = async ({
   spotify,
-  song,
 }: PlaybackAPIPlayProps): Promise<string | null> => {
-  if (song?.youtube_video_id) return null;
-
   const devices = await spotify.getMyDevices();
 
   const activeDevices = devices.devices.filter((d) => d.is_active);

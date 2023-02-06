@@ -7,6 +7,7 @@ export const play = async (props: PlaybackAPIPlayProps) => {
   if (!song?.spotifyUri) return;
 
   const device_id = await SpotifyAPI.getTargetDevice(props);
+  if (!device_id) return;
 
   await spotify.play({
     uris: [song.spotifyUri],
